@@ -13,11 +13,29 @@ const { title, description, pubDate, updatedDate } = Astro.props;
 	<head>
 		<BaseHead title={title} description={description} />
 		<style>
+
+      @keyframes appear {
+        from {
+          opacity: 0;
+          translate: 25vw 0;
+        }
+        to {
+          opacity: 1;
+          translate: 0 0;
+        }
+      }
+      body::-webkit-scrollbar {
+        display: none;
+      }
 			main {
 				width: calc(100% - 2em);
 				max-width: 100%;
 				margin: 0;
 			}
+      article {
+        animation: appear 0.3s ease-in-out;
+      }
+
 			.prose {
 				width: 720px;
 				max-width: calc(100% - 2em);

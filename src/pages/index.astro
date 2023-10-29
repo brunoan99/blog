@@ -15,19 +15,35 @@ const posts = (await getCollection('blog')).sort(
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
+
+
+      @keyframes appear {
+        from {
+          opacity: 0;
+          translate: 5vw 0;
+        }
+        to {
+          opacity: 1;
+          translate: 0 0;
+        }
+      }
 			main {
 				width: 960px;
 			}
 			ul {
 				display: flex;
         flex-direction: column;
-				gap: 2rem;
+				gap: 25px;
 				list-style-type: none;
 				margin: 0;
 				padding: 0;
 			}
 			ul li {
 				width: calc(50% - 1rem);
+        padding: 5px;
+        animation: appear 1ms ease-in-out;
+        animation-timeline: view();
+        animation-range: cover 0% entry-crossing 80%;
 			}
 			ul li * {
 				text-decoration: none;
@@ -38,11 +54,13 @@ const posts = (await getCollection('blog')).sort(
 			}
 			.title {
 				margin: 0;
+        padding-left: 15px;
 				color: rgb(var(--black));
 				line-height: 1;
 			}
 			.date {
 				margin: 0;
+        padding-left: 15px;
 				color: rgb(var(--gray));
 			}
 			ul li a:hover h4,
@@ -54,7 +72,7 @@ const posts = (await getCollection('blog')).sort(
 			}
 			@media (max-width: 720px) {
 				ul {
-					gap: 0.5em;
+					gap: 1.25em;
 				}
 				ul li {
 					width: 100%;
@@ -77,6 +95,7 @@ const posts = (await getCollection('blog')).sort(
 										<FormattedDate date={post.data.pubDate} />
 									</p>
 								</a>
+                <hr />
 							</li>
 						))
 					}
