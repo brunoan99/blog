@@ -5,15 +5,18 @@ import Header from '../components/Header.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import { ViewTransitions, fade } from 'astro:transitions';
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = { post: CollectionEntry<'blog'>['data'], summary: {index: number, count: number, title: string, ref: string }[] };
 
-const { title, description, pubDate, updatedDate } = Astro.props;
+const { summary, post: { title, description, pubDate, updatedDate} } = Astro.props;
 ---
 
 <html lang="pt-br">
 	<head>
 		<BaseHead title={title} description={description} />
 		<style>
+      html {
+        scroll-behavior: smooth;
+      }
       body::-webkit-scrollbar {
         display: none;
       }
@@ -22,9 +25,6 @@ const { title, description, pubDate, updatedDate } = Astro.props;
 				max-width: 100%;
 				margin: 0;
 			}
-      article {
-        /* animation: appear 0.3s ease-in-out; */
-      }
 
 			.prose {
 				width: 720px;
@@ -49,6 +49,38 @@ const { title, description, pubDate, updatedDate } = Astro.props;
 			.last-updated-on {
 				font-style: italic;
 			}
+      .summary {
+        position: fixed;
+        width: calc((100vw - 880px) / 2);
+        max-width: 360px;
+        left: 3em;
+        top: 186px;
+      }
+
+      .summary ul {
+        margin-block: 0px;
+        margin-inline: 0px;
+        padding-inline: 0px;
+        list-style-type: none;
+        line-height: 1.6;
+        font-size: 19px;
+      }
+
+      .summary ul li a {
+        color: rgb(var(--gray));
+        text-decoration: none;
+        text-wrap: wrap;
+      }
+
+      .summary ul li a:hover {
+        color: var(--accent);
+      }
+
+      @media (max-width: 1299px) {
+        .summary {
+          display: none;
+        }
+      }
 		</style>
     <ViewTransitions />
 	</head>
@@ -58,6 +90,21 @@ const { title, description, pubDate, updatedDate } = Astro.props;
 		<main
       transition:animate={fade({duration: "0.42s"})}
     >
+      <section class="summary">
+        <ul>
+        {
+          summary.map((heading) => {
+            return (
+              <li style={`margin-left: ${Math.max((heading.count - 2), 0) * 16}px`}>
+                <a href={`#${heading.ref}`}>
+                {heading.title}
+                </a>
+              </li>
+            )
+          })
+        }
+        </ul>
+      </section>
 			<article>
 				<div class="prose">
 					<div class="title"
