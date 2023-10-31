@@ -1,0 +1,57 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+
+---
+<html lang="en">
+  <head>
+    <BaseHead title="Não Encontrado" />
+    <style>
+      .not-found {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-top: 25vh;
+      }
+
+      .not-found p {
+        padding-bottom: 5vh;
+        font-size: 36px;
+        color: var(--secondary);
+      }
+
+      .home-button {
+        display: flex;
+        height: 120px;
+        width: 400px;
+        background: var(--secondary);
+        text-decoration: none;
+        text-align: center;
+        justify-content: center;
+        border: 2px rgb(var(--black)) solid;
+        border-radius: 40px;
+      }
+
+      .home-button span {
+        align-self: center;
+        font-size: 24px;
+        color: var(--white)
+      }
+    </style>
+  </head>
+  <body>
+    <Header />
+    <div class="not-found">
+      <p>
+        Página Não encontrada
+      </p>
+      <a class="home-button" href="/">
+        <span>
+          Retornar ao início
+        </span>
+      </a>
+    </div>
+  </>
+  </body>
+</html>
