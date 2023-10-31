@@ -37,9 +37,7 @@ body {
 	margin: 0;
 	padding: 0;
 	text-align: left;
-	background: var(--primary);
-	background-size: 100% 600px;
-	word-wrap: break-word;
+  background: var(--primary);
 	overflow-wrap: break-word;
 	color: var(--secondary);
 	font-size: 20px;

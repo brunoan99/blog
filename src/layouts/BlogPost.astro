@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content';
 import BaseHead from "../components/BaseHead.astro";
 import Header from '../components/Header.astro';
 import FormattedDate from '../components/FormattedDate.astro';
+import { ViewTransitions, fade, slide } from 'astro:transitions';
 
 type Props = CollectionEntry<'blog'>['data'];
 
@@ -13,17 +14,6 @@ const { title, description, pubDate, updatedDate } = Astro.props;
 	<head>
 		<BaseHead title={title} description={description} />
 		<style>
-
-      @keyframes appear {
-        from {
-          opacity: 0;
-          translate: 25vw 0;
-        }
-        to {
-          opacity: 1;
-          translate: 0 0;
-        }
-      }
       body::-webkit-scrollbar {
         display: none;
       }
@@ -33,7 +23,7 @@ const { title, description, pubDate, updatedDate } = Astro.props;
 				margin: 0;
 			}
       article {
-        animation: appear 0.3s ease-in-out;
+        /* animation: appear 0.3s ease-in-out; */
       }
 
 			.prose {
@@ -60,14 +50,19 @@ const { title, description, pubDate, updatedDate } = Astro.props;
 				font-style: italic;
 			}
 		</style>
+    <ViewTransitions />
 	</head>
 
 	<body>
 		<Header />
-		<main>
+		<main
+      transition:animate={fade({duration: "0.42s"})}
+    >
 			<article>
 				<div class="prose">
-					<div class="title">
+					<div class="title"
+            transition:name={title}
+          >
 						<h1>{title}</h1>
             <div class="date">
 							<FormattedDate date={pubDate} />
