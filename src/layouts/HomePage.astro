@@ -10,21 +10,14 @@ type Props = { posts: CollectionEntry<'blog'>[]};
 const { posts } = Astro.props;
 
 ---
-
 <!doctype html>
 <html lang="pt-br">
 	<head>
 		<BaseHead />
 		<style>
       @keyframes appear {
-        from {
-          opacity: 0;
-          translate: 5vw 0;
-        }
-        to {
-          opacity: 1;
-          translate: 0 0;
-        }
+        from { opacity: 0; }
+        to { opacity: 1; }
       }
       body::-webkit-scrollbar {
         display: none;
@@ -44,13 +37,10 @@ const { posts } = Astro.props;
 			ul li {
 				width: calc(50% - 1rem);
         padding: 5px;
-        animation: appear 1ms ease-in-out;
-        animation-timeline: view();
-        animation-range: cover 0% entry-crossing 80%;
+        animation: appear 550ms ease-in;
 			}
 			ul li * {
 				text-decoration: none;
-				transition: 0.2s ease;
 			}
 			ul li a {
 				display: block;
@@ -83,10 +73,9 @@ const { posts } = Astro.props;
 				}
 			}
 		</style>
-    <ViewTransitions />
 	</head>
 	<body>
-		<Header />
+		<Header/>
 		<main>
 			<section>
 				<ul>
@@ -94,7 +83,7 @@ const { posts } = Astro.props;
 						posts.map((post) => (
 							<li>
 								<a href={`/posts/${post.slug}/`}
-                   transition:name={post.data.title}
+                   transition:animate="fade"
                 >
 									<h4 class="title">{post.data.title}</h4>
 									<p class="date">
