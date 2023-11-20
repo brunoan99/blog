@@ -3,17 +3,20 @@ import type { CollectionEntry } from 'astro:content';
 import BaseHead from "../components/BaseHead.astro";
 import Header from '../components/Header.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import { ViewTransitions, fade } from 'astro:transitions';
 
 type Props = { post: CollectionEntry<'blog'>['data'], summary: {index: number, count: number, title: string, ref: string }[] };
 
 const { summary, post: { title, description, pubDate, updatedDate} } = Astro.props;
 ---
-
+<!doctype html>
 <html lang="pt-br">
 	<head>
 		<BaseHead title={title} description={description} />
 		<style>
+      @keyframes appear {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
       html {
         scroll-behavior: smooth;
       }
@@ -24,6 +27,7 @@ const { summary, post: { title, description, pubDate, updatedDate} } = Astro.pro
 				width: calc(100% - 2em);
 				max-width: 100%;
 				margin: 0;
+        animation: appear 350ms ease-in;
 			}
 
 			.prose {
@@ -32,6 +36,8 @@ const { summary, post: { title, description, pubDate, updatedDate} } = Astro.pro
 				margin: auto;
 				padding: 1em;
 	      color: var(--secondary);
+        text-align: justify;
+        text-justify: inter-word;
 			}
 			.title {
 				margin-bottom: 1em;
@@ -52,7 +58,7 @@ const { summary, post: { title, description, pubDate, updatedDate} } = Astro.pro
       .summary {
         position: fixed;
         width: calc((100vw - 880px) / 2);
-        max-width: 360px;
+        max-width: 280px;
         left: 3em;
         top: 186px;
       }
@@ -82,14 +88,11 @@ const { summary, post: { title, description, pubDate, updatedDate} } = Astro.pro
         }
       }
 		</style>
-    <ViewTransitions />
 	</head>
 
 	<body>
-		<Header />
-		<main
-      transition:animate={fade({duration: "0.42s"})}
-    >
+		<Header/>
+		<main>
       <section class="summary">
         <ul>
         {
@@ -107,9 +110,7 @@ const { summary, post: { title, description, pubDate, updatedDate} } = Astro.pro
       </section>
 			<article>
 				<div class="prose">
-					<div class="title"
-            transition:name={title}
-          >
+					<div class="title">
 						<h1>{title}</h1>
             <div class="date">
 							<FormattedDate date={pubDate} />
