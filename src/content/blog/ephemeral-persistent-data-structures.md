@@ -59,15 +59,13 @@ Modelo semelhante ao utilizada em Programação Funcional, para que ambas as ver
 
 ## Casos de Uso
 
-Apesar de cada modelo de implementação suprir a abstração dos métodos de cada Estrutura de Dados, por tratar de modo distinto o Estado cada tipo de implementação possui características particulares.
-
-Visto que armazenar o Estado seja por *duplicação*  (Implementação Persistente) ou por *referência* (Implementação Parcialmente Persistente) tem seus custos sua utilização fica restrita aos casos em que a preservação do Estado faz-se por necessária.
+Apesar de cada modelo de implementação suprir a abstração dos métodos de cada Estrutura de Dados, por tratar de modo distinto o Estado cada tipo de implementação possui características particulares. Visto que armazenar o Estado tem seus custos sua utilização fica restrita aos casos em que a preservação do Estado faz-se por necessária.
 
 Tratando-se de quantidade de utilizações efetivas grande parte das Estruturas de Dados utilizadas usam de Implementações Efêmeras para prover funcionalidade com eficiência. Como exemplo Grafos são extremamente uteis para representar conexões em Redes Sociais, manter qualquer estado passado desta estrutura é pouco interessante visto seu grande custo e pouca aplicabilidade da conservação.
 
-Há alguns cenários em que manter o Estado anterior da Estrutura de Dados é extremante relevante para a aplicação, como, por exemplo, o caso da Estrutura de Dados denominada de Corda que permite trabalhar com longos textos de forma eficiente. Editores de texto utilizam-se dessa Estrutura implementada de modo Persistente ou Parcialmente Persistente para manter suporte a funcionalidades como desfazer e refazer.
+Há alguns cenários em que manter o Estado anterior da Estrutura de Dados é extremante relevante para a aplicação, como, por exemplo, o caso da Estrutura de Dados denominada de Corda que permite trabalhar com longos textos de forma eficiente. Editores de texto utilizam-se dessa Estrutura implementada de modo Persistente para manter suporte a funcionalidades como desfazer e refazer.
 
-Além de que linguagens puramente funcionais, como Haskell, podem não conter dentre de suas funcionalidade o aspecto de mutabilidade dessa forma restringindo a utilização de implementações não persistentes.
+Além de que linguagens puramente funcionais, como Haskell ou Lean, podem não conter dentre de suas funcionalidade o aspecto de mutabilidade dessa forma restringindo a utilização de implementações não persistentes.
 
 ## Diferenças
 
