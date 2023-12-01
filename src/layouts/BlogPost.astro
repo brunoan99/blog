@@ -4,14 +4,24 @@ import BaseHead from "../components/BaseHead.astro";
 import Header from '../components/Header.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 
-type Props = { post: CollectionEntry<'blog'>['data'], summary: {index: number, count: number, title: string, ref: string }[] };
+type SummaryProps = {
+  index: number,
+  count: number,
+  title: string,
+  ref: string,
+}
 
-const { summary, post: { title, description, pubDate, updatedDate} } = Astro.props;
+type Props = {
+  post: CollectionEntry<'blog'>,
+  summary: SummaryProps[]
+};
+
+const { summary, post } = Astro.props;
 ---
 <!doctype html>
 <html lang="pt-br">
 	<head>
-		<BaseHead title={title} description={description} />
+		<BaseHead title={post.data.title} description={post.data.description} />
 		<style>
       @keyframes appear {
         from { opacity: 0; }
@@ -27,7 +37,6 @@ const { summary, post: { title, description, pubDate, updatedDate} } = Astro.pro
 				width: calc(100% - 2em);
 				max-width: 100%;
 				margin: 0;
-        animation: appear 350ms ease-in;
 			}
 
 			.prose {
@@ -61,6 +70,7 @@ const { summary, post: { title, description, pubDate, updatedDate} } = Astro.pro
         max-width: 280px;
         left: 3em;
         top: 186px;
+        animation: appear 750ms ease-in-out;
       }
 
       .summary ul {
@@ -80,6 +90,10 @@ const { summary, post: { title, description, pubDate, updatedDate} } = Astro.pro
 
       .summary ul li a:hover {
         color: var(--accent);
+      }
+
+      .content {
+        animation: appear 750ms ease-in-out;
       }
 
       @media (max-width: 1299px) {
@@ -111,19 +125,25 @@ const { summary, post: { title, description, pubDate, updatedDate} } = Astro.pro
 			<article>
 				<div class="prose">
 					<div class="title">
-						<h1>{title}</h1>
-            <div class="date">
-							<FormattedDate date={pubDate} />
-              { updatedDate
+						<h1
+              transition:name={post.data.title}
+            >{post.data.title}</h1>
+            <div class="date"
+              transition:name={post.data.pubDate.toString()}
+            >
+							<FormattedDate date={post.data.pubDate} />
+              { post.data.updatedDate
                 ? <div class="last-updated-on">
-                    Last updated on <FormattedDate date={updatedDate} />
+                    Last updated on <FormattedDate date={post.data.updatedDate} />
                   </div>
                 : <></>
               }
 						</div>
 						<hr />
 					</div>
-					<slot />
+          <div class="content">
+            <slot/>
+          </div>
 				</div>
 			</article>
 		</main>
