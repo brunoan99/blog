@@ -9,17 +9,17 @@ dependencies:
     specifier: ^0.3.1
     version: 0.3.1(typescript@5.3.2)
   '@astrojs/mdx':
-    specifier: 2.0.0-beta.0
-    version: 2.0.0-beta.0(astro@4.0.0-beta.3)
+    specifier: 2.0.0
+    version: 2.0.0(astro@4.0.2)
   '@astrojs/rss':
-    specifier: 4.0.0-beta.0
-    version: 4.0.0-beta.0
+    specifier: 4.0.0
+    version: 4.0.0
   '@astrojs/sitemap':
-    specifier: 3.0.0-beta.0
-    version: 3.0.0-beta.0
+    specifier: 3.0.3
+    version: 3.0.3
   astro:
-    specifier: 4.0.0-beta.3
-    version: 4.0.0-beta.3(typescript@5.3.2)
+    specifier: 4.0.2
+    version: 4.0.2(typescript@5.3.2)
   sharp:
     specifier: ^0.32.6
     version: 0.32.6
@@ -96,13 +96,13 @@ packages:
       - typescript
     dev: false
 
-  /@astrojs/markdown-remark@4.0.0-beta.0(astro@4.0.0-beta.3):
-    resolution: {integrity: sha512-WuC+cxSrrjr9yxBjyEXS8BwSmtw09UmdG5FraOcRWuenMmjiu946WZlgeceBK4Bgal0jXodLODIGuryDJfmsCQ==}
+  /@astrojs/markdown-remark@4.0.0(astro@4.0.2):
+    resolution: {integrity: sha512-JSrn49fJGuH/0S2TTGxLK7bNDspOakJWZVFHeP+IDFjWdghT4HtsTShS2EiISNx3zfOFBAwy5Cj4xT4U5BWNeA==}
     peerDependencies:
       astro: ^4.0.0-beta.0
     dependencies:
       '@astrojs/prism': 3.0.0
-      astro: 4.0.0-beta.3(typescript@5.3.2)
+      astro: 4.0.2(typescript@5.3.2)
       github-slugger: 2.0.0
       import-meta-resolve: 4.0.0
       mdast-util-definitions: 6.0.0
@@ -120,16 +120,16 @@ packages:
       - supports-color
     dev: false
 
-  /@astrojs/mdx@2.0.0-beta.0(astro@4.0.0-beta.3):
-    resolution: {integrity: sha512-gW+3vZSzrCQFtgykWhLEFUQpYWDv6PJY17RKY8WDk/6SZu+ENTW76nAIuzNwwGblcC7kjEMKQC2MfDxagAsj5A==}
+  /@astrojs/mdx@2.0.0(astro@4.0.2):
+    resolution: {integrity: sha512-VT5HnnOETk2gmdlheSlSBtYIsS0PQF/bEgZDjhc0VngdZstR90kt1NVns/Jj8q7G5lMZp8/9ZOHwwBbAhVk2zA==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
       astro: ^4.0.0-beta.0
     dependencies:
-      '@astrojs/markdown-remark': 4.0.0-beta.0(astro@4.0.0-beta.3)
+      '@astrojs/markdown-remark': 4.0.0(astro@4.0.2)
       '@mdx-js/mdx': 3.0.0
       acorn: 8.11.2
-      astro: 4.0.0-beta.3(typescript@5.3.2)
+      astro: 4.0.2(typescript@5.3.2)
       es-module-lexer: 1.4.1
       estree-util-visit: 2.0.0
       github-slugger: 2.0.0
@@ -153,15 +153,15 @@ packages:
       prismjs: 1.29.0
     dev: false
 
-  /@astrojs/rss@4.0.0-beta.0:
-    resolution: {integrity: sha512-ueOJ0mawkVLfdpdzvh/kmUHAhwZIU4NPY3gueZm5A5OvXfQWrO3nUPZYrPoTdZ/7R8mggPAaYULT9JxeeUDomw==}
+  /@astrojs/rss@4.0.0:
+    resolution: {integrity: sha512-Lu7xBVg2qe/+Ja3vJY9qprWDl5K2MjztQXekes4jCz/VcDrqRWLUiRQGLXOVqu/k9aORuj6yiU5hTcsiJb9zuA==}
     dependencies:
       fast-xml-parser: 4.3.2
       kleur: 4.1.5
     dev: false
 
-  /@astrojs/sitemap@3.0.0-beta.0:
-    resolution: {integrity: sha512-ZXgjdVSBtFcUHBPLtkPWNu37O7f7YMCa2Hc6Lt4uyXM+QAzjxJARGHD3nA8p+eurV4xaBf57zgjxrdnxhuhKZw==}
+  /@astrojs/sitemap@3.0.3:
+    resolution: {integrity: sha512-+GRKp1yho9dpHBcMcU6JpbL41k0yYZghOkNsMRb8QIRflbGHvd787tdv9oIZ5NJj0SqAuOlqp2UpqLkJXuAe2A==}
     dependencies:
       sitemap: 7.1.1
       zod: 3.22.4
@@ -1049,14 +1049,14 @@ packages:
     hasBin: true
     dev: false
 
-  /astro@4.0.0-beta.3(typescript@5.3.2):
-    resolution: {integrity: sha512-ga6qQ3hIhWr/ZhzLtgVToslaFX2/59Wjy4sfsER4w0+5Q/FIe6giBKlNOCImvna0ZTyVWa3UuVLXFFWaIkszyg==}
+  /astro@4.0.2(typescript@5.3.2):
+    resolution: {integrity: sha512-ee7tGS53ZcKjorxTy6VEapIGwRA3rzSUAEXYhuchGppFxykObCbzJv5o3x8G2lvHm4g7Mn83OFrvNlwjYjsXnQ==}
     engines: {node: '>=18.14.1', npm: '>=6.14.0'}
     hasBin: true
     dependencies:
       '@astrojs/compiler': 2.3.2
       '@astrojs/internal-helpers': 0.2.1
-      '@astrojs/markdown-remark': 4.0.0-beta.0(astro@4.0.0-beta.3)
+      '@astrojs/markdown-remark': 4.0.0(astro@4.0.2)
       '@astrojs/telemetry': 3.0.4
       '@babel/core': 7.23.5
       '@babel/generator': 7.23.5
