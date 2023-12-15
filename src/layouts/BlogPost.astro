@@ -70,7 +70,7 @@ const { summary, post } = Astro.props;
         max-width: 280px;
         left: 3em;
         top: 186px;
-        animation: appear 750ms ease-in-out;
+        animation: appear 250ms ease-in-out;
       }
 
       .summary ul {
@@ -90,10 +90,6 @@ const { summary, post } = Astro.props;
 
       .summary ul li a:hover {
         color: var(--accent);
-      }
-
-      .content {
-        animation: appear 750ms ease-in-out;
       }
 
       @media (max-width: 1299px) {
@@ -126,10 +122,9 @@ const { summary, post } = Astro.props;
 				<div class="prose">
 					<div class="title">
 						<h1
-              transition:name={post.data.title}
+              transition:name={post.slug}
             >{post.data.title}</h1>
             <div class="date"
-              transition:name={post.data.pubDate.toString()}
             >
 							<FormattedDate date={post.data.pubDate} />
               { post.data.updatedDate

@@ -79,10 +79,9 @@ const { posts } = Astro.props;
 								<a href={`/posts/${post.slug}/`}
                 >
 									<h4 class="title"
-                    transition:name={post.data.title}
+                    transition:name={post.slug}
                   >{post.data.title}</h4>
 									<p class="date"
-                    transition:name={post.data.pubDate.toString()}
                   >
 										<FormattedDate date={post.data.pubDate} />
 									</p>
