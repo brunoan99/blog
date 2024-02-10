@@ -2,7 +2,7 @@
 pubDate: "Nov 19 2023"
 description: "Introdução a Estrutura de Dados e designação de estruturas Efêmeras e Persistentes"
 title: "Introdução a Estruturas de Dados Efêmeras e Persistentes"
-updatedDate: "Feb 2 2024"
+updatedDate: "Mar 26 2024"
 ---
 
 Neste artigo, pretendo abordar de modo sucinto o tópico de Estrutura de Dados e ilustrar as diferenças entre implementações Persistentes e Efêmeras, assim como destacar pontos a respeito de cada implementação.
@@ -115,5 +115,5 @@ Sem entrar em muitos detalhes técnicos e muito específicos espero ter abordado
 
 Chris Okasaki - [Purely Functional Data Structures](https://www.cs.cmu.edu/~rwh/students/okasaki.pdf) - 1996
 
-Reema Thareja - (Data Structures Using C)[https://aa.bbs.tr/lab/cen215-data-structures/Data-Structures-Using-C-2nd-edition.pdf] - 2011
+Reema Thareja - [Data Structures Using C](https://aa.bbs.tr/lab/cen215-data-structures/Data-Structures-Using-C-2nd-edition.pdf) - 2011
 
