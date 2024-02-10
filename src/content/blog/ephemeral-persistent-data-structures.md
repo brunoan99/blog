@@ -2,7 +2,7 @@
 pubDate: "Nov 19 2023"
 description: "Introdução a Estrutura de Dados e designação de estruturas Efêmeras e Persistentes"
 title: "Introdução a Estruturas de Dados Efêmeras e Persistentes"
-updatedDate: "Feb 2 2024"
+updatedDate: "Mar 26 2024"
 ---
 
 Neste artigo, pretendo abordar de modo sucinto o tópico de Estrutura de Dados e ilustrar as diferenças entre implementações Persistentes e Efêmeras, assim como destacar pontos a respeito de cada implementação.
@@ -46,7 +46,7 @@ Uma vaga definição para Persistência em uma Estrutura de Dados é o suporte a
 
 
 ![persistent insert](../../../assets/ephemeral-persistent-data-structures/persistent_add_operation.png)
-No início temos a **Fila \[0, 1, 2, 3, 4\]**, ao realizar a operação de inserção mantemos a **Fila \[0, 1, 2, 3, 4\]** inalterada e como resultado da operação temos a nova estrutura **Fila \[0, 1, 2, 3, 4, 5\]**. Perceba que o Estado precedente a operação é preservado na fila inicial e segue tão acessível quanto o novo Estado ambos podendo ser consultados e modificados.
+  No início temos a **Fila \[0, 1, 2, 3, 4\]**, ao realizar a operação de inserção mantemos a **Fila \[0, 1, 2, 3, 4\]** inalterada e como resultado da operação temos a nova estrutura **Fila \[0, 1, 2, 3, 4, 5\]**. Perceba que o Estado precedente a operação é preservada na fila inicial e segue tão acessível quanto o novo Estado ambos podendo ser consultados e modificados.
 
 Exemplo em código:
 ```js
@@ -93,17 +93,17 @@ Sendo assim, não necessariamente uma Estrutura de Dados Persistente é totalmen
 
 ## Casos de Uso
 
-Apesar de cada modelo de implementação suprir a abstração dos métodos de cada Estrutura de Dados, por tratar de modo distinto o Estado cada tipo de implementação possui características particulares. Visto que armazenar o Estado tem seus custos sua utilização fica restrita aos casos em que a preservação do Estado faz-se por necessária.
+Apesar de cada modelo de implementação suprir a abstração dos métodos de cada Estrutura de Dados, por tratar de modo distinto o Estado cada tipo de implementação possui características particulares. Visto que armazenar o Estado tem seus custos sua utilização fica restrita aos casos em que a preservação do Estado se faz por necessária.
 
 Tratando-se de quantidade de utilizações efetivas grande parte das Estruturas de Dados utilizadas usam de Implementações Efêmeras para prover funcionalidade com eficiência. Como exemplo Grafos são extremamente uteis para representar conexões em Redes Sociais, manter qualquer estado passado desta estrutura é pouco interessante visto seu grande custo e pouca aplicabilidade da conservação.
 
 Há alguns cenários em que manter o Estado anterior da Estrutura de Dados é extremante relevante para a aplicação, como, por exemplo, o caso da Estrutura de Dados denominada de Corda que permite trabalhar com longos textos de forma eficiente. Editores de texto utilizam-se dessa Estrutura implementada de modo Persistente para manter suporte a funcionalidades como desfazer e refazer.
 
-Além de que linguagens puramente funcionais, como Haskell ou Lean, podem não conter dentre de suas funcionalidade o aspecto de mutabilidade dessa forma restringindo a utilização de implementações não persistentes.
+Além de que linguagens puramente funcionais, como Haskell ou Lean, podem não conter dentre de suas funcionalidades o aspecto de mutabilidade dessa forma restringindo a utilização de implementações não persistentes.
 
 ## Diferenças
 
-A divergência entre os tipos de implementações estão claramente atreladas como cada tipo trata as alterações no Estado da Estrutura de Dados. Quesito que influência diretamente a utilização de recursos para atingir as funcionalidades esperadas.
+A divergência entre os tipos de implementações está claramente atrelada a como cada tipo trata as alterações no Estado da Estrutura de Dados. Quesito que influência diretamente a utilização de recursos para atingir as funcionalidades esperadas.
 
 Para satisfazer uma Implementação Persistente e manter versões anteriores amplamente disponíveis para utilização faz-se por necessário alocar mais memória frente a uma implementação Efêmera. Não apenas alocação de memória pode fazer parte do custo de manter o versionamento como também custo de processamento e maior complexidade em sua implementação.
 
@@ -115,5 +115,5 @@ Sem entrar em muitos detalhes técnicos e muito específicos espero ter abordado
 
 Chris Okasaki - [Purely Functional Data Structures](https://www.cs.cmu.edu/~rwh/students/okasaki.pdf) - 1996
 
-Reema Thareja - (Data Structures Using C)[https://aa.bbs.tr/lab/cen215-data-structures/Data-Structures-Using-C-2nd-edition.pdf] - 2011
+Reema Thareja - [Data Structures Using C](https://aa.bbs.tr/lab/cen215-data-structures/Data-Structures-Using-C-2nd-edition.pdf) - 2011
 
