@@ -113,10 +113,16 @@ const { summary, post: { title, description, pubDate, updatedDate} } = Astro.pro
 					<div class="title">
 						<h1>{title}</h1>
             <div class="date">
-							<FormattedDate date={pubDate} />
+              {
+                updatedDate
+                ? <div class="last-updated-on">
+                    Publicado em <FormattedDate date={pubDate} />
+                  </div>
+                : <FormattedDate date={pubDate} />
+              }
               { updatedDate
                 ? <div class="last-updated-on">
-                    Last updated on <FormattedDate date={updatedDate} />
+                    Atualizado em <FormattedDate date={updatedDate} />
                   </div>
                 : <></>
               }

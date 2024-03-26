@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import HomePage from '../layouts/HomePage.astro';
+import HomePage from '../ui/layouts/HomePage.astro';
 
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
