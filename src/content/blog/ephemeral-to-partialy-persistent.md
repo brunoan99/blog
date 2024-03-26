@@ -15,9 +15,7 @@ Neste nível como dito a ideia é implementar de uma maneira de conservar estado
 
 Para essa pergunta não existe uma única resposta, ao longo do tempo técnicas foram introduzidas de modo a tornar o processo mais eficiente. Ainda assim vale a pena conhecer os processos adotados no passado.
 
-Para seguir uma linha de raciocínio e exemplificação para cada exemplo vou realizar as seguintes operações de forma sequencial:
-
-**Sequência de Operações**:
+Para seguir uma linha de raciocínio para cada exemplo vou realizar a seguinte **Sequência de Operações**:
 
 1. Iniciar a Estrutura **vazia**;
 2. Adicionar um valor **1**;
@@ -93,7 +91,7 @@ Entretanto, caso a perda de informação toque negativamente um processo, a util
 
 O método mais primitivo possível para implementar a **Persistência Parcial**, consiste em gerar cópias da estrutura para cada alteração realizada e manter uma lista de versões que disponibilize consultas para toda e qualquer versão desejada.
 
-Neste método a estrutura dos *Nodes* utilizados não sofrerá alterações, em comparação com Modelo Efêmero, permanecendo como:
+Neste método a estrutura dos **Nodes** utilizados não sofrerá alterações, em comparação com Modelo Efêmero, permanecendo como:
 
 ```rust
 struct Node<T> {
@@ -262,7 +260,7 @@ Tendo definido os tipos, segue a representação visual da Estrutura:
   Novamente temos a presença de uma **root**, porém, ao contrário do **Modelo das Cópias** a root não aponta diretamente para um **Node**. Neste caso instância vazia contém uma ramificação para versão zero, nessa ramificação há uma estrutura vazia construída e uma lista de atualizações também vazia.
 
 2. **Adicionar um valor 1**: <br> ![history_step_method_step_02](../../../assets/ephemeral-to-partialy-persistent/history_step_method_step_02.png)
-  A medida que atualizações são realizadas, faz-se a adição da atualização na lista de ***updates***, enquanto a ***structure*** permanece inalterada.
+  A medida que atualizações são realizadas, faz-se a adição da atualização na lista de **updates**, enquanto a **structure** permanece inalterada.
 
 3. **Adicionar um valor 2**: <br> ![history_step_method_step_03](../../../assets/ephemeral-to-partialy-persistent/history_step_method_step_03.png)
 
@@ -329,7 +327,7 @@ Tendo definido os tipos, segue a representação visual da Estrutura:
 
 
 1. **Começar com a Estrutura vazia**: <br> ![fat_node_method_step_01](../../../assets/ephemeral-to-partialy-persistent/fat_node_method_step_01.png)
-  De forma semelhante ao **Método das Cópias** temos uma ***root*** que é iniciada com um HashMap de versões, já contendo um item correspondente a versão inicial da estrutura.
+  De forma semelhante ao **Método das Cópias** temos uma **root** que é iniciada com um HashMap de versões, já contendo um item correspondente a versão inicial da estrutura.
 
 2. **Adicionar um valor 1**: <br> ![fat_node_method_step_02](../../../assets/ephemeral-to-partialy-persistent/fat_node_method_step_02.png)
   Diferentemente do **Método das Cópias** e de forma semelhante ao **Método Híbrido**, aqui nem toda alteração vai gerar uma nova versão.
@@ -353,7 +351,7 @@ Tendo definido os tipos, segue a representação visual da Estrutura:
   Novamente um **Node** é removido na versão em questão, nesse caso, como não há outro node na sequência do removido a modificação então deve receber o valor respectivo ao caso vazio.
 
 10. **Remover o valor 1**: <br> ![fat_node_method_step_10](../../../assets/ephemeral-to-partialy-persistent/fat_node_method_step_10.png)
-  A ***root*** da versão v0, a mais recente até então, aponta diretamente para o ***Node*** que será removido, neste caso ou em casos de inserções na primeira posição, uma nova raiz é adicionada ao HashMap de ramificações.
+  A **root** da versão v0, a mais recente até então, aponta diretamente para o **Node** que será removido, neste caso ou em casos de inserções na primeira posição, uma nova raiz é adicionada ao HashMap de ramificações.
 
 11. **Remover o valor 9**: <br> ![fat_node_method_step_11](../../../assets/ephemeral-to-partialy-persistent/fat_node_method_step_11.png)
 
@@ -390,7 +388,7 @@ struct FatNode<T, const N: usize> {
   mods: [Mod<T | Option<Box<FatNode>>>; N]
 }
 
-struct EphemeralLinkedList<T, const N: usize> {
+struct NodeSplittingMethodLinkedList<T, const N: usize> {
   root: HashMap<String, Option<Box<FatNode<T, N>>>>;
 }
 ```
