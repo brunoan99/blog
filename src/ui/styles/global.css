@@ -43,12 +43,6 @@ body {
 	font-size: 20px;
 	line-height: 1.7;
 }
-main {
-	width: 720px;
-	max-width: calc(100% - 2em);
-	margin: auto;
-	padding: 3em 1em;
-}
 h1,
 h2,
 h3,
@@ -77,12 +71,6 @@ h5 {
 strong,
 b {
 	font-weight: 700;
-}
-a {
-	color: var(--accent);
-}
-a:hover {
-	color: var(--accent);
 }
 textarea {
 	width: 100%;

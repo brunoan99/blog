@@ -3,7 +3,7 @@ import type { CollectionEntry } from "astro:content";
 import BaseHead from "../components/BaseHead.astro";
 import FormattedDate from "../components/FormattedDate.astro";
 import Header from "../components/Header.astro";
-import { ViewTransitions } from "astro:transitions";
+import "../styles/global.css";
 
 type Props = { posts: CollectionEntry<'blog'>[]};
 
@@ -24,6 +24,9 @@ const { posts } = Astro.props;
       }
 			main {
 				width: 960px;
+	      max-width: calc(100% - 2em);
+	      margin: auto;
+	      padding: 2em 1em;
 			}
 			ul {
 				display: flex;
@@ -48,7 +51,7 @@ const { posts } = Astro.props;
 			.title {
 				margin: 0;
         padding-left: 15px;
-				color: rgb(var(--black));
+				color: var(--secondary);
 				line-height: 1;
 			}
 			.date {
@@ -58,10 +61,7 @@ const { posts } = Astro.props;
 			}
 			ul li a:hover h4,
 			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
+				color: var(--accent);
 			}
 			@media (max-width: 720px) {
 				ul {
