@@ -29,6 +29,9 @@ const { summary, post: { title, description, pubDate, updatedDate} } = Astro.pro
 				margin: 0;
         animation: appear 350ms ease-in;
 			}
+      article {
+        width: 100vw;
+      }
 
 			.prose {
 				width: 720px;
@@ -41,7 +44,7 @@ const { summary, post: { title, description, pubDate, updatedDate} } = Astro.pro
 			}
 			.title {
 				margin-bottom: 1em;
-				padding: 1em 0;
+				padding: 0 0 1em 0;
 				text-align: center;
 				line-height: 1;
 			}
@@ -55,14 +58,14 @@ const { summary, post: { title, description, pubDate, updatedDate} } = Astro.pro
 			.last-updated-on {
 				font-style: italic;
 			}
+
       .summary {
         position: fixed;
         width: calc((100vw - 880px) / 2);
         max-width: 280px;
         left: 3em;
-        top: 186px;
+        top: 64px;
       }
-
       .summary ul {
         margin-block: 0px;
         margin-inline: 0px;
