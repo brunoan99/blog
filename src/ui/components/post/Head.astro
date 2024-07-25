@@ -1,0 +1,50 @@
+---
+import PubDate from './PubDate.astro';
+import UpdateDate from './UpdateDate.astro';
+
+
+type Props = { title: string, pubDate: Date, updatedDate: Date | undefined };
+
+const { title, pubDate, updatedDate } = Astro.props;
+---
+<style>
+  .prose {
+    width: 720px;
+    max-width: calc(100% - 2em);
+    margin: auto;
+    padding: 1em;
+    color: var(--secondary);
+    text-align: justify;
+    text-justify: inter-word;
+  }
+  .title {
+    margin-top: 64px;
+    margin-bottom: 1em;
+    padding: 0 0 1em 0;
+    text-align: center;
+    line-height: 1;
+  }
+  .title h1 {
+    display: block;
+    color: var(--secondary);
+
+    font-family: "Atkinson", sans-serif;
+    font-weight: bold;
+	  font-size: 3.052em;
+    line-height: 1.7;
+
+    margin: 0 0 0.5em 0;
+    margin-inline: 0px;
+
+    overflow-wrap: break-word;
+    unicode-bidi: isolate;
+  }
+</style>
+<div class="title">
+  <h1>{title}</h1>
+  <div class="date">
+    <PubDate date={pubDate} />
+    <UpdateDate date={updatedDate} />
+  </div>
+  <hr />
+</div>
