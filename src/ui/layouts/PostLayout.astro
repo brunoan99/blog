@@ -34,17 +34,14 @@ const { metadata: { title, description, pubDate, updatedDate }, summary } = Astr
         background: var(--primary);
       }
       main {
-        width: calc(100% - 2em);
-        max-width: 100%;
-        margin: 0;
+        width: calc(100vw - 2em);
+        max-width: 100vw;
+        margin: auto;
         animation: appear 350ms ease-in;
-      }
-      article {
-        width: 100vw;
       }
       .prose {
         width: 720px;
-        max-width: calc(100% - 2em);
+        max-width: calc(100%);
         margin: auto;
         padding: 1em;
       }
@@ -53,7 +50,8 @@ const { metadata: { title, description, pubDate, updatedDate }, summary } = Astr
       }
       @media (max-width: 720px) {
         .prose {
-          width: calc(720px - 2em);
+          margin: 0;
+          padding: 0;
         }
       }
     </style>

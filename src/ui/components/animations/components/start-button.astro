@@ -1,0 +1,47 @@
+---
+type Props = {
+  id: string;
+};
+
+const { id } = Astro.props;
+---
+<button class="start-button" id={id}>
+  <span class="arrow"></span>
+  <input type="checkbox" id="toggle" class="visually-hidden" />
+</button>
+<style>
+  .start-button {
+    opacity: 0;
+    display: flex;
+    gap: 1.65rem;
+    cursor: pointer;
+    border-radius: 5rem;
+    padding: 1.2rem 3rem;
+    background-color: var(--secondary);
+    color: #000;
+    border: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+  .start-button:hover {
+    background-color: var(--accent);
+  }
+  .start-button:active {
+    transform: translateY(0.2rem);
+  }
+  .arrow {
+    position: relative;
+    cursor: pointer;
+    width: 0;
+    height: 0;
+    border-top: 0.8rem solid transparent;
+    border-bottom: 0.8rem solid transparent;
+    border-left: 1rem solid #fff;
+  }
+  .visually-hidden {
+    cursor: pointer;
+    position: absolute;
+    opacity: 0;
+  }
+</style>

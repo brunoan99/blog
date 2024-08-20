@@ -1,0 +1,115 @@
+---
+import Canvas from "../components/canvas.astro"
+import { inputValue } from "./shared.store";
+---
+<div class="input-line">
+  <input id="input-static-node" value={inputValue.get()} autocomplete="off" maxlength="10" contenteditable="true"/>
+</div>
+<style>
+  .input-line {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-bottom: 10px;
+  }
+  input {
+    border: solid var(--secondary) 0.5px;
+    border-radius: 8px;
+    color: var(--secondary);
+    font-size: 20px;
+    padding-left: 8px;
+    align-self: center;
+  }
+</style>
+
+<Canvas id="canvas-static-node" height="240px" />
+
+<script>
+  import { createNode, createBin } from "../utils/Node";
+  import { inputValue } from "./shared.store";
+
+  let canvas = document.getElementById("canvas-static-node") as HTMLElement;
+  let width = canvas.clientWidth;
+  let height = canvas.clientHeight;
+
+  // insert node on canvas
+  let size = 120; // node size
+  let offsetPerNode = size + 2 // +2 cause of the border
+  let offsetBinLeft = (width - (2 * offsetPerNode)) / 3;
+  let offsetNodeLeft = offsetBinLeft * 2 + offsetPerNode;
+  let offsetTop = (height - offsetPerNode) / 2;
+
+  let node = createNode({
+    id: "static-node-example-1",
+    className: "static-node-example",
+    style: {
+      size: `${size}px`,
+      opacity: "1",
+      top: `${offsetTop}px`,
+      left: `${offsetNodeLeft}px`,
+      backgroundColor: "#f1f1f1",
+    },
+    innitialValue: inputValue.get(),
+  });
+  canvas.appendChild(node);
+
+  let [
+    binElem,
+    firstByteElement,
+    secondByteElement,
+    thirdByteElement,
+    quarterByteElement
+  ] = createBin({
+    id: "bin_example",
+    style: {
+      size: `${size}px`,
+      top: `${offsetTop}px`,
+      left: `${offsetBinLeft}px`
+    }
+  });
+  canvas.appendChild(binElem);
+
+  let inputElem = document.getElementById("input-static-node") as HTMLInputElement;
+  inputElem.addEventListener("keyup", function(e) {
+    // console.log(e);
+    let code = e.key;
+    let num = parseInt(code);
+    if (
+      code == "Backspace" ||
+      code == "Delete"
+    ) {
+      if (inputElem.value == "") {
+        inputElem.value = "0";
+      }
+    } else if (isNaN(num) ) {
+      e.preventDefault();
+      return;
+    }
+    let max_val = 4_294_967_295;
+    let newNum = parseInt(inputElem.value);
+    let newVal = Math.min(newNum, max_val);
+    inputElem.value = newVal.toString();
+    inputValue.set(newVal.toString());
+  });
+  inputElem.addEventListener("paste", function(e) {
+    e.preventDefault();
+  });
+
+  inputValue.subscribe((value, _) => {
+    node.innerText = value;
+    if (inputElem.value != value) inputElem.value = value;
+
+    let newStringBinary = (parseInt(value) >>> 0).toString(2).padStart(32, "0");
+    let newSplited = newStringBinary.split("");
+    let newFirstByte = newSplited.slice(0, 8).join(" ");
+    let newSecondByte = newSplited.slice(8, 16).join(" ");
+    let newThirdByte = newSplited.slice(16, 24).join(" ");
+    let newQuarterByte = newSplited.slice(24, 32).join(" ");
+
+    firstByteElement.innerText = newFirstByte;
+    secondByteElement.innerText = newSecondByte;
+    thirdByteElement.innerText = newThirdByte;
+    quarterByteElement.innerText = newQuarterByte;
+  });
+</script>
