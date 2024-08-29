@@ -1,0 +1,174 @@
+---
+title: "Estruturas de Dados"
+description: "Exemplos e explicações a respeito de Estruturas de Dados"
+pubDate: "Aug 26 2024"
+---
+import StaticNodeExample from "../../ui/animations/data-structures/anim-static-node.astro"
+import SetToZero from "../../ui/animations/data-structures/components/set-to-zero.astro"
+import SetToMax from "../../ui/animations/data-structures/components/set-to-max.astro"
+
+import StaticMemoryAnimation from "../../ui/animations/data-structures/anim-static-memory.astro"
+
+import InProgress from "../../ui/components/InProgress.astro"
+
+**Obs**: *Recomendo leitura via desktop*.
+
+## Intro
+
+Talvez um dos assuntos mais batidos no mundo da programação. Mas esse ponto tem uma explicação muito pertinente, a importância e o impacto que a utilização correta de Estruturas de Dados tem no desenvolvimento de software. Aqui pretendo apenas introduzir alguns tópicos a respeito, exemplificar e tentar trazer nitidez para quem ainda se vê confuso no assunto.
+
+Começando da forma mais simples possível Estruturas de Dados são formas de se organizar dados para obter um comportamento ou atingir uma eficiência maior em comparação com um padão "desorganizado".
+
+Mas "**o que?**" exatamente estamos organizando? **Dados**, que inevitalmente são apenas sequências de **0's** e **1's**. Estes **0's** e **1's** escritos/lidos de forma correta representam valores de diferentes **"tipos"**. Por exemplo podemos representar números e caracteres de texto e através destes representar outros **"tipos"** mais abstratos.
+
+Apesar de um conceito abstrato e um pouco genérico podemos definir Estruturas de Dados pelo forma como dados são armazenados e tratados, através das rotinas ou métodos da estrutura em questão. Apesar da abastração conseguimos agrupar Estruturas de Dados que nos ajudam a compreender seu comportamento.
+
+//REDO
+Cada Estrutura é particularmente diferente das demais
+Possibilidade de agrupar comportamentos em diferentes rótulos
+
+Dentre as principais formas de distinguir esturutras de Dados temos quanto a forma de Alocação e a Linearidade dessa Estrutura.
+
+## Alocação
+
+Imagino eu que todo e qualquer programador ou pessoa que esteja lendo esse post tenha uma rasa noção a respeito de Alocação de memória. Caso não, recomendo leitura.
+
+No que diz respeito a Alocação de Memória em Estrutura de Dados pode-mos dividir em duas as diferentes formas:
+- Alocação Estático ou Tamanho Estático;
+- Alocação Dinâmica ou Tamanho Dinâmico (Máquina de Ponteiros).
+
+Vejamos um pouco mais a respeito de cada uma das formas antes de debater seu impacto.
+
+### Alocação Estática
+
+Alocação Estática resume-se a utilizar previamente do conhecimento do tamanho de um dado e realizar alocação sequêncial de memória suficiente para conter um arranjo destes dados desejados. Um claro exemplo são os Arrays.
+
+Antes de exemplificar como Estruturas de Dados fazem uso dessa propriedade, permita-me demostrar o que seria conhecer o tamanho de um dado/tipo. Tomemos como exemplo um u32 em Rust (u32 é a notação para inteiro sem sinal de 32 bits). Este tipo possui um tamanho definido 32 bits ou 4 bytes.
+
+Sendo assim, para cada vez que um dado deste tipo é instânciado um bloco com tamanho de 4 bytes é alocado na memória para comportar essa informação. Experimente mudar o valor abaixo e ver como a representação se comporta.
+
+<StaticNodeExample />
+
+A Esquerda os **byte** e **bits** que representam o número em questão. Sendo que cada linha representa um byte e cada **0** ou **1** representa um bit. A direita a maneira como, nos próximos exemplos, pretendo representar a alocação de memória.
+
+Através deste **tipo** podemos representar todos os números de <SetToZero /> até <SetToMax />. Perceba que para o menor caso todos os **bits** estarão em **0** e para o maior todos estarão em **1**.
+
+Exemplificando de forma rasa, supondo que desejamos instanciar um Array do tipo **u32**, esperando que o Array abrigue 5 posições deste tipo de dado. Se para cada posição **precisamos** de 4 bytes, então basta pedir ao sistema operacional por uma porção de memória de 20 bytes para este Array e teremos espaço suficiente.
+
+Vamos simular. Como seria alocar um Array e definir valores para cada item dele. Neste exemplo temos os 20 bytes alocados, entenda cada bloco abaixo como um conjunto de **4 bytes**, cada um para representar um valor no Array.
+
+<StaticMemoryAnimation />
+
+**Por que esse tipo de alocação pode ser útil?**
+
+Em decorrência da alocação sequêncial podemos realizar acessos a quaisquer posições desta estrutura em tempo constante, sem a necessidade de percorrer toda estrutura para chegar na posição desejada.
+
+Para acessar posição de número **n** desse Array. A partir do endereço do Array desloca-se **n - 1** vezes o tamanho em bytes de cada elemento e então lê-se a quantidade de bytes respectiva ao tamanho do elemento.
+
+Supondo um Array de **u32** (4 bytes, 32 bits) de endereço ***0x7fff94f3f410*** para ler a 3ª posição nos deslocamos **8 bytes** e chegamos ao endereço ***0x7fff94f3f418*** e então basta ler 4 bytes a partir deste endereço.
+
+**Com todas as posições cheias e se precisasemos de mais um espaço?**
+
+O processo de "expandir" a capacidade desta estrutura envolve realizar nova alocação de memória. O que naturalmente foge da premissa da Estrutura de alocar toda a memória que será utilizada previamente e ao decorrer da utilização não necessitar de solicitar ao sistema por mais memória.
+
+Para comportar um ou mais novos elementos, uma nova sequência de memória deve ser alocada, considerando a nova capacidade desejada. Então os dados presentes na atual estrutura devem ser transferidos para a nova alocação e então insere-se o novo elemento.
+
+**O que pode acontecer ao tentar?**
+
+Depende. Há inumeras variáveis que podem determinar o resultado dessa tentativa, podendo ser deste a linguagem utilizada até mesmo o sistema em que o processo irá executar.
+
+Vejamos alguns exemplos de códigos que exemplificam isso e os seus respectivos retornos na tentativa de execução. (Removi parte da verbosidade das linguagens e preferi por apenas colocar no exemplo o código que aborda a questão).
+
+Exemplo em **Rust**:
+```rust
+  let mut array: [u32; 5] = [0; 5];
+  array[5] = 6;
+```
+
+```
+λ cargo run
+   Compiling ...
+error: this operation will panic at runtime
+ --> src/main.rs:12:3
+  |
+7 |   array[5] = 6;
+  |   ^^^^^^^^ index out of bounds: the length is 5 but the
+index is 5
+  |
+```
+
+Esse exemplo não passou da etapa de compilação, o programa nem chegou a ser executado e o compilador identificou que a execução deste código irá resultar em erro e por essa razão não prosseguiu.
+
+E se tentassemos fazer isso em uma linguagem como C?
+
+Exemplo em **C**:
+```c
+  int array[5];
+  array[5] = 6;
+```
+
+```
+λ gcc example.c && ./a.out
+*** stack smashing detected ***: terminated
+```
+
+Em C esse programa compila e ao executá-lo um erro como o demostrado assima é esperado, mas não é garantido. Em C esta ação tem comportamento indefinido e comportamento indefinido nem sempre resulta em erros imediatos.
+
+Em alguns sistemas acessar memória levemente fora do intervalo alocado pode não causar problema algum devido ao layout de memória. Logicamente pra isso a memória em questão não deve pertencer a nenhuma outro processo ou variável do mesmo escopo.
+
+E se tentassemos fazer isso em **Javascript**?
+
+```javascript
+let arr = Array(5);
+arr[5] = 6;
+console.log(arr);
+```
+
+```
+λ node example.js
+[ <5 empty items>, 6 ]
+```
+
+Em javascript esse código executa sem erro algum. O Array é instânciado com 5 posições, ao passo que uma sexta é solicitada a linguagem automaticamente realiza por baixo dos panos as operações necessárias para se adequar e seguir com a execução normalmente.
+
+**Mas e se dentro do uso desejado não sabemos a quantidade de items que serão comportados e/ou o tamanho destes items?**
+
+Neste caso o melhor a se fazer é não utilizar uma Estrutura que faz-uso deste tipo de alocação. Há também Estruturas de Dados qualificadas como de **Alocação Dinâmica** ou **Tamanho Dinâmico**. Vejamos mais a respeito **...**
+
+<br/>
+
+<hr />
+
+<InProgress />
+
+<br />
+{/*
+### Alocação Dinâmica
+
+<DynamicAnim />
+
+### Comparativo
+
+
+<br/>
+<br/>
+<br/>
+
+## Linearidade
+
+Linearidade:
+- Linear
+- Não Linear
+
+// Linearidade
+// exemplo Procurar número em um linear outro n linear
+
+### Linear
+
+### Não Linear
+
+### Comparativo
+
+## Final
+
+Parte da ideia desse post é introduzir a maneira como eu pretendo representar Estruturas de Dados, Nós, um pouco de Memória e afins. A ideia central não é representar diversas estruturas diferentes de formas diferentes. Mas apenas o suficiente para dar a entender a representação. */}

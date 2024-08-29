@@ -1,0 +1,32 @@
+---
+type Props = {
+  id: string;
+  goals: string[];
+};
+
+let { id, goals } = Astro.props;
+---
+<style>
+  ul {
+    margin-block-start: 0px;
+    padding-inline-start: 16px;
+  }
+  ul li {
+    display: inline-block;
+    box-sizing: border-box;
+    background-image: linear-gradient(black, black);
+    background-repeat: no-repeat;
+    background-position: center left;
+    background-size: 0% 2px;
+    transition-behavior: normal, normal;
+    transition-duration: 800ms, 800ms;
+    transition-timing-function: ease-in-out, ease-in-out;
+    transition-delay: 0ms, 0ms;
+    transition-property: background-size, opacity;
+  }
+  </style>
+<div id={id}>
+  <span><strong>Interaja para entender melhor:</strong>
+  </span>
+  <ul id={`${id}-ul`}>{goals.map((goal) => <li>{goal}</li>)}</ul>
+</div>

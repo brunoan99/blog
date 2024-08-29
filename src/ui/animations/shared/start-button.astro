@@ -7,15 +7,17 @@ const { id } = Astro.props;
 ---
 <button class="start-button" id={id}>
   <span class="arrow"></span>
-  <input type="checkbox" id="toggle" class="visually-hidden" />
 </button>
 <style>
+  button {
+    position: absolute;
+  }
   .start-button {
     opacity: 0;
     display: flex;
     gap: 1.65rem;
     cursor: pointer;
-    border-radius: 5rem;
+    border-radius: 16px;
     padding: 1.2rem 3rem;
     background-color: var(--secondary);
     color: #000;
@@ -38,10 +40,5 @@ const { id } = Astro.props;
     border-top: 0.8rem solid transparent;
     border-bottom: 0.8rem solid transparent;
     border-left: 1rem solid #fff;
-  }
-  .visually-hidden {
-    cursor: pointer;
-    position: absolute;
-    opacity: 0;
   }
 </style>

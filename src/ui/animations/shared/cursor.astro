@@ -1,0 +1,25 @@
+---
+type Props = {
+  id: string;
+  className?: string;
+  size?: string;
+}
+
+let { id, className, size } = Astro.props
+---
+<style>
+  svg {
+    position: absolute;
+    z-index: 3;
+    opacity: 0;
+  }
+</style>
+<svg id={id} class={className ? className : ""}
+     width={ size ? size : "28" } height={ size ? size : "28" } viewBox={ size ? `0 0 ${size} ${size}` : "0 0 32 32" }
+>
+  <path d="M 0 0 L 0 32 C 8 22 8 22 20 23 Z"
+        fill="white"
+        stroke="black"
+        stroke-width="2"/>
+
+<svg />

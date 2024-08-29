@@ -1,9 +1,8 @@
 ---
 import Canvas from "../shared/canvas.astro"
-import { inputValue } from "./stores/shared.store";
 ---
 <div class="input-line">
-  <input id="input-static-node" value={inputValue.get()} autocomplete="off" maxlength="10"/>
+  <input id="input-static-node" autocomplete="off" maxlength="10"/>
 </div>
 <style>
   .input-line {
@@ -28,7 +27,7 @@ import { inputValue } from "./stores/shared.store";
 <script>
   import anime from "animejs";
   import { createNode, createBin } from "./utils/Node";
-  import { inputValue } from "./stores/shared.store";
+  import { inputValue } from "./stores/node-example.store";
 
   let canvas = document.getElementById("static-node-canvas") as HTMLElement;
   let width = canvas.clientWidth;
