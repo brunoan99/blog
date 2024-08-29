@@ -4,10 +4,13 @@
   strong {
     cursor: pointer;
   }
+  strong:hover {
+    color: var(--accent);
+  }
 </style>
 <strong id="set-static-node-example-to-max">4.294.967.295</strong>
 <script>
-  import { inputValue } from "./shared.store";
+  import { inputValue } from "../shared.store";
 
   let toZero = document.getElementById("set-static-node-example-to-max") as HTMLElement;
   toZero.addEventListener("click", function(e) {
