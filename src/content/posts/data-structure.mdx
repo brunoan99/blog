@@ -17,33 +17,29 @@ import InProgress from "../../ui/components/InProgress.astro"
 
 Talvez um dos assuntos mais batidos no mundo da programação. Mas esse ponto tem uma explicação muito pertinente, a importância e o impacto que a utilização correta de Estruturas de Dados tem no desenvolvimento de software. Aqui pretendo apenas introduzir alguns tópicos a respeito, exemplificar e tentar trazer nitidez para quem ainda se vê confuso no assunto.
 
-Começando da forma mais simples possível Estruturas de Dados são formas de se organizar dados para obter um comportamento ou atingir uma eficiência maior em comparação com um padão "desorganizado".
+Começando da forma mais simples possível Estruturas de Dados são formas de se organizar/agrupar dados para obter um comportamento ou atingir uma eficiência maior em comparação com um padão "desorganizado" ou menos pertinente.
 
 Mas "**o que?**" exatamente estamos organizando? **Dados**, que inevitalmente são apenas sequências de **0's** e **1's**. Estes **0's** e **1's** escritos/lidos de forma correta representam valores de diferentes **"tipos"**. Por exemplo podemos representar números e caracteres de texto e através destes representar outros **"tipos"** mais abstratos.
 
-Apesar de um conceito abstrato e um pouco genérico podemos definir Estruturas de Dados pelo forma como dados são armazenados e tratados, através das rotinas ou métodos da estrutura em questão. Apesar da abastração conseguimos agrupar Estruturas de Dados que nos ajudam a compreender seu comportamento.
-
-//REDO
-Cada Estrutura é particularmente diferente das demais
-Possibilidade de agrupar comportamentos em diferentes rótulos
+Apesar de um conceito abstrato e um pouco genérico podemos definir Estruturas de Dados pelo forma como dados são armazenados e tratados, através das rotinas ou métodos da estrutura em questão. Apesar da abastração conseguimos organizar Estruturas de Dados em grupos que nos ajudam a compreender seu comportamento.
 
 Dentre as principais formas de distinguir esturutras de Dados temos quanto a forma de Alocação e a Linearidade dessa Estrutura.
 
 ## Alocação
 
-Imagino eu que todo e qualquer programador ou pessoa que esteja lendo esse post tenha uma rasa noção a respeito de Alocação de memória. Caso não, recomendo leitura.
+Imagino eu que todo e qualquer programador ou pessoa que esteja lendo esse post tenha uma rasa noção a respeito de **Memória**. Caso não, recomendo leitura.
 
 No que diz respeito a Alocação de Memória em Estrutura de Dados pode-mos dividir em duas as diferentes formas:
-- Alocação Estático ou Tamanho Estático;
+- Alocação Estática ou Tamanho Estático;
 - Alocação Dinâmica ou Tamanho Dinâmico (Máquina de Ponteiros).
 
 Vejamos um pouco mais a respeito de cada uma das formas antes de debater seu impacto.
 
 ### Alocação Estática
 
-Alocação Estática resume-se a utilizar previamente do conhecimento do tamanho de um dado e realizar alocação sequêncial de memória suficiente para conter um arranjo destes dados desejados. Um claro exemplo são os Arrays.
+Alocação Estática resume-se a utilizar previamente do conhecimento do tamanho de um dado e realizar alocação sequêncial de memória suficiente para conter o arranjo destes dados desejados. Um claro exemplo são os Arrays.
 
-Antes de exemplificar como Estruturas de Dados fazem uso dessa propriedade, permita-me demostrar o que seria conhecer o tamanho de um dado/tipo. Tomemos como exemplo um u32 em Rust (u32 é a notação para inteiro sem sinal de 32 bits). Este tipo possui um tamanho definido 32 bits ou 4 bytes.
+Antes de exemplificar como Estruturas de Dados fazem uso dessa propriedade, permita-me demostrar o que seria conhecer o tamanho de um dado/tipo. Tomemos como exemplo um **u32** em Rust (u32 é a notação para inteiro sem sinal de 32 bits). Este tipo possui um tamanho definido **32 bits** ou **4 bytes**.
 
 Sendo assim, para cada vez que um dado deste tipo é instânciado um bloco com tamanho de 4 bytes é alocado na memória para comportar essa informação. Experimente mudar o valor abaixo e ver como a representação se comporta.
 
@@ -51,11 +47,19 @@ Sendo assim, para cada vez que um dado deste tipo é instânciado um bloco com t
 
 A Esquerda os **byte** e **bits** que representam o número em questão. Sendo que cada linha representa um byte e cada **0** ou **1** representa um bit. A direita a maneira como, nos próximos exemplos, pretendo representar a alocação de memória.
 
+Perceba que quão menor o número menos bytes são necessários para representá-lo. O número **42** precisa apenas de **1 byte** para ser definido, mas ainda que apenas o primeiro byte contenha informação significativa caso este número seja instânciado como um **u32** ele ocupará na memória os **4 bytes** respectivos ao tipo.
+
 Através deste **tipo** podemos representar todos os números de <SetToZero /> até <SetToMax />. Perceba que para o menor caso todos os **bits** estarão em **0** e para o maior todos estarão em **1**.
 
-Exemplificando de forma rasa, supondo que desejamos instanciar um Array do tipo **u32**, esperando que o Array abrigue 5 posições deste tipo de dado. Se para cada posição **precisamos** de 4 bytes, então basta pedir ao sistema operacional por uma porção de memória de 20 bytes para este Array e teremos espaço suficiente.
+**E como isso nos ajuda?**
 
-Vamos simular. Como seria alocar um Array e definir valores para cada item dele. Neste exemplo temos os 20 bytes alocados, entenda cada bloco abaixo como um conjunto de **4 bytes**, cada um para representar um valor no Array.
+É bem simples, sabendo o tamanho de cada dado e tendo uma rasa noção da quantidade de dados que serão contidos, podemos facilmente definir um tamanho para comportar esses dados em sua totalidade.
+
+Ainda que os dados venham a ser adicionados ao longo do tempo podemos alocar memória suficiente em uma única operação. Dai o nome Alocação ou Tamanho **Estático**, pois a ideia é que este tamanho não vá variar de acordo com o tempo, ao menos não é o ideal.
+
+Exemplificando de forma rasa, supondo que desejamos instanciar um Array que comportará dados do tipo **u32**, esperando que o Array abrigue **5 posições** deste tipo de dado. Se para cada posição precisamos de **4 bytes**, então basta pedir ao sistema operacional por uma porção de memória de **20 bytes** para este Array e teremos espaço suficiente.
+
+Vamos simular. Como seria alocar um Array e definir valores para cada item dele. Neste exemplo entenda cada bloco abaixo como um conjunto de **4 bytes**, cada um para representar um valor no Array.
 
 <StaticMemoryAnimation />
 
@@ -75,7 +79,9 @@ Para comportar um ou mais novos elementos, uma nova sequência de memória deve 
 
 **O que pode acontecer ao tentar?**
 
-Depende. Há inumeras variáveis que podem determinar o resultado dessa tentativa, podendo ser deste a linguagem utilizada até mesmo o sistema em que o processo irá executar.
+Depende. Há inumeras variáveis que podem determinar o resultado dessa tentativa, podendo ser desde a linguagem utilizada até mesmo o sistema em que o processo irá executar.
+
+Para entender melhor isso, temos que traduzir essa a operação de "adicionar" esse novo elemento ao Array ao que de fato se trata. Quando adicionamos um valor a uma determinada posição nada mais estamos fazendo do que escrever  na verdade trata-se de uma solicitação para escrever num endereço que teoricamente não pertence ao nosso programa.
 
 Vejamos alguns exemplos de códigos que exemplificam isso e os seus respectivos retornos na tentativa de execução. (Removi parte da verbosidade das linguagens e preferi por apenas colocar no exemplo o código que aborda a questão).
 
@@ -161,7 +167,7 @@ Linearidade:
 - Não Linear
 
 // Linearidade
-// exemplo Procurar número em um linear outro n linear
+// exemplo Pesquisa binária em um linear outro n linear
 
 ### Linear
 
