@@ -21,6 +21,7 @@ import Goals from "./components/goals.astro"
 
   let nodeLimit = 5;
   let nodeSize = 90; // node visual size
+  if (nodeSize * nodeLimit > canvasWidth) nodeSize = canvasWidth / (nodeLimit + 0.5);
 
   let nodeOffsetPerNode = nodeSize + 2 // +2 cause of the border
   let nodeOffsetLeft = (canvasWidth - (nodeOffsetPerNode * nodeLimit)) / 2;
