@@ -1,0 +1,117 @@
+---
+import Canvas from "../shared/canvas.astro"
+import Cursor from "../shared/cursor.astro"
+import Goals from "./components/goals.astro"
+---
+<Goals id="static-memory-goals" goals={[
+  "Clique em um espaço para adicionar um valor.",
+  "Clique e preencha todas as posições disponíveis.",
+  "Clique mais de uma vez no mesmo bloco para substituir o item."
+]} />
+<Canvas id="static-memory-canvas" label="Estático" height="240px">
+  <Cursor id="static-memory-cursor"/>
+</Canvas>
+<script>
+  import { any, every, replaced, currentValue } from "./stores/static-memory.store";
+  import { createNodesElements, createNodeAndCursorAppearAnimation, createCursorClickAnimation } from "./staticMemAnim";
+
+  let canvas = document.getElementById("static-memory-canvas") as HTMLElement;
+  let canvasWidth = canvas.clientWidth;
+  let canvasHeight = canvas.clientHeight;
+
+  let nodeLimit = 5;
+  let nodeSize = 90; // node visual size
+  if (nodeSize * nodeLimit > canvasWidth) nodeSize = canvasWidth / (nodeLimit + 0.5);
+
+  let nodeOffsetPerNode = nodeSize + 2 // +2 cause of the border
+  let nodeOffsetLeft = (canvasWidth - (nodeOffsetPerNode * nodeLimit)) / 2;
+  let nodeOffsetTop = (canvasHeight - nodeOffsetPerNode) / 2;
+
+  let sizes = {
+    canvasWidth,
+    canvasHeight,
+    nodeSize,
+    nodeLimit,
+    nodeOffsetTop,
+    nodeOffsetPerNode,
+    nodeOffsetLeft,
+  };
+
+  let cursor = document.getElementById("static-memory-cursor") as HTMLButtonElement;
+  cursor.style.left = `${nodeOffsetLeft + (nodeSize * 0.85)}px`;
+  cursor.style.top = `${nodeOffsetTop + (nodeSize * 0.85)}px`;
+
+  let goals = document.getElementById("static-memory-goals-ul") as HTMLUListElement;
+
+  let nodesClassName = "static-mem-node-slot";
+
+  let elements = {
+    canvas,
+    nodes: [],
+    cursor,
+  };
+
+  let tags = {
+    nodesClassName,
+  };
+
+  createNodesElements(elements, tags, sizes);
+  createNodeAndCursorAppearAnimation(elements, tags);
+
+  let cursorAnimation = createCursorClickAnimation(cursor);
+
+  any.subscribe((value) => {
+    if (value) {
+      cursorAnimation.pause();
+      cursor.style.opacity = "";
+      cursor.style.display = "none";
+
+      let goal = (goals.childNodes[0] as HTMLLIElement);
+      let lineWidth = goal.clientWidth;
+      goal.style.backgroundSize = `${lineWidth}px 2px`;
+      goal.style.opacity = "0.5";
+    }
+  });
+
+  every.subscribe((value) => {
+    if (value) {
+      let goal = (goals.childNodes[1] as HTMLLIElement);
+      let lineWidth = goal.clientWidth;
+      goal.style.backgroundSize = `${lineWidth}px 2px`;
+      goal.style.opacity = "0.5";
+    }
+  });
+
+  replaced.subscribe((value) => {
+    if (value) {
+      let goal = (goals.childNodes[2] as HTMLLIElement);
+      let lineWidth = goal.clientWidth;
+      goal.style.backgroundSize = `${lineWidth}px 2px`;
+      goal.style.opacity = "0.5";
+    }
+  });
+
+  elements.nodes.forEach((n: HTMLElement) => {
+    n.addEventListener("click", () => {
+      if (!replaced.get() && n.innerText != "") replaced.set(true);
+
+      if (!any.get()) any.set(true);
+
+      let newValue = currentValue.get() + 1;
+      currentValue.set(newValue);
+      n.innerText = newValue.toString();
+
+      if (!every.get()) {
+        let nodes = document.getElementsByClassName(tags.nodesClassName);
+        let isEveryChanged = true;
+        for (let i = 0; i < nodes.length; i++) {
+          if ((nodes.item(i) as HTMLElement).innerText == "") {
+            isEveryChanged = false;
+            break;
+          }
+        }
+        if (isEveryChanged) every.set(true);
+      }
+    })
+  });
+</script>

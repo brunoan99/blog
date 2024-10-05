@@ -1,0 +1,73 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from '../components/Header.astro';
+import Head from '../components/post/Head.astro';
+import Summary from '../components/post/Summary.astro';
+import "../styles/global.css";
+
+type Props = {
+  metadata: {
+    title: string,
+    description: string,
+    pubDate: Date,
+    updatedDate: Date | undefined
+  },
+  summary: {
+    id: string,
+    level: number,
+    label: string,
+  }[]
+};
+
+const { metadata: { title, description, pubDate, updatedDate }, summary } = Astro.props;
+
+---
+<!doctype html>
+<html lang="pt-br">
+	<head>
+		<BaseHead title={title} description={description} />
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--primary);
+      }
+      main {
+        width: calc(100vw - 2em);
+        max-width: 100vw;
+        margin: auto;
+        animation: appear 350ms ease-in;
+      }
+      .prose {
+        width: 720px;
+        max-width: calc(100%);
+        margin: auto;
+        padding: 1em;
+      }
+      .content {
+        text-align: justify;
+      }
+      @media (max-width: 720px) {
+        .prose {
+          margin: 0;
+          padding: 0;
+        }
+      }
+    </style>
+  </head>
+	<body>
+		<Header/>
+		<main>
+      <Summary data={summary}/>
+			<article>
+        <div class="prose">
+          <Head title={title} pubDate={pubDate} updatedDate={updatedDate} />
+          <div class="content">
+            <slot />
+          </div>
+				</div>
+			</article>
+		</main>
+	</body>
+</html>

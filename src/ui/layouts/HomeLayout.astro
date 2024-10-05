@@ -1,0 +1,109 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import PostCard from "../components/PostCard.astro";
+import "../styles/global.css";
+
+type Props = {
+  posts: {
+    title: string;
+    slug: string;
+    date: Date;
+  }[];
+};
+
+const { posts } = Astro.props;
+
+---
+<!doctype html>
+<html lang="pt-br">
+	<head>
+		<BaseHead />
+		<style>
+      @keyframes appear {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      body {
+        text-align: left;
+        background: var(--primary);
+        overflow-wrap: break-word;
+        color: var(--secondary);
+        font-size: 20px;
+        line-height: 1.7;
+      }
+      main {
+        width: 960px;
+        max-width: calc(100% - 2em);
+        margin: auto;
+        padding: 2em 1em;
+      }
+      section {
+        margin-top: 16px;
+      }
+      ul {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 25px;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+      ul li {
+        width: calc(50% - 1rem);
+        padding: 5px;
+        animation: appear 550ms ease-in;
+      }
+      ul li * {
+        text-decoration: none;
+      }
+      ul li a {
+        display: block;
+      }
+      ul li h4 {
+	      font-size: 1.563em;
+      }
+      .title {
+        margin: 0;
+        padding-left: 15px;
+        color: var(--secondary);
+        line-height: 1;
+      }
+      .date {
+        margin: 0;
+        padding-left: 15px;
+        color: rgb(var(--gray));
+      }
+      ul li a:hover h4,
+      ul li a:hover .date {
+        color: var(--accent);
+      }
+      @media (max-width: 720px) {
+        ul {
+          gap: 1.25em;
+        }
+        ul li {
+          width: 100%;
+          text-align: center;
+        }
+      }
+		</style>
+	</head>
+
+	<body>
+		<Header/>
+		<main>
+			<section>
+				<ul>
+					{ posts.map((post) => (
+            <li>
+              <PostCard slug={post.slug} title={post.title} date={post.date} />
+            </li>
+           ))
+					}
+				</ul>
+			</section>
+		</main>
+	</body>
+</html>

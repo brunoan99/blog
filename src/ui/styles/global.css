@@ -4,7 +4,7 @@
   License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
  */
 
-:root {
+ :root {
 	--accent: #2337ff;
 	--accent-dark: #000d8a;
   --primary: #F7F3EE;
@@ -112,9 +112,6 @@ hr {
 @media (max-width: 720px) {
 	body {
 		font-size: 18px;
-	}
-	main {
-		padding: 1em;
 	}
 }
 

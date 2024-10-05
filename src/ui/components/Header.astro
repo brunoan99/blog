@@ -3,25 +3,37 @@ import "../styles/global.css";
 ---
 
 <header>
-	<h2><a href="/">by Bruno Andrade</a></h2>
+	<h2><a href="/">Blog by Bruno Andrade</a></h2>
+  <div class="line"></div>
 </header>
 <style>
 	header {
-		margin-top: 10px;
-		padding: 0 1em;
+    width: 100vw;
+    position: fixed;
+    top: 0px;
+    background-color: var(--primary);
+    z-index: 1000;
 	}
 	h2 {
-		margin: 0;
+		margin-top: 10px;
+    margin-bottom: 0px;
 		font-size: 1em;
 		color: var(--secondary);
 	}
-	h2 a {
+	h2 > a {
+		padding: 0 1em;
 		text-decoration: none;
 	}
-  h2 a:visited {
+  h2 > a:visited {
     color: var(--secondary);
   }
-  h2 a:hover {
+  h2 > a:hover {
     color: var(--accent);
+  }
+  header > .line {
+    position: fixed;
+    width: 100vw;
+    height: 4px;
+    background-color: var(--primary);
   }
 </style>

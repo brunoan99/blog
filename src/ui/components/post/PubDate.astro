@@ -1,0 +1,15 @@
+---
+import FormattedDate from '../FormattedDate.astro';
+
+type Props = { date: Date };
+
+const { date } = Astro.props;
+---
+<style>
+  div {
+    font-style: italic;
+    margin-bottom: 0.5em;
+    color: rgb(var(--gray));
+  }
+</style>
+<div>Publicado em <FormattedDate date={date} /></div>

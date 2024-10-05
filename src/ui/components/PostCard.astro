@@ -1,0 +1,46 @@
+---
+import FormattedDate from './FormattedDate.astro';
+
+type Props = {
+  title: string;
+  slug: string;
+  date: Date;
+}
+
+const { title, slug, date } = Astro.props;
+---
+<style>
+  * {
+    text-decoration: none;
+  }
+  a {
+    display: block;
+  }
+  h4 {
+    font-size: 1.563em;
+  }
+  .title {
+    margin: 0;
+    padding-left: 15px;
+    color: var(--secondary);
+    line-height: 1;
+  }
+  .date {
+    margin: 0;
+    padding-left: 15px;
+    color: rgb(var(--gray));
+  }
+  a:hover h4,
+  a:hover .date {
+    color: var(--accent);
+  }
+</style>
+<a href={`/posts/${slug}/`}
+  transition:animate="fade"
+>
+  <h4 class="title">{title}</h4>
+  <p class="date">
+    <FormattedDate date={date} />
+  </p>
+</a>
+<hr />

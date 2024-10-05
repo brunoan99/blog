@@ -1,0 +1,56 @@
+---
+type Props = {
+  data: {
+    id: string;
+    level: number;
+    label: string;
+  }[];
+};
+
+const { data } = Astro.props;
+---
+<style>
+  .summary {
+    position: fixed;
+    width: calc((100vw - 880px) / 2);
+    max-width: 280px;
+    left: 3em;
+    top: 64px;
+  }
+  .summary ul {
+    margin-block: 0px;
+    margin-inline: 0px;
+    padding-inline: 0px;
+    list-style-type: none;
+    line-height: 1.6;
+    font-size: 19px;
+  }
+  .summary ul li a {
+    color: rgb(var(--gray));
+    text-decoration: none;
+    text-wrap: wrap;
+  }
+  .summary ul li a:hover {
+    color: var(--accent);
+  }
+  @media (max-width: 1299px) {
+    .summary {
+      display: none;
+    }
+  }
+</style>
+<section class="summary">
+  <ul>
+  {
+    data.map((heading) => {
+      return (
+        <li style={`margin-left: ${Math.max((heading.level - 2), 0) * 16}px`}>
+          <a href={`#${heading.id}`}>
+          {heading.label}
+          </a>
+        </li>
+      )
+    })
+  }
+  </ul>
+</section>

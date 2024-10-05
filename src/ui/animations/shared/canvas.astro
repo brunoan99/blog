@@ -1,0 +1,41 @@
+---
+type Props = {
+  id: string;
+  label?: string;
+  width?: string;
+  height?: string;
+};
+
+let { id, label, width, height } = Astro.props;
+if (!width) width = "100%"
+if (!height) height = "360px"
+---
+<div class="canvas" id={id}>
+  {
+    label
+      ? <span class="label">{label}</span>
+      : <></>
+  }
+  <slot />
+</div>
+<style define:vars={{ width, height }}>
+  .canvas {
+    width: var(--width);
+    height: var(--height);
+    background-color: white;
+
+    margin: auto;
+    border: 1px solid var(--secondary);
+    border-radius: 8px;
+    margin-bottom: 16px;
+
+    position: relative;
+  }
+  .label {
+    user-select: none;
+    position: absolute;
+    left: 10px;
+    top: 2px;
+    opacity: 0.7;
+  }
+</style>

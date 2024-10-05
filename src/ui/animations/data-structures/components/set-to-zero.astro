@@ -1,0 +1,19 @@
+---
+---
+<style>
+  strong {
+    cursor: pointer;
+  }
+  strong:hover {
+    color: var(--accent);
+  }
+</style>
+<strong id="set-static-node-example-to-zero">0</strong>
+<script>
+  import { inputValue } from "../stores/node-example.store";
+
+  let toZero = document.getElementById("set-static-node-example-to-zero") as HTMLElement;
+  toZero.addEventListener("click", function(e) {
+    inputValue.set("0");
+  })
+</script>

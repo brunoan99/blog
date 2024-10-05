@@ -1,10 +1,15 @@
 ---
-import { getCollection } from 'astro:content';
-import HomePage from '../ui/layouts/HomePage.astro';
+import { getCollection } from "astro:content";
+import HomeLayout from "../ui/layouts/HomeLayout.astro"
 
-const posts = (await getCollection('blog')).sort(
+let postsC = (await getCollection('posts')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
+let posts = postsC.map(post => ({
+  title: post.data.title,
+  slug: post.slug,
+  date: post.data.pubDate,
+}))
 ---
 
-<HomePage {posts} />
+<HomeLayout {posts} />
