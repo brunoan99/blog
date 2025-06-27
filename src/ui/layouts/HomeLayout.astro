@@ -13,17 +13,13 @@ type Props = {
 };
 
 const { posts } = Astro.props;
-
 ---
+
 <!doctype html>
 <html lang="pt-br">
-	<head>
-		<BaseHead />
-		<style>
-      @keyframes appear {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
+  <head>
+    <BaseHead />
+    <style>
       body {
         text-align: left;
         background: var(--primary);
@@ -53,7 +49,6 @@ const { posts } = Astro.props;
       ul li {
         width: calc(50% - 1rem);
         padding: 5px;
-        animation: appear 550ms ease-in;
       }
       ul li * {
         text-decoration: none;
@@ -62,7 +57,7 @@ const { posts } = Astro.props;
         display: block;
       }
       ul li h4 {
-	      font-size: 1.563em;
+        font-size: 1.563em;
       }
       .title {
         margin: 0;
@@ -88,22 +83,27 @@ const { posts } = Astro.props;
           text-align: center;
         }
       }
-		</style>
-	</head>
+    </style>
+  </head>
 
-	<body>
-		<Header/>
-		<main>
-			<section>
-				<ul>
-					{ posts.map((post) => (
-            <li>
-              <PostCard slug={post.slug} title={post.title} date={post.date} />
-            </li>
-           ))
-					}
-				</ul>
-			</section>
-		</main>
-	</body>
+  <body>
+    <Header />
+    <main>
+      <section>
+        <ul>
+          {
+            posts.map((post) => (
+              <li>
+                <PostCard
+                  slug={post.slug}
+                  title={post.title}
+                  date={post.date}
+                />
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    </main>
+  </body>
 </html>

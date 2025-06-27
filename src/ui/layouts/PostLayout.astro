@@ -10,7 +10,8 @@ type Props = {
     title: string,
     description: string,
     pubDate: Date,
-    updatedDate: Date | undefined
+    updatedDate: Date | undefined,
+    slug: string
   },
   summary: {
     id: string,
@@ -19,7 +20,7 @@ type Props = {
   }[]
 };
 
-const { metadata: { title, description, pubDate, updatedDate }, summary } = Astro.props;
+const { metadata: { title, description, pubDate, updatedDate, slug }, summary } = Astro.props;
 
 ---
 <!doctype html>
@@ -62,7 +63,7 @@ const { metadata: { title, description, pubDate, updatedDate }, summary } = Astr
       <Summary data={summary}/>
 			<article>
         <div class="prose">
-          <Head title={title} pubDate={pubDate} updatedDate={updatedDate} />
+          <Head title={title} pubDate={pubDate} updatedDate={updatedDate} slug={slug} />
           <div class="content">
             <slot />
           </div>

@@ -3,9 +3,9 @@ import PubDate from './PubDate.astro';
 import UpdateDate from './UpdateDate.astro';
 
 
-type Props = { title: string, pubDate: Date, updatedDate: Date | undefined };
+type Props = { title: string, pubDate: Date, updatedDate: Date | undefined, slug: string };
 
-const { title, pubDate, updatedDate } = Astro.props;
+const { title, pubDate, updatedDate, slug } = Astro.props;
 ---
 <style>
   .prose {
@@ -41,7 +41,7 @@ const { title, pubDate, updatedDate } = Astro.props;
   }
 </style>
 <div class="title">
-  <h1>{title}</h1>
+  <h1 transition:name={slug}>{title}</h1>
   <div class="date">
     <PubDate date={pubDate} />
     <UpdateDate date={updatedDate} />
