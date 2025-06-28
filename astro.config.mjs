@@ -6,4 +6,5 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://blog.brunoan.dev',
   integrations: [mdx(), sitemap()],
+  viewTransitions: true,
 });

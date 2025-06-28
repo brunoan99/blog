@@ -36,7 +36,7 @@ const { title, slug, date } = Astro.props;
   }
 </style>
 <a href={`/posts/${slug}/`}
-  transition:animate="fade"
+  transition:name={slug}
 >
   <h4 class="title">{title}</h4>
   <p class="date">

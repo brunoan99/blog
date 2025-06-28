@@ -1,5 +1,7 @@
 ---
+
 ---
+
 <style>
   strong {
     cursor: pointer;
@@ -12,8 +14,10 @@
 <script>
   import { inputValue } from "../stores/node-example.store";
 
-  let toZero = document.getElementById("set-static-node-example-to-zero") as HTMLElement;
-  toZero.addEventListener("click", function(e) {
+  let toZero = document.getElementById(
+    "set-static-node-example-to-zero",
+  ) as HTMLElement;
+  toZero.addEventListener("click", function (_) {
     inputValue.set("0");
-  })
+  });
 </script>
