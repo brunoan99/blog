@@ -1,11 +1,12 @@
 ---
 import Canvas from "../shared/canvas.astro";
+import "../../styles/global.css";
 ---
 
 <div class="static-node-input-line">
+  <button class="static-node-button" id="static-node-minus-button">-</button>
   <input id="static-node-input" autocomplete="off" maxlength="10" />
-  <button id="static-node-minus-button">-</button>
-  <button id="static-node-plus-button">+</button>
+  <button class="static-node-button" id="static-node-plus-button">+</button>
 </div>
 <style>
   .static-node-input-line {
@@ -14,6 +15,13 @@ import Canvas from "../shared/canvas.astro";
     flex-direction: row;
     justify-content: center;
     padding-bottom: 10px;
+    gap: 10px;
+  }
+  .static-node-button {
+    background-color: var(--primary);
+    border: 0.5px var(--secondary) solid;
+    border-radius: 4px;
+    width: 24px;
   }
   input {
     border: solid var(--secondary) 0.5px;
@@ -85,7 +93,6 @@ import Canvas from "../shared/canvas.astro";
 
     // Prevent being empty when perform a delete
     if (code == "Backspace" || code == "Delete") {
-      console.log(e, start, end);
       e.preventDefault();
       if (len == 1 || end - start == len) {
         // Execution will only be here if start and end are literaly in start and
@@ -191,11 +198,24 @@ import Canvas from "../shared/canvas.astro";
     "static-node-minus-button",
   ) as HTMLButtonElement;
   buttonMinusElem.addEventListener("click", (_) => {
-    inputValue.set(Math.max(0, parseInt(inputValue.get()) - 1).toString());
+    let oldValue = inputValue.get();
+    if (oldValue == "0") {
+      inputValue.set("4294967295");
+      return;
+    }
+    inputValue.set((parseInt(oldValue) - 1).toString());
   });
   let buttonPlusElem = document.getElementById(
     "static-node-plus-button",
   ) as HTMLButtonElement;
+  buttonPlusElem.addEventListener("click", (_) => {
+    let oldValue = inputValue.get();
+    if (oldValue == "4294967295") {
+      inputValue.set("0");
+      return;
+    }
+    inputValue.set((parseInt(oldValue) + 1).toString());
+  });
 
   inputValue.subscribe((value, oldValue) => {
     node.innerText = value;
