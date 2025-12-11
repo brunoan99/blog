@@ -1,16 +1,27 @@
 ---
-import Canvas from "../shared/canvas.astro"
+import Canvas from "../shared/canvas.astro";
+import "../../styles/global.css";
 ---
-<div class="input-line">
-  <input id="input-static-node" autocomplete="off" maxlength="10"/>
+
+<div class="static-node-input-line">
+  <button class="static-node-button" id="static-node-minus-button">-</button>
+  <input id="static-node-input" autocomplete="off" maxlength="10" />
+  <button class="static-node-button" id="static-node-plus-button">+</button>
 </div>
 <style>
-  .input-line {
+  .static-node-input-line {
     width: 100%;
     display: flex;
     flex-direction: row;
     justify-content: center;
     padding-bottom: 10px;
+    gap: 10px;
+  }
+  .static-node-button {
+    background-color: var(--primary);
+    border: 0.5px var(--secondary) solid;
+    border-radius: 4px;
+    width: 24px;
   }
   input {
     border: solid var(--secondary) 0.5px;
@@ -35,8 +46,8 @@ import Canvas from "../shared/canvas.astro"
 
   // insert node on canvas
   let size = 120; // node size
-  let offsetPerNode = size + 2 // +2 cause of the border
-  let offsetBinLeft = (width - (2 * offsetPerNode)) / 3;
+  let offsetPerNode = size + 2; // +2 cause of the border
+  let offsetBinLeft = (width - 2 * offsetPerNode) / 3;
   let offsetNodeLeft = offsetBinLeft * 2 + offsetPerNode;
   let offsetTop = (height - offsetPerNode) / 2;
 
@@ -55,19 +66,19 @@ import Canvas from "../shared/canvas.astro"
   node.style.cursor = "default";
   canvas.appendChild(node);
 
-  let [
-    binElem,
-  ] = createBin({
+  let [binElem] = createBin({
     id: "bin_example",
     style: {
       size: `${size}px`,
       top: `${offsetTop}px`,
-      left: `${offsetBinLeft}px`
-    }
+      left: `${offsetBinLeft}px`,
+    },
   });
   canvas.appendChild(binElem);
 
-  let inputElem = document.getElementById("input-static-node") as HTMLInputElement;
+  let inputElem = document.getElementById(
+    "static-node-input",
+  ) as HTMLInputElement;
   inputElem.addEventListener("keydown", (e) => {
     let code = e.key;
     let input = e.target as any;
@@ -82,24 +93,86 @@ import Canvas from "../shared/canvas.astro"
 
     // Prevent being empty when perform a delete
     if (code == "Backspace" || code == "Delete") {
-      if (len == 1 || (end - start) == len) {
-        e.preventDefault();
+      e.preventDefault();
+      if (len == 1 || end - start == len) {
+        // Execution will only be here if start and end are literaly in start and
+        // end of the text itself. So always will be a full delete of contet.
+        // Just set to zero and be happy. No need to check cursor cause in this
+        // after delete the cursor will at end.
         inputElem.value = "0";
         inputValue.set("0");
         return;
       } else if (end != start) {
-        e.preventDefault();
+        // Execution will only be here if is a selection and is not full content
+        // being deleted. So in this case just get the slice from start to selection
+        // and concat with slice from selection to end
         let splited = value.split("");
-        let newValue: string = ([] as string[]).concat(splited.slice(0, start), splited.slice(end)).join("");
+        // digit position
+        //   0 1 2 3 4 5
+        //   | | | | | |
+        // [ 4 2 7 8 5 6 ]
+        //  | | | | | |
+        //  0 1 2 3 4 5
+        // cursor position
+        // supose the event is to delete from 7 to 8, including 8
+        // the cursor in this case will start at 2 and end at 4
+        // so slice from 0 to 2 and concat with slice from 4 to end
+        //   0 1 2 3
+        //   | | | |
+        // [ 4 2 5 6 ]
+        //  | | | |
+        //  0 1 2 3
+        let newValue: string = ([] as string[])
+          .concat(splited.slice(0, start), splited.slice(end))
+          .join("");
         inputElem.value = newValue;
         inputValue.set(newValue);
+        // after seting the newValue the cursor may be moved to the end
+        // for better experience is good to adjust cursor to correct position, for so:
+        // using example above in final position cursor will be same as start of
+        // selection. Is this case there is no diference for backspace and delete.
+        inputElem.selectionEnd = start;
         return;
       } else {
-        e.preventDefault();
+        // Execution will only be here when start and end are not equal
+        // meaning that will never be a selection, just a regular cursor
+        // so for do it just is needed to find the position and depending on
+        // key code filter the digit by index
         let splited = value.split("");
-        let newValue: string = ([] as string[]).concat(splited.slice(0, start - 1)).join("");
+        // backspace remove the digit before the cursor so `start - 1`
+        // else will be delete so will remove the digit after cursor
+        // that is representing by just `start` or `end`
+        // better representated like this
+        // digit position
+        //   0 1
+        //   | |
+        // [ 4 2 ]
+        //  | |
+        //  0 1
+        // cursor position
+        let indexToFilter = code == "Backspace" ? start - 1 : end;
+        let newValue = splited.filter((v, i) => i != indexToFilter).join("");
         inputElem.value = newValue;
         inputValue.set(newValue);
+        // after seting the newValue the cursor may be moved to the end
+        // for better experience is good to adjust cursor to correct position, for so:
+        //   0 1 2 3
+        //   | | | |
+        // [ 4 2 7 8 ]
+        //  | | | |
+        //  0 1 2 3
+        // after remove digit 7
+        //   0 1 2
+        //   | | |
+        // [ 4 2 8 ]
+        //  | | |
+        //  0 1 2
+        // we may want the cursor to stay between 2 and 8
+        // if key code is backspace the cursor was in position 3, and 2 otherwise
+        // the final code should be 2, so just set to `start - 1` for backspace
+        // and `start` or `end` to delete.
+        // Looks like indexToFilter will always represent the position to cursor to end
+        inputElem.selectionEnd = indexToFilter;
         return;
       }
     }
@@ -121,6 +194,29 @@ import Canvas from "../shared/canvas.astro"
   });
   inputElem.addEventListener("paste", (e) => e.preventDefault());
 
+  let buttonMinusElem = document.getElementById(
+    "static-node-minus-button",
+  ) as HTMLButtonElement;
+  buttonMinusElem.addEventListener("click", (_) => {
+    let oldValue = inputValue.get();
+    if (oldValue == "0") {
+      inputValue.set("4294967295");
+      return;
+    }
+    inputValue.set((parseInt(oldValue) - 1).toString());
+  });
+  let buttonPlusElem = document.getElementById(
+    "static-node-plus-button",
+  ) as HTMLButtonElement;
+  buttonPlusElem.addEventListener("click", (_) => {
+    let oldValue = inputValue.get();
+    if (oldValue == "4294967295") {
+      inputValue.set("0");
+      return;
+    }
+    inputValue.set((parseInt(oldValue) + 1).toString());
+  });
+
   inputValue.subscribe((value, oldValue) => {
     node.innerText = value;
     if (inputElem.value != value) inputElem.value = value;
@@ -136,8 +232,7 @@ import Canvas from "../shared/canvas.astro"
       for (let i = 0; i < newSplited.length; i++) {
         let byte = Math.floor(i / 8);
         let bit = i - Math.floor(i / 8) * 8;
-        if (newSplited[i] == "0")
-          toAppear.push(`#bin_digits_${byte}_${bit}_0`);
+        if (newSplited[i] == "0") toAppear.push(`#bin_digits_${byte}_${bit}_0`);
         else if (newSplited[i] == "1")
           toAppear.push(`#bin_digits_${byte}_${bit}_1`);
       }
@@ -146,17 +241,19 @@ import Canvas from "../shared/canvas.astro"
         targets: toAppear,
         opacity: [0, 1],
         duration: 500,
-        easing: 'easeInOutQuad'
+        easing: "easeInOutQuad",
       });
     } else {
       // needs to get diffs from old to new
       // get diffs in format toDisappear and to Appear
       // then animate
-      let oldStringBinary = (parseInt(oldValue) >>> 0).toString(2).padStart(32, "0");
+      let oldStringBinary = (parseInt(oldValue) >>> 0)
+        .toString(2)
+        .padStart(32, "0");
       let oldSplited = oldStringBinary.split("");
 
-      let toDisappear:  string[] = [];
-      let toAppear:  string[] = [];
+      let toDisappear: string[] = [];
+      let toAppear: string[] = [];
 
       for (let i = 0; i < newSplited.length; i++) {
         let byte = Math.floor(i / 8);
@@ -175,16 +272,15 @@ import Canvas from "../shared/canvas.astro"
           targets: toDisappear,
           opacity: [1, 0],
           duration: 500,
-          easing: 'easeInOutQuad'
+          easing: "easeInOutQuad",
         });
 
         anime({
           targets: toAppear,
           opacity: [0, 1],
           duration: 500,
-          easing: 'easeInOutQuad'
+          easing: "easeInOutQuad",
         });
-
       }
     }
   });

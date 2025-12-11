@@ -8,6 +8,7 @@ import SetToZero from "../../ui/animations/data-structures/components/set-to-zer
 import SetToMax from "../../ui/animations/data-structures/components/set-to-max.astro"
 
 import StaticMemoryAnimation from "../../ui/animations/data-structures/anim-static-memory.astro"
+import DynamicMemoryAnimation from "../../ui/animations/data-structures/anim-dynamic-memory.astro"
 
 import InProgress from "../../ui/components/InProgress.astro"
 
@@ -91,7 +92,7 @@ Exemplo em **Rust**:
   array[5] = 6;
 ```
 
-```
+```shell
 λ cargo run
    Compiling ...
 error: this operation will panic at runtime
@@ -113,7 +114,7 @@ Exemplo em **C**:
   array[5] = 6;
 ```
 
-```
+```shell
 λ gcc example.c && ./a.out
 *** stack smashing detected ***: terminated
 ```
@@ -130,28 +131,52 @@ arr[5] = 6;
 console.log(arr);
 ```
 
-```
+```shell
 λ node example.js
 [ <5 empty items>, 6 ]
 ```
 
 Em javascript esse código executa sem erro algum. O Array é instânciado com 5 posições, ao passo que uma sexta é solicitada a linguagem automaticamente realiza por baixo dos panos as operações necessárias para se adequar e seguir com a execução normalmente.
 
+Se utilizarmos Nodejs como runtime para execução do nosso código Javascript podemos adotar um exemplo utilizando uma estrutura melhor adequada há um Array o <strong>Uint8Array</strong> que é uma subclasse de <strong>TypedArray</strong>. Chegamos então ao simples exemplo:
+
+```javascript
+let arr = new Uint8Array(5);
+arr[5] = 6;
+console.log(arr);
+```
+
+Ao executarmos este código também não obteremos erro.
+
+```shell
+λ node example2.js
+Uint8Array(5) [ 0, 0, 0, 0, 0 ]
+```
+
+Porém neste cenário o Nodejs por baixo dos panos não irá realizar o trabalho necessário para criar uma nova estrutura. O que particularmente me parece mais adequado tendo em consideranção o comportamento experado de um Array.
+
 **Mas e se dentro do uso desejado não sabemos a quantidade de items que serão comportados e/ou o tamanho destes items?**
 
-Neste caso o melhor a se fazer é não utilizar uma Estrutura que faz-uso deste tipo de alocação. Há também Estruturas de Dados qualificadas como de **Alocação Dinâmica** ou **Tamanho Dinâmico**. Vejamos mais a respeito **...**
+Neste caso o melhor a se fazer é não utilizar uma Estrutura que faz-uso deste tipo de alocação. Há também Estruturas de Dados qualificadas como de **Alocação Dinâmica** ou **Tamanho Dinâmico**. Vejamos mais a respeito.
 
 <br/>
 
-<hr />
-
-<InProgress />
-
-<br />
 {/*
+
 ### Alocação Dinâmica
 
-<DynamicAnim />
+rewrite
+Em contrapartida a alocação estática, nem sempre sabemos quanto de memória será necessário para que o programa seja executado. A <strong>Alocação Dinâmica</strong> lida com estes casos e não possui estrutura completamente fixa e pode mudar de acordo com as operações realizadas em tempo de execução.
+
+Mas de que modo a alocação varia? Majoritariamente uma estrutura que se apoia no modelo de alocação dinâmica trabalha com <strong>Nós</strong> ou <strong>Nodes</strong> estes que por sua vez vão conter os dados em tipos primitivos, ou também, muito comumente os <strong>Nós</strong> são alocados com estruturas de tamanho estático. Assim a medida que há necessidade de alocar dados estes nós são construidos em mémoria e adereçados à estrutura através de ponteiros.
+
+Máquina de ponteiros.
+
+<strong>Listas encadeadas</strong> são um exelente exemplo de <strong>Nós</strong> que carregam informações através de tipos primitivos. E uma <strong>BTree</strong> é uma estrutura de alocação dinâmica que utiliza de <strong>Arrays</strong> em seus <strong>Nós</strong>.
+
+
+<DynamicMemoryAnimation />
+<br />
 
 ### Comparativo
 
@@ -159,6 +184,12 @@ Neste caso o melhor a se fazer é não utilizar uma Estrutura que faz-uso deste 
 <br/>
 <br/>
 <br/>
+
+Nem toda estrutura é exclusivamente dinâmica.
+Btree estrutura dinâmica que se apoia em uma estrutura estática (arrays).
+Hash tables array que pode utilizar estrutura dinâmia(linked list) para resolver colisões.
+Assim como também, podemos ter representações de uma estrutura de um tipo em outro.
+Exemplo um Array pode ser utilizado para representar uma árvore binária.
 
 ## Linearidade
 
@@ -178,3 +209,6 @@ Linearidade:
 ## Final
 
 Parte da ideia desse post é introduzir a maneira como eu pretendo representar Estruturas de Dados, Nós, um pouco de Memória e afins. A ideia central não é representar diversas estruturas diferentes de formas diferentes. Mas apenas o suficiente para dar a entender a representação. */}
+<hr />
+
+<InProgress />

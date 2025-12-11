@@ -36,7 +36,7 @@ type NodeProps = {
   innitialValue?: string;
 }
 
-export const createNode = ({ id, className, style, innitialValue }: NodeProps): HTMLElement  => {
+export const createNode = ({ id, className, style, innitialValue }: NodeProps): HTMLElement => {
   let node = createElem<HTMLElement>({
     type: "div",
     id,
@@ -114,7 +114,7 @@ export const createBin = ({ id, style }: BinProps): [HTMLElement, HTMLElement, H
     styleBitOne(b1);
     b1.style.opacity = "0";
 
-    let b = createElem({ type: "div", id: `bin_digits_0_${i}`});
+    let b = createElem({ type: "div", id: `bin_digits_0_${i}` });
     b.appendChild(b0);
     b.appendChild(b1);
     styleBitPos(b);
@@ -134,7 +134,7 @@ export const createBin = ({ id, style }: BinProps): [HTMLElement, HTMLElement, H
     styleBitOne(b1);
     b1.style.opacity = "0";
 
-    let b = createElem({ type: "div", id: `bin_digits_1_${i}`});
+    let b = createElem({ type: "div", id: `bin_digits_1_${i}` });
     b.appendChild(b0);
     b.appendChild(b1);
     styleBitPos(b);
@@ -154,7 +154,7 @@ export const createBin = ({ id, style }: BinProps): [HTMLElement, HTMLElement, H
     styleBitOne(b1);
     b1.style.opacity = "0";
 
-    let b = createElem({ type: "div", id: `bin_digits_2_${i}`});
+    let b = createElem({ type: "div", id: `bin_digits_2_${i}` });
     b.appendChild(b0);
     b.appendChild(b1);
     styleBitPos(b);
@@ -174,7 +174,7 @@ export const createBin = ({ id, style }: BinProps): [HTMLElement, HTMLElement, H
     styleBitOne(b1);
     b1.style.opacity = "0";
 
-    let b = createElem({ type: "div", id: `bin_digits_3_${i}`});
+    let b = createElem({ type: "div", id: `bin_digits_3_${i}` });
     b.appendChild(b0);
     b.appendChild(b1);
     styleBitPos(b);
