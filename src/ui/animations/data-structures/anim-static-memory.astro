@@ -1,19 +1,38 @@
 ---
-import Canvas from "../shared/canvas.astro"
-import Cursor from "../shared/cursor.astro"
-import Goals from "./components/goals.astro"
+import Canvas from "../shared/canvas.astro";
+import Cursor from "../shared/cursor.astro";
+import Goals from "./components/goals.astro";
 ---
-<Goals id="static-memory-goals" goals={[
-  "Clique em um espaço para adicionar um valor.",
-  "Clique e preencha todas as posições disponíveis.",
-  "Clique mais de uma vez no mesmo bloco para substituir o item."
-]} />
+
+<Goals
+  id="static-memory-goals"
+  goals={[
+    "Clique em um espaço para adicionar um valor.",
+    "Clique e preencha todas as posições disponíveis.",
+    "Clique mais de uma vez no mesmo bloco para substituir o item.",
+  ]}
+/>
 <Canvas id="static-memory-canvas" label="Estático" height="240px">
-  <Cursor id="static-memory-cursor"/>
+  <Cursor id="static-memory-cursor" />
 </Canvas>
 <script>
-  import { any, every, replaced, currentValue } from "./stores/static-memory.store";
-  import { createNodesElements, createNodeAndCursorAppearAnimation, createCursorClickAnimation } from "./staticMemAnim";
+  import {
+    any,
+    every,
+    replaced,
+    currentValue,
+    clicksPerNodes,
+    clicked,
+    cursorPosition,
+  } from "./stores/static-memory.store";
+  import {
+    createNodesElements,
+    createNodeAndCursorAppearAnimation,
+    createCursorClickAnimation,
+    createNodeElementsAnimation,
+    createCursorMoveAnimation,
+    markGoalAsComplete,
+  } from "./staticMemAnim";
 
   let canvas = document.getElementById("static-memory-canvas") as HTMLElement;
   let canvasWidth = canvas.clientWidth;
@@ -21,10 +40,12 @@ import Goals from "./components/goals.astro"
 
   let nodeLimit = 5;
   let nodeSize = 90; // node visual size
-  if (nodeSize * nodeLimit > canvasWidth) nodeSize = canvasWidth / (nodeLimit + 0.5);
+  if (nodeSize * nodeLimit > canvasWidth)
+    nodeSize = canvasWidth / (nodeLimit + 0.5);
 
-  let nodeOffsetPerNode = nodeSize + 2 // +2 cause of the border
-  let nodeOffsetLeft = (canvasWidth - (nodeOffsetPerNode * nodeLimit)) / 2;
+  let borderSize = 2;
+  let nodeOffsetPerNode = nodeSize + borderSize; // +2 cause of the border
+  let nodeOffsetLeft = (canvasWidth - nodeOffsetPerNode * nodeLimit) / 2;
   let nodeOffsetTop = (canvasHeight - nodeOffsetPerNode) / 2;
 
   let sizes = {
@@ -37,11 +58,16 @@ import Goals from "./components/goals.astro"
     nodeOffsetLeft,
   };
 
-  let cursor = document.getElementById("static-memory-cursor") as HTMLButtonElement;
-  cursor.style.left = `${nodeOffsetLeft + (nodeSize * 0.85)}px`;
-  cursor.style.top = `${nodeOffsetTop + (nodeSize * 0.85)}px`;
+  let cursor = document.getElementById(
+    "static-memory-cursor",
+  ) as HTMLButtonElement;
+  let cursorPercentFromBorder = 0.85;
+  cursor.style.left = `${nodeOffsetLeft + nodeSize * cursorPercentFromBorder}px`;
+  cursor.style.top = `${nodeOffsetTop + nodeSize * cursorPercentFromBorder}px`;
 
-  let goals = document.getElementById("static-memory-goals-ul") as HTMLUListElement;
+  let goals = document.getElementById(
+    "static-memory-goals-ul",
+  ) as HTMLUListElement;
 
   let nodesClassName = "static-mem-node-slot";
 
@@ -61,57 +87,66 @@ import Goals from "./components/goals.astro"
   let cursorAnimation = createCursorClickAnimation(cursor);
 
   any.subscribe((value) => {
-    if (value) {
-      cursorAnimation.pause();
-      cursor.style.opacity = "";
-      cursor.style.display = "none";
-
-      let goal = (goals.childNodes[0] as HTMLLIElement);
-      let lineWidth = goal.clientWidth;
-      goal.style.backgroundSize = `${lineWidth}px 2px`;
-      goal.style.opacity = "0.5";
-    }
+    if (value) markGoalAsComplete(goals.childNodes[0] as HTMLLIElement);
   });
 
   every.subscribe((value) => {
-    if (value) {
-      let goal = (goals.childNodes[1] as HTMLLIElement);
-      let lineWidth = goal.clientWidth;
-      goal.style.backgroundSize = `${lineWidth}px 2px`;
-      goal.style.opacity = "0.5";
-    }
+    if (value) markGoalAsComplete(goals.childNodes[1] as HTMLLIElement);
   });
 
   replaced.subscribe((value) => {
-    if (value) {
-      let goal = (goals.childNodes[2] as HTMLLIElement);
-      let lineWidth = goal.clientWidth;
-      goal.style.backgroundSize = `${lineWidth}px 2px`;
-      goal.style.opacity = "0.5";
+    if (value) markGoalAsComplete(goals.childNodes[2] as HTMLLIElement);
+  });
+
+  clicked.subscribe((value) => {
+    if (value.length == 0) return;
+
+    let cursorPositionValue = cursorPosition.get();
+    let clickPosition = value[0];
+    if (clickPosition != cursorPositionValue) return; // if the click isn't on the cursor position
+    // nothing needs to be done. Only want to move the cursor when its node is clicked.
+
+    // When the node its clicked. We need to see how much the cursor should move to be in next position.
+    // For this we should find the nextSpot to be empty.
+    let nextSpot = clicksPerNodes.get().findIndex((v) => v == 0);
+    // if there is no nextSpot it will return -1 meaning all nodes have been clicked once.
+    // and so if also the replaced goal wasn't already return the cursor to the first position.
+    // and if already completed just vanish the cursor
+    if (nextSpot == -1 && !replaced.get()) nextSpot = 0;
+    else if (nextSpot == -1) {
+      cursorAnimation.pause();
+      cursor.style.opacity = "";
+      cursor.style.display = "none";
+      return;
     }
+    // The left property that will be changed do move the cursor always starts counting from the initial position
+    // of the cursor. So to cursor to move to nextSpot, will always need to set the translatX to be offsetleft + nodeSize * nextSpot.
+    // and for cursor not be moved to start of node, add nodeSize * cursorPercentFromBorder;
+    let left = `${nodeOffsetLeft + nodeSize * (nextSpot + cursorPercentFromBorder)}px`;
+    createCursorMoveAnimation(cursor, left);
+    cursorPosition.set(nextSpot);
   });
 
   elements.nodes.forEach((n: HTMLElement) => {
     n.addEventListener("click", () => {
-      if (!replaced.get() && n.innerText != "") replaced.set(true);
+      let index = parseInt(n.id.charAt(n.id.length - 1)) - 1;
+      let clicks = clicksPerNodes.get();
+      clicks[index] = clicks[index] + 1;
 
       if (!any.get()) any.set(true);
+
+      if (!every.get() && clicks.every((v) => v >= 1)) every.set(true);
+
+      if (!replaced.get() && clicks.some((v) => v > 1)) replaced.set(true);
+
+      if (n.innerText == "") createNodeElementsAnimation(n);
+
+      clicksPerNodes.set([...clicks]);
+      clicked.set([index]);
 
       let newValue = currentValue.get() + 1;
       currentValue.set(newValue);
       n.innerText = newValue.toString();
-
-      if (!every.get()) {
-        let nodes = document.getElementsByClassName(tags.nodesClassName);
-        let isEveryChanged = true;
-        for (let i = 0; i < nodes.length; i++) {
-          if ((nodes.item(i) as HTMLElement).innerText == "") {
-            isEveryChanged = false;
-            break;
-          }
-        }
-        if (isEveryChanged) every.set(true);
-      }
-    })
+    });
   });
 </script>
