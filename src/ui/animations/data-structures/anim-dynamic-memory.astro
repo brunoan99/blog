@@ -1,6 +1,108 @@
 ---
 import Canvas from "../shared/canvas.astro";
+import Cursor from "../shared/cursor.astro";
+import Goals from "./components/goals.astro";
 ---
 
-<Canvas id="canvas-dynamic" label="Dinâmico" />
-<script></script>
+<Goals
+  id="dynamic-memory-goals"
+  goals={[
+    "Clique em qualquer lugar para adicionar um valor.",
+    "Continue clicando até ter adicionado pelo menos 5 nós",
+    "Clique em algum node já adicionado para removê-lo",
+    "Clique e arraste para reposicionar um valor de lugar",
+  ]}
+/>
+<Canvas id="dynamic-memory-canvas" label="Dinâmico">
+  <Cursor id="dynamic-memory-cursor" />
+</Canvas>
+<script>
+  import { createNodeElement, markGoalAsComplete } from "./dynamicMemAnim";
+  import {
+    createCursorAppearAnimation,
+    createCursorClickAnimation,
+  } from "./dynamicMemAnim";
+  import { current, first, nodes } from "./stores/dynamic-memory-store";
+
+  let canvas = document.getElementById(
+    "dynamic-memory-canvas",
+  ) as HTMLCanvasElement;
+  let canvasWidth = canvas.clientWidth;
+  let canvasHeight = canvas.clientHeight;
+
+  // Nodes should be inserted and removed from canvas
+  // But for not doing to much calculations on positions
+  // Let preset on canvas lines and in this lines positions for nodes to be inserted
+  // or moved on.
+  // So first wee need to calc this positions. And to do so we need to calc the node size.
+
+  let nodeLimitPerLine = 4;
+  let nodeSize = 90; // node visual size
+  if (nodeSize * nodeLimitPerLine > canvasWidth)
+    nodeSize = canvasWidth / (nodeLimitPerLine + 0.5);
+  let borderSize = 2;
+  let betweenNodesDistance = "";
+
+  let nodeOffsetPerNode = nodeSize + borderSize; // +2 cause of the border
+  let nodeOffsetLeft = (canvasWidth - nodeOffsetPerNode * nodeLimitPerLine) / 2;
+  let nodeOffsetTop = (canvasHeight - nodeOffsetPerNode) / 2;
+
+  let sizes = {
+    canvasWidth,
+    canvasHeight,
+    nodeSize,
+    nodeLimitPerLine,
+    nodeOffsetTop,
+    nodeOffsetPerNode,
+    nodeOffsetLeft,
+  };
+
+  let cursor = document.getElementById(
+    "dynamic-memory-cursor",
+  ) as HTMLButtonElement;
+  let cursorPercentFromBorder = 0.85;
+  cursor.style.left = `${nodeOffsetLeft + nodeSize * cursorPercentFromBorder}px`;
+  cursor.style.top = `${nodeOffsetTop + nodeSize * cursorPercentFromBorder}px`;
+
+  let goals = document.getElementById(
+    "dynamic-memory-goals-ul",
+  ) as HTMLUListElement;
+
+  let nodesClassName = "dynamic-memory-node-slot";
+
+  let elements = {
+    canvas,
+    nodes,
+    cursor,
+  };
+
+  let tags = {
+    nodesClassName,
+  };
+
+  createCursorAppearAnimation(elements);
+  createCursorClickAnimation(cursor).pause();
+
+  first.subscribe((value) => {
+    if (value) markGoalAsComplete(goals.childNodes[0] as HTMLLIElement);
+  });
+
+  canvas.addEventListener("click", (e) => {
+    // Every time a click ocurs inside the canvas an action is done.
+    // Click on plain canvas -> insert node
+    //  - position on canvas of insertion may vary according to where was clicked
+    //  - position on linked list will vary too.
+    // Click on node -> remove node
+    // Click and drag node -> move node on
+    console.log(e);
+    if (e.target == canvas) {
+      if (!first.get()) first.set(true);
+      console.log("Clicked on Canvas: Inserting Node");
+      let currentValue = current.get();
+      let node = createNodeElement(elements, tags, sizes, currentValue);
+    } else if ((e.target as HTMLElement).className == tags.nodesClassName) {
+      console.log("Clicked on Node: Removing Node");
+      console.log(e.target);
+    }
+  });
+</script>

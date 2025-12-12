@@ -161,21 +161,20 @@ Neste caso o melhor a se fazer é não utilizar uma Estrutura que faz-uso deste 
 
 <br/>
 
-{/*
 
 ### Alocação Dinâmica
 
-rewrite
 Em contrapartida a alocação estática, nem sempre sabemos quanto de memória será necessário para que o programa seja executado. A <strong>Alocação Dinâmica</strong> lida com estes casos e não possui estrutura completamente fixa e pode mudar de acordo com as operações realizadas em tempo de execução.
 
-Mas de que modo a alocação varia? Majoritariamente uma estrutura que se apoia no modelo de alocação dinâmica trabalha com <strong>Nós</strong> ou <strong>Nodes</strong> estes que por sua vez vão conter os dados em tipos primitivos, ou também, muito comumente os <strong>Nós</strong> são alocados com estruturas de tamanho estático. Assim a medida que há necessidade de alocar dados estes nós são construidos em mémoria e adereçados à estrutura através de ponteiros.
-
-Máquina de ponteiros.
+Mas de que modo a alocação varia? Majoritariamente uma estrutura que se apoia no modelo de alocação dinâmica trabalha com <strong>Nós</strong>/<strong>Nodes</strong> que por sua vez vão conter os dados em tipos primitivos, ou também, muito comumente os <strong>Nós</strong> são alocados com estruturas de tamanho estático.
 
 <strong>Listas encadeadas</strong> são um exelente exemplo de <strong>Nós</strong> que carregam informações através de tipos primitivos. E uma <strong>BTree</strong> é uma estrutura de alocação dinâmica que utiliza de <strong>Arrays</strong> em seus <strong>Nós</strong>.
 
+Esse modelo de alocação é popularmente conhecido como <strong>Máquina de ponteiros</strong>. Pois utilizamos ponteiros para que os dados contidos nos <strong>Nós</strong> sejam adereçados a estrutura. Assim podemos realizar manipulação na estrutura de forma dinâmica apenas manipulando os ponteiros.
 
 <DynamicMemoryAnimation />
+
+{/*
 <br />
 
 ### Comparativo
