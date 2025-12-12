@@ -95,7 +95,15 @@ import Goals from "./components/goals.astro";
   });
 
   replaced.subscribe((value) => {
-    if (value) markGoalAsComplete(goals.childNodes[2] as HTMLLIElement);
+    if (!value) return;
+    markGoalAsComplete(goals.childNodes[2] as HTMLLIElement);
+    // Disable cursor animation and hide it.
+    // Here is the best place to do it, cause the cursor will always stop when
+    // all goals are done, and there is no path which all goals are completed
+    // without this one being the last.
+    cursorAnimation.pause();
+    cursor.style.opacity = "";
+    cursor.style.display = "none";
   });
 
   clicked.subscribe((value) => {
@@ -112,15 +120,8 @@ import Goals from "./components/goals.astro";
     let nextSpot = clicks.findIndex((v) => v == 0);
     // if there is no nextSpot it will return -1 meaning all nodes have been clicked once.
     // and so if also the replaced goal wasn't already return the cursor to the first position.
-    // and if already completed just vanish the cursor
     if (nextSpot == -1 && !replaced.get())
       nextSpot = elements.nodes.findIndex((v) => v.innerText == "1") || 0;
-    else if (nextSpot == -1) {
-      cursorAnimation.pause();
-      cursor.style.opacity = "";
-      cursor.style.display = "none";
-      return;
-    }
     // The left property that will be changed do move the cursor always starts counting from the initial position
     // of the cursor. So to cursor to move to nextSpot, will always need to set the translatX to be offsetleft + nodeSize * nextSpot.
     // and for cursor not be moved to start of node, add nodeSize * cursorPercentFromBorder;
