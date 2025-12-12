@@ -36,7 +36,7 @@ import "../../styles/global.css";
 <Canvas id="static-node-canvas" height="240px" />
 
 <script>
-  import anime from "animejs";
+  import { animate } from "animejs";
   import { createNode, createBin } from "./utils/Node";
   import { inputValue } from "./stores/node-example.store";
 
@@ -237,9 +237,8 @@ import "../../styles/global.css";
           toAppear.push(`#bin_digits_${byte}_${bit}_1`);
       }
 
-      anime({
-        targets: toAppear,
-        opacity: [0, 1],
+      animate(toAppear, {
+        opacity: [{ to: 0 }, { to: 1 }],
         duration: 500,
         easing: "easeInOutQuad",
       });
@@ -268,16 +267,14 @@ import "../../styles/global.css";
           }
         }
 
-        anime({
-          targets: toDisappear,
-          opacity: [1, 0],
+        animate(toDisappear, {
+          opacity: [{ to: 1 }, { to: 0 }],
           duration: 500,
           easing: "easeInOutQuad",
         });
 
-        anime({
-          targets: toAppear,
-          opacity: [0, 1],
+        animate(toAppear, {
+          opacity: [{ to: 0 }, { to: 1 }],
           duration: 500,
           easing: "easeInOutQuad",
         });
