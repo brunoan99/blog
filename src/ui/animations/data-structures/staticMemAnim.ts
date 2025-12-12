@@ -1,4 +1,4 @@
-import anime, { type AnimeInstance } from "animejs";
+import { animate, JSAnimation } from "animejs";
 import { createNode } from "./utils/Node";
 
 type Sizes = {
@@ -39,27 +39,19 @@ const createNodesElements = (elements: Elements, tags: Tags, sizes: Sizes) => {
   }
 }
 
-const createNodeAndCursorAppearAnimation = (elements: Elements, tags: Tags) => {
-  anime({
-    targets: [`.${tags.nodesClassName}`, `#${elements.cursor.id}`],
-    opacity: [0, 1],
+const createNodeAndCursorAppearAnimation = (elements: Elements, tags: Tags): JSAnimation => {
+  return animate([`.${tags.nodesClassName}`, `#${elements.cursor.id}`], {
+    opacity: [{ to: 0 }, { to: 1 }],
     duration: 550,
     easing: "linear",
     autoplay: true,
   });
 }
 
-const createCursorClickAnimation = (cursor: HTMLElement): AnimeInstance => {
-  return anime({
-    targets: `#${cursor.id}`,
-    scale: [
-      { value: 0.9 },
-      { value: 1 }
-    ],
-    strokeWidth: [
-      { value: 2 },
-      { value: 1 }
-    ],
+const createCursorClickAnimation = (cursor: HTMLElement): JSAnimation => {
+  return animate(`#${cursor.id}`, {
+    scale: [{ to: 0.9 }, { to: 1 }],
+    strokeWidth: [{ to: 2 }, { to: 1 }],
     easing: 'easeInOutQuad',
     duration: 450,
     delay: 50,
@@ -68,9 +60,8 @@ const createCursorClickAnimation = (cursor: HTMLElement): AnimeInstance => {
   });
 }
 
-const createCursorMoveAnimation = (cursor: HTMLElement, left: string): AnimeInstance => {
-  return anime({
-    targets: `#${cursor.id}`,
+const createCursorMoveAnimation = (cursor: HTMLElement, left: string) => {
+  return animate(`#${cursor.id}`, {
     left: left,
     easing: 'easeInOutQuad',
     duration: 350,
@@ -81,8 +72,7 @@ const createCursorMoveAnimation = (cursor: HTMLElement, left: string): AnimeInst
 }
 
 const createNodeElementsAnimation = (element: HTMLElement) => {
-  return anime({
-    targets: `#${element.id}`,
+  return animate(`#${element.id}`, {
     "background-color": "#F7F3EE",
     easing: 'easeInOutQuad',
     duration: 500,
