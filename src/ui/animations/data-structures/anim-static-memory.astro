@@ -92,6 +92,12 @@ import Goals from "./components/goals.astro";
 
   every.subscribe((value) => {
     if (value) markGoalAsComplete(goals.childNodes[1] as HTMLLIElement);
+
+    if (replaced.get()) {
+      cursorAnimation.pause();
+      cursor.style.opacity = "";
+      cursor.style.display = "none";
+    }
   });
 
   replaced.subscribe((value) => {
@@ -101,9 +107,12 @@ import Goals from "./components/goals.astro";
     // Here is the best place to do it, cause the cursor will always stop when
     // all goals are done, and there is no path which all goals are completed
     // without this one being the last.
-    cursorAnimation.pause();
-    cursor.style.opacity = "";
-    cursor.style.display = "none";
+
+    if (every.get()) {
+      cursorAnimation.pause();
+      cursor.style.opacity = "";
+      cursor.style.display = "none";
+    }
   });
 
   clicked.subscribe((value) => {
