@@ -1,6 +1,178 @@
 ---
 import Canvas from "../shared/canvas.astro";
+import Goals from "./components/goals.astro";
 ---
 
-<Canvas id="canvas-dynamic" label="Dinâmico" />
-<script></script>
+<Goals
+  id="dynamic-memory-goals"
+  goals={[
+    "Clique em um espaço para adicionar um valor.",
+    "Clique entre dois blocos para criar um novo bloco entre eles.",
+    "Clique em um bloco para remove-lo.",
+    "Clique em um bloco entre dois blocos para remove-lo",
+    "Clique e adicione ao menos 5 blocos",
+  ]}
+/>
+<Canvas id="dynamic-memory-canvas" label="Dinâmico" height="4000px" />
+<script>
+  import {
+    currentNodeValue,
+    currentNodeIndex,
+    totalNodes,
+    animationBlock,
+  } from "./stores/dynamic-memory.store";
+  import {
+    createNodeAt,
+    createNodeAtEnd,
+    moveForward,
+    removeNodeAtEnd,
+    calculateClickActionByEvent,
+    calculateNodeIndexByEvent,
+    calculateNodeIndexByNodePosition,
+    removeNodeAt,
+    moveBackward,
+  } from "./dynamicMemAnim";
+  import { createArrow } from "./utils/Arrows";
+
+  let canvas = document.getElementById("dynamic-memory-canvas") as HTMLElement;
+  let canvasWidth = canvas.clientWidth;
+  let canvasHeight = canvas.clientHeight;
+
+  let arrowWidth = 56;
+  let nodeLimitPerRow = 4;
+  let nodeSize = 90; // node visual size
+  // if (nodeSize * nodeLimitPerRow + arrowWidth * (nodeLimitPerRow - 1) > canvasWidth)
+  //   nodeSize = canvasWidth / (nodeLimitPerRow + 0.5);
+
+  let borderSize = 2;
+  let nodeOffsetPerNode = nodeSize + borderSize; // +2 cause of the border
+  let nodeOffsetLeft =
+    (canvasWidth -
+      nodeOffsetPerNode * nodeLimitPerRow -
+      arrowWidth * (nodeLimitPerRow - 1)) /
+    2;
+  let nodeOffsetTop = 74; //(canvasHeight - nodeOffsetPerNode) / 2;
+  let nodeOffsetRow = 30;
+  let rowSize =
+    nodeLimitPerRow * nodeOffsetPerNode + (nodeLimitPerRow - 1) * arrowWidth;
+
+  let sizes = {
+    canvasWidth,
+    canvasHeight,
+    nodeSize,
+    nodeLimitPerRow,
+    nodeOffsetTop,
+    nodeOffsetPerNode,
+    nodeOffsetLeft,
+    nodeOffsetRow,
+    nodeAmount: 0,
+    arrowWidth,
+    rowSize,
+  };
+
+  let nodesClassName = "dynamic-mem-node-slot";
+
+  let elements = {
+    canvas,
+    nodes: [] as HTMLElement[],
+    arrows: [] as SVGSVGElement[],
+  };
+
+  let rootArrow = createArrow({
+    id: "dynamic-mem-root-arrow",
+    arrowWidth: sizes.arrowWidth,
+    arrowType: "root",
+    top: sizes.nodeOffsetTop,
+    left: sizes.nodeOffsetLeft - sizes.arrowWidth - sizes.nodeSize,
+    nodeHeight: sizes.nodeSize,
+    nodeWidth: sizes.nodeSize,
+  });
+  elements.arrows.push(rootArrow);
+  elements.canvas.appendChild(rootArrow);
+
+  let tags = {
+    nodesClassName,
+  };
+
+  canvas.onclick = (e: PointerEvent) => {
+    if (animationBlock.get()) return;
+    animationBlock.set(true);
+    let clickAction = calculateClickActionByEvent(e);
+    if (clickAction == "insert") {
+      let nodeIndex = calculateNodeIndexByEvent(e, sizes, elements);
+      if (nodeIndex == sizes.nodeAmount) {
+        // Insert Action Required at the end
+        let currentValue = currentNodeValue.get();
+        let currentIndex = currentNodeIndex.get();
+        let totalNodesValue = totalNodes.get();
+        sizes.nodeAmount = totalNodesValue;
+
+        createNodeAtEnd(elements, tags, sizes, currentIndex, currentValue);
+
+        currentNodeValue.set(currentValue + 1);
+        currentNodeIndex.set(currentIndex + 1);
+        totalNodes.set(totalNodesValue + 1);
+        sizes.nodeAmount = totalNodesValue + 1;
+      } else {
+        // Insert Action Required in the middle or beginning
+        let currentValue = currentNodeValue.get();
+        let currentIndex = currentNodeIndex.get();
+        let totalNodesValue = totalNodes.get();
+        sizes.nodeAmount = totalNodesValue;
+
+        let positionToPush = sizes.nodeAmount - 1;
+        while (positionToPush >= nodeIndex) {
+          let shouldCreateArrow = positionToPush + 2 == sizes.nodeAmount;
+          moveForward(
+            elements.nodes[positionToPush],
+            positionToPush + 1,
+            shouldCreateArrow,
+            elements,
+            tags,
+            sizes,
+          );
+          positionToPush--;
+        }
+        createNodeAt(elements, tags, sizes, nodeIndex, currentValue);
+
+        currentNodeValue.set(currentValue + 1);
+        currentNodeIndex.set(currentIndex + 1);
+        totalNodes.set(totalNodesValue + 1);
+        sizes.nodeAmount = totalNodesValue + 1;
+      }
+    }
+    if (clickAction == "remove") {
+      let nodeIndex = calculateNodeIndexByNodePosition(
+        e.target as HTMLElement,
+        elements,
+      );
+      if (nodeIndex == sizes.nodeAmount - 1) {
+        // Remove Action Required at the end
+        removeNodeAtEnd(elements);
+        sizes.nodeAmount = Math.max(0, sizes.nodeAmount - 1);
+        currentNodeIndex.set(Math.max(0, currentNodeIndex.get() - 1));
+        totalNodes.set(sizes.nodeAmount);
+      } else {
+        // Remove Action Required in the middle or beginning
+        removeNodeAt(elements, nodeIndex);
+        let positionToPull = nodeIndex;
+        while (positionToPull < sizes.nodeAmount - 1) {
+          moveBackward(
+            elements.nodes[positionToPull],
+            positionToPull,
+            false,
+            elements,
+            tags,
+            sizes,
+          );
+          positionToPull++;
+        }
+
+        sizes.nodeAmount = Math.max(0, sizes.nodeAmount - 1);
+        currentNodeIndex.set(Math.max(0, currentNodeIndex.get() - 1));
+        totalNodes.set(sizes.nodeAmount);
+      }
+    }
+    animationBlock.set(false);
+  };
+</script>

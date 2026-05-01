@@ -45,6 +45,9 @@ const createNodeAndCursorAppearAnimation = (elements: Elements, tags: Tags): JSA
     duration: 550,
     easing: "linear",
     autoplay: true,
+    onComplete: (self: JSAnimation) => {
+      self.cancel();
+    },
   });
 }
 

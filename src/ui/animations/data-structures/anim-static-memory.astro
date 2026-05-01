@@ -94,7 +94,7 @@ import Goals from "./components/goals.astro";
     if (value) markGoalAsComplete(goals.childNodes[1] as HTMLLIElement);
 
     if (replaced.get()) {
-      cursorAnimation.pause();
+      cursorAnimation.cancel();
       cursor.style.opacity = "";
       cursor.style.display = "none";
     }
@@ -109,7 +109,7 @@ import Goals from "./components/goals.astro";
     // without this one being the last.
 
     if (every.get()) {
-      cursorAnimation.pause();
+      cursorAnimation.cancel();
       cursor.style.opacity = "";
       cursor.style.display = "none";
     }
