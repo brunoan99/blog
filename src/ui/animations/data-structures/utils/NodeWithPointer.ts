@@ -21,10 +21,10 @@ export type NodeWithPointerProps = {
 const styleNodeUpper = (elem: HTMLElement, style: NodeWithPointerStyleProps) => {
   elem.style.height = `${style.size * 0.6}px`;
   elem.style.padding = "8px 12px";
-  elem.style.borderBottom = "2px solid #333";
+  elem.style.borderBottom = "#000 solid 1px";
   elem.style.textAlign = "flex";
   elem.style.fontWeight = "bold";
-  elem.style.background = "f0f4ff"
+  elem.style.background = "#F7F3EE"
   elem.style.display = "flex";
   elem.style.alignItems = "center";
   elem.style.justifyContent = "center";
@@ -35,7 +35,7 @@ const styleNodeBottom = (elem: HTMLElement, style: NodeWithPointerStyleProps) =>
   elem.style.height = `${style.size * 0.4}px`;
   elem.style.padding = "6px 12px";
   elem.style.textAlign = "center";
-  elem.style.color = "#555";
+  elem.style.fontWeight = "bold";
   elem.style.fontSize = "12px";
   elem.style.display = "flex";
   elem.style.alignItems = "center";
@@ -55,15 +55,12 @@ const styleNodeWithPointer = (elem: HTMLElement, style: NodeWithPointerStyleProp
   if (style.backgroundColor) elem.style.backgroundColor = style.backgroundColor;
   elem.style.display = "flex";
   elem.style.flexDirection = "column";
-  elem.style.borderRadius = "8px";
-  elem.style.border = "2px solid #333",
+  elem.style.border = "#000000 solid 1px",
     elem.style.position = "absolute";
   elem.style.fontFamily = "ui-monospace"
   elem.style.overflow = "hidden";
   elem.style.fontSize = "14px";
-  elem.style.background = "#fff";
-  elem.style.boxShadow = "2px 2px 6px rgba(0, 0, 0, 0.1)";
-  elem.style.flexShrink = "0";
+  elem.style.background = "#F7F3EE";
   elem.style.userSelect = "none";
 }
 

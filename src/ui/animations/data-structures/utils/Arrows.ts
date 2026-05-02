@@ -10,8 +10,6 @@ export type ArrowProps = {
 
 type ArrowBuildProps = Omit<ArrowProps, "arrowType">;
 
-const DIAGONAL_ARROW = false;
-
 const arrowLeft = ({ id, arrowWidth, top, left, nodeWidth, nodeHeight }: ArrowBuildProps): SVGSVGElement => {
   const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   arrow.id = id;
@@ -27,32 +25,21 @@ const arrowLeft = ({ id, arrowWidth, top, left, nodeWidth, nodeHeight }: ArrowBu
   const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
   const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
 
+  const cy = nodeHeight * 0.8;
+  const ny = arrowWidth - 14;
 
-  if (DIAGONAL_ARROW) {
-    const cy = nodeHeight * 0.6;
-    const ny = arrowWidth - 14;
-
-    line.setAttribute('x1', `${arrowWidth + 30}`);
-    line.setAttribute('y1', `${ny + 30}`);
-    line.setAttribute('x2', `${8}`);
-    line.setAttribute('y2', `${cy}`);
-
-    poly.setAttribute("points", `2,${cy} 8, ${cy - 4} 8, ${cy + 4} `);
-  } else {
-    const cy = nodeHeight * 0.8;
-    const ny = arrowWidth - 14;
-
-    line.setAttribute('x1', `${arrowWidth + 30}`);
-    line.setAttribute('y1', `${ny + 30}`);
-    line.setAttribute('x2', `${8}`);
-    line.setAttribute('y2', `${cy}`);
-
-    poly.setAttribute("points", `2,${cy} 8, ${cy - 4} 8, ${cy + 4} `);
-  }
-
-  line.setAttribute("stroke", "#555");
+  line.setAttribute('x1', `${arrowWidth + 30}`);
+  line.setAttribute('y1', `${ny + 30}`);
+  line.setAttribute('x2', `${8}`);
+  line.setAttribute('y2', `${cy}`);
+  line.setAttribute("stroke", "#674d3d");
   line.setAttribute("stroke-width", "1.5");
-  line.setAttribute("fill", "#555");
+  line.setAttribute("fill", "#674d3d");
+
+  poly.setAttribute("points", `2,${cy} 8, ${cy - 4} 8, ${cy + 4} `);
+  poly.setAttribute("stroke", "#674d3d");
+  poly.setAttribute("stroke-width", "1.5");
+  poly.setAttribute("fill", "#674d3d");
 
   arrow.appendChild(line);
   arrow.appendChild(poly);
@@ -75,39 +62,22 @@ const arrowRight = ({ id, arrowWidth, top, left, nodeWidth, nodeHeight }: ArrowB
   const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
   const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
 
+  const cy = nodeHeight * 0.8;
 
-  if (DIAGONAL_ARROW) {
-    const cy = nodeHeight * 0.6;
-    const ny = arrowWidth - 14;
+  line.setAttribute('x1', `${-30}`);
+  line.setAttribute('y1', `${cy}`);
+  line.setAttribute('x2', `${arrowWidth - 8}`);
+  line.setAttribute('y2', `${cy}`);
+  line.setAttribute("stroke", "#674d3d");
+  line.setAttribute("stroke-width", "1.5");
+  line.setAttribute("fill", "#674d3d");
 
-    line.setAttribute('x1', `${-30}`);
-    line.setAttribute('y1', `${ny + 30}`);
-    line.setAttribute('x2', `${arrowWidth - 8}`);
-    line.setAttribute('y2', `${cy}`);
-    poly.setAttribute('points',
-      `${arrowWidth - 1},${cy} ${arrowWidth - 8},${cy - 4} ${arrowWidth - 8},${cy + 4}`
-    );
-
-    line.setAttribute("stroke", "#555");
-    line.setAttribute("stroke-width", "1.5");
-    line.setAttribute("fill", "#555");
-  } else {
-    const cy = nodeHeight * 0.8;
-    const ny = arrowWidth - 14;
-
-    line.setAttribute('x1', `${-30}`);
-    line.setAttribute('y1', `${cy}`);
-    line.setAttribute('x2', `${arrowWidth - 8}`);
-    line.setAttribute('y2', `${cy}`);
-    poly.setAttribute('points',
-      `${arrowWidth - 1},${cy} ${arrowWidth - 8},${cy - 4} ${arrowWidth - 8},${cy + 4}`
-    );
-
-    line.setAttribute("stroke", "#555");
-    line.setAttribute("stroke-width", "1.5");
-    line.setAttribute("fill", "#555");
-  }
-
+  poly.setAttribute('points',
+    `${arrowWidth - 1},${cy} ${arrowWidth - 8},${cy - 4} ${arrowWidth - 8},${cy + 4}`
+  );
+  poly.setAttribute("stroke", "#674d3d");
+  poly.setAttribute("stroke-width", "1.5");
+  poly.setAttribute("fill", "#674d3d");
 
   arrow.appendChild(line);
   arrow.appendChild(poly);
@@ -127,20 +97,27 @@ const arrowDown = ({ id, arrowWidth, top, left, nodeWidth, nodeHeight }: ArrowBu
   arrow.style.position = "absolute";
   arrow.style.userSelect = "none";
 
+
+  const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+
   const x = nodeWidth / 2;
 
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  path.setAttribute('d', `M ${x} 0 L ${x} ${nodeHeight / 2 - 8 + 8}`);
-  path.setAttribute('fill', 'none');
-  path.setAttribute('stroke', '#555');
-  path.setAttribute('stroke-width', '1.5');
+  line.setAttribute('x1', `${x}`);
+  line.setAttribute('y1', `${0}`);
+  line.setAttribute('x2', `${x}`);
+  line.setAttribute('y2', `${nodeHeight / 2 - 8 + 8}`);
+  line.setAttribute('fill', '#674d3d');
+  line.setAttribute('stroke', '#674d3d');
+  line.setAttribute('stroke-width', '1.5');
 
 
-  const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
   poly.setAttribute('points', `${x},${nodeHeight / 2 + 6} ${x - 4},${nodeHeight / 2 - 8 + 6} ${x + 4},${nodeHeight / 2 - 8 + 6}`);
-  poly.setAttribute('fill', '#555');
+  poly.setAttribute('fill', '#674d3d');
+  poly.setAttribute('stroke', '#674d3d');
+  poly.setAttribute('stroke-width', '1.5');
 
-  arrow.appendChild(path);
+  arrow.appendChild(line);
   arrow.appendChild(poly);
 
   return arrow
@@ -168,14 +145,17 @@ const arrowRoot = ({ id, arrowWidth, top, left, nodeWidth, nodeHeight }: ArrowBu
   line.setAttribute('y1', `${cy}`);
   line.setAttribute('x2', `${arrowWidth - 8}`);
   line.setAttribute('y2', `${cy}`);
+  line.setAttribute("stroke", "#674d3d");
+  line.setAttribute("stroke-width", "1.5");
+  line.setAttribute("fill", "#674d3d");
 
   poly.setAttribute('points',
     `${arrowWidth - 3},${cy} ${arrowWidth - 10},${cy - 4} ${arrowWidth - 10},${cy + 4}`
   );
+  poly.setAttribute("stroke", "#674d3d");
+  poly.setAttribute("stroke-width", "1.5");
+  poly.setAttribute("fill", "#674d3d");
 
-  line.setAttribute("stroke", "#555");
-  line.setAttribute("stroke-width", "1.5");
-  line.setAttribute("fill", "#555");
 
   arrow.appendChild(line);
   arrow.appendChild(poly);
@@ -185,7 +165,7 @@ const arrowRoot = ({ id, arrowWidth, top, left, nodeWidth, nodeHeight }: ArrowBu
   text.setAttribute('x', `${0}`);
   text.setAttribute('y', `${cy - 4}`);
   text.setAttribute('font-size', '18px');
-  text.setAttribute('fill', '#555');
+  text.setAttribute('fill', '#674d3d');
   text.textContent = 'root';
   text.style.userSelect = "none";
 
