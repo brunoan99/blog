@@ -62,6 +62,7 @@ const styleNodeWithPointer = (elem: HTMLElement, style: NodeWithPointerStyleProp
   elem.style.fontSize = "14px";
   elem.style.background = "#F7F3EE";
   elem.style.userSelect = "none";
+  elem.style.zIndex = "1";
 }
 
 export const createNodeWithPointer = ({ id, className, style, innitialValue, innitialPointerValue }: NodeWithPointerProps): HTMLElement => {

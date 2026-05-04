@@ -3,7 +3,6 @@ import { atom } from "nanostores"
 export const animationBlock = atom(false);
 
 export const currentNodeValue = atom(0);
-export const currentNodeIndex = atom(0);
 export const totalNodes = atom(0);
 export const cursorPosition = atom(0);
 

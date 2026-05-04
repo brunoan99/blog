@@ -28,7 +28,33 @@ type Tags = {
   nodesClassName: string;
 };
 
+type PositionInfos = {
+  nodeIndex: number;
+  inRowIndex: number;
+  rowIndex: number;
+  isRowEven: boolean;
+  isLastInRow: boolean;
+  isLastNode: boolean;
+}
+
 type ClickAction = "insert" | "remove";
+
+export const calculatePositionInfosByIndex = (index: number, sizes: Sizes): PositionInfos => {
+  let rowIndex = Math.floor(index / sizes.nodeLimitPerRow);
+  let isRowEven = rowIndex % 2 == 0;
+  let inRowIndex = index % sizes.nodeLimitPerRow;
+  let isLastNode = index == sizes.nodeAmount;
+  let isLastInRow = inRowIndex == sizes.nodeLimitPerRow - 1;
+
+  return {
+    nodeIndex: index,
+    inRowIndex,
+    rowIndex,
+    isRowEven,
+    isLastInRow,
+    isLastNode,
+  }
+}
 
 export const calculateClickActionByEvent = (event: PointerEvent): ClickAction => {
   let target = event.target as HTMLElement;
@@ -135,61 +161,15 @@ const calculateArrowTopOffset = (rowIndex: number, sizes: Sizes) => {
   return sizes.nodeOffsetTop + (rowIndex * (sizes.nodeOffsetPerNode + sizes.nodeOffsetRow));
 }
 
-export const createNodeAtEnd = (elements: Elements, tags: Tags, sizes: Sizes, nodeIndex: number, nodeValue: number) => {
-  let rowIndex = Math.floor(nodeIndex / sizes.nodeLimitPerRow);
-  let isRowEven = rowIndex % 2 == 0;
-  let inRowIndex = nodeIndex % sizes.nodeLimitPerRow;
-  let isLastInRow = inRowIndex == sizes.nodeLimitPerRow - 1;
-  let isLastNode = nodeIndex == sizes.nodeAmount;
-
-
-  let topOffset = `${calculateNodeTopOffset(rowIndex, sizes)}px`;
-  let leftOffset = `${calculateNodeLeftOffset(inRowIndex, isRowEven, sizes)}px`;
-  let node = createNodeWithPointer({
-    id: `${tags.nodesClassName}-${(nodeValue + 1).toString()}`,
-    className: tags.nodesClassName,
-    style: {
-      size: sizes.nodeSize,
-      top: topOffset,
-      left: leftOffset,
-      backgroundColor: "#ededed",
-    },
-    innitialValue: `${nodeValue}`,
-    innitialPointerValue: isLastNode ? "null" : "next",
-  });
-  elements.nodes.push(node);
-  elements.canvas.appendChild(node);
-
-  if (!isLastNode) {
-    let topOffset = calculateArrowTopOffset(rowIndex, sizes);
-    let leftOffset = calculateArrowLeftOffset(inRowIndex, isRowEven, isLastInRow, sizes);
-    let arrow = createArrow({
-      id: `${tags.nodesClassName}-arrow-${nodeIndex}`,
-      arrowWidth: sizes.arrowWidth,
-      arrowType: isLastInRow ? "down" : (isRowEven ? "right" : "left"),
-      top: topOffset,
-      left: leftOffset,
-      nodeHeight: sizes.nodeSize,
-      nodeWidth: sizes.nodeSize,
-    });
-    elements.arrows.push(arrow);
-    elements.canvas.appendChild(arrow);
-  }
-  if (nodeIndex != 0) {
-    let previousNodeValue = nodeIndex - 1;
-    linkPreviousNodeToCreated(elements, tags, sizes, previousNodeValue);
-  }
-}
-
 export const createNodeAt = (elements: Elements, tags: Tags, sizes: Sizes, nodeIndex: number, nodeValue: number) => {
   let rowIndex = Math.floor(nodeIndex / sizes.nodeLimitPerRow);
   let isRowEven = rowIndex % 2 == 0;
   let inRowIndex = nodeIndex % sizes.nodeLimitPerRow;
   let isLastNode = nodeIndex == sizes.nodeAmount;
-  let isLastInRow = inRowIndex == sizes.nodeLimitPerRow - 1;
 
   let topOffset = `${calculateNodeTopOffset(rowIndex, sizes)}px`;
   let leftOffset = `${calculateNodeLeftOffset(inRowIndex, isRowEven, sizes)}px`;
+
   let node = createNodeWithPointer({
     id: `${tags.nodesClassName}-${(nodeValue + 1).toString()}`,
     className: tags.nodesClassName,
@@ -202,38 +182,16 @@ export const createNodeAt = (elements: Elements, tags: Tags, sizes: Sizes, nodeI
     innitialValue: `${nodeValue}`,
     innitialPointerValue: isLastNode ? "null" : "next",
   });
-  // elements.nodes.push(node);
+
   elements.nodes.splice(nodeIndex, 0, node);
   elements.canvas.appendChild(node);
 
-
-  let insertingOnBefore = nodeIndex == sizes.nodeAmount - 1
-  if (insertingOnBefore) {
-
-    let topOffset = calculateArrowTopOffset(rowIndex, sizes);
-    let leftOffset = calculateArrowLeftOffset(inRowIndex, isRowEven, isLastInRow, sizes);
-    let arrow = createArrow({
-      id: `${tags.nodesClassName}-arrow-${nodeIndex}`,
-      arrowWidth: sizes.arrowWidth,
-      arrowType: isLastInRow ? "down" : (isRowEven ? "right" : "left"),
-      top: topOffset,
-      left: leftOffset,
-      nodeHeight: sizes.nodeSize,
-      nodeWidth: sizes.nodeSize,
-    });
-    elements.arrows.push(arrow);
-    elements.canvas.appendChild(arrow);
-  }
+  if (isLastNode && nodeIndex != 0)
+    linkPreviousNodeToCreated(elements, nodeIndex - 1);
 }
 
-export const linkPreviousNodeToCreated = (elements: Elements, tags: Tags, sizes: Sizes, nodeIndex: number) => {
-  let nodeToUpdate = elements.nodes[nodeIndex];
-  let nodeId = nodeToUpdate.id;
-  let bottom = getElem<HTMLElement>(`#${nodeId}-bottom`);
-  if (bottom.innerText == "null") {
-    bottom.innerText = "next";
-  }
-
+export const createArrowAtEnd = (elements: Elements, tags: Tags, sizes: Sizes) => {
+  let nodeIndex = sizes.nodeAmount - 1;
   let rowIndex = Math.floor(nodeIndex / sizes.nodeLimitPerRow);
   let isRowEven = rowIndex % 2 == 0;
   let inRowIndex = nodeIndex % sizes.nodeLimitPerRow;
@@ -241,8 +199,9 @@ export const linkPreviousNodeToCreated = (elements: Elements, tags: Tags, sizes:
 
   let topOffset = calculateArrowTopOffset(rowIndex, sizes);
   let leftOffset = calculateArrowLeftOffset(inRowIndex, isRowEven, isLastInRow, sizes);
+
   let arrow = createArrow({
-    id: `${tags.nodesClassName}-arrow-${nodeIndex}`,
+    id: `${tags.nodesClassName}-arrow-${rowIndex}`,
     arrowWidth: sizes.arrowWidth,
     arrowType: isLastInRow ? "down" : (isRowEven ? "right" : "left"),
     top: topOffset,
@@ -250,35 +209,36 @@ export const linkPreviousNodeToCreated = (elements: Elements, tags: Tags, sizes:
     nodeHeight: sizes.nodeSize,
     nodeWidth: sizes.nodeSize,
   });
+
   elements.arrows.push(arrow);
   elements.canvas.appendChild(arrow);
 }
 
-export const removeNodeAtEnd = (elements: Elements) => {
-  let nodeToRemove = elements.nodes.pop();
-  if (nodeToRemove) elements.canvas.removeChild(nodeToRemove);
-  let arrowToRemove = elements.arrows.pop();
-  if (!arrowToRemove?.id.includes("root") && arrowToRemove) elements.canvas.removeChild(arrowToRemove);
-  unLinkPreviousNodeToRemoved(elements, elements.nodes.length - 1);
+export const linkPreviousNodeToCreated = (elements: Elements, nodeIndex: number) => {
+  let nodeToUpdate = elements.nodes[nodeIndex];
+  let nodeId = nodeToUpdate.id;
+  let bottom = getElem<HTMLElement>(`#${nodeId}-bottom`);
+  if (bottom.innerText == "null") {
+    bottom.innerText = "next";
+  }
 }
 
 export const removeNodeAt = (elements: Elements, nodeIndex: number) => {
-  console.log("Nodes: ", elements.nodes);
   let nodeToRemove = elements.nodes[nodeIndex];
-  console.log("Node to Remove: ", nodeToRemove);
 
   if (nodeToRemove) {
     elements.canvas.removeChild(nodeToRemove);
-
     elements.nodes = elements.nodes.filter((v, i) => v.id != nodeToRemove.id);
   }
-  console.log("Nodes after removal: ", elements.nodes);
 
+  if (nodeIndex == elements.nodes.length)
+    unLinkPreviousNodeToRemoved(elements, nodeIndex - 1);
+}
+
+export const removeArrowAtEnd = (elements: Elements) => {
   let arrowToRemove = elements.arrows.pop();
-  if (!arrowToRemove?.id.includes("root") && arrowToRemove) elements.canvas.removeChild(arrowToRemove);
-  if (nodeIndex == elements.nodes.length) {
-    unLinkPreviousNodeToRemoved(elements, nodeIndex);
-  }
+  if (arrowToRemove && !arrowToRemove?.id.includes("root"))
+    elements.canvas.removeChild(arrowToRemove);
 }
 
 export const unLinkPreviousNodeToRemoved = (elements: Elements, nodeIndex: number) => {
@@ -290,46 +250,59 @@ export const unLinkPreviousNodeToRemoved = (elements: Elements, nodeIndex: numbe
   if (bottom.innerText == "next") {
     bottom.innerText = "null";
   }
-
 }
 
-export const moveForward = (element: HTMLElement, newIndex: number, toCreateArrow: boolean, elements: Elements, tags: Tags, sizes: Sizes) => {
+export const moveForward = (element: HTMLElement, newIndex: number, sizes: Sizes) => {
   let rowIndex = Math.floor(newIndex / sizes.nodeLimitPerRow);
   let isRowEven = rowIndex % 2 == 0;
   let inRowIndex = newIndex % sizes.nodeLimitPerRow;
-  let isLastInRow = inRowIndex == sizes.nodeLimitPerRow - 1;
 
   let topOffset = calculateNodeTopOffset(rowIndex, sizes);
   let leftOffset = calculateNodeLeftOffset(inRowIndex, isRowEven, sizes);
   element.style.left = `${leftOffset}px`;
   element.style.top = `${topOffset}px`;
+}
 
-  if (toCreateArrow) {
-    console.log("True at: ", newIndex);
-    let topOffset = calculateArrowTopOffset(rowIndex, sizes);
-    let leftOffset = calculateArrowLeftOffset(inRowIndex, isRowEven, isLastInRow, sizes);
-    let arrow = createArrow({
-      id: `${tags.nodesClassName}-arrow-${newIndex}`,
-      arrowWidth: sizes.arrowWidth,
-      arrowType: isLastInRow ? "down" : (isRowEven ? "right" : "left"),
-      top: topOffset,
-      left: leftOffset,
-      nodeHeight: sizes.nodeSize,
-      nodeWidth: sizes.nodeSize,
-    });
-    elements.arrows.push(arrow);
-    elements.canvas.appendChild(arrow);
+export const moveBackward = (element: HTMLElement, newIndex: number, sizes: Sizes) => {
+  let rowIndex = Math.floor(newIndex / sizes.nodeLimitPerRow);
+  let isRowEven = rowIndex % 2 == 0;
+  let inRowIndex = newIndex % sizes.nodeLimitPerRow;
+
+  let topOffset = calculateNodeTopOffset(rowIndex, sizes);
+  let leftOffset = calculateNodeLeftOffset(inRowIndex, isRowEven, sizes);
+  element.style.left = `${leftOffset}px`;
+  element.style.top = `${topOffset}px`;
+}
+
+export const expandCanvasIfNeeded = (elements: Elements, sizes: Sizes) => {
+  const { canvasHeight, nodeAmount, nodeLimitPerRow, nodeOffsetRow, nodeSize, nodeOffsetTop } = sizes;
+
+  // Adding a new node will start a new row if current nodes fill rows exactly
+  const willStartNewRow = nodeAmount % nodeLimitPerRow === 0;
+
+  if (willStartNewRow) {
+    const nextRowIndex = Math.floor(nodeAmount / nodeLimitPerRow); // 0-based
+    const requiredHeight = 2 * nodeOffsetTop + (nextRowIndex + 1) * (nodeSize + nodeOffsetRow);
+
+    if (canvasHeight < requiredHeight) {
+      sizes.canvasHeight = requiredHeight;
+      elements.canvas.style.height = `${requiredHeight}px`;
+    }
   }
 }
 
-export const moveBackward = (element: HTMLElement, newIndex: number, toRemoveArrow: boolean, elements: Elements, tags: Tags, sizes: Sizes) => {
-  let rowIndex = Math.floor(newIndex / sizes.nodeLimitPerRow);
-  let isRowEven = rowIndex % 2 == 0;
-  let inRowIndex = newIndex % sizes.nodeLimitPerRow;
+export const shrinkCanvasIfNeeded = (elements: Elements, sizes: Sizes) => {
+  const { nodeAmount, nodeLimitPerRow, nodeOffsetRow, nodeSize } = sizes;
 
-  let topOffset = calculateNodeTopOffset(rowIndex, sizes);
-  let leftOffset = calculateNodeLeftOffset(inRowIndex, isRowEven, sizes);
-  element.style.left = `${leftOffset}px`;
-  element.style.top = `${topOffset}px`;
+  // Removing a node will empty the last row if it's the only node in that row
+  const willEmptyLastRow = nodeAmount % nodeLimitPerRow === 1;
 
+  // Don't shrink below the initial double-row height
+  const minHeight = 2 * (nodeSize + nodeOffsetRow) + sizes.nodeOffsetTop;
+
+  if (willEmptyLastRow && sizes.canvasHeight > minHeight) {
+    const newHeight = sizes.canvasHeight - nodeSize - nodeOffsetRow;
+    sizes.canvasHeight = newHeight;
+    elements.canvas.style.height = `${newHeight}px`;
+  }
 }

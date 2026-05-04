@@ -8,29 +8,31 @@ import Goals from "./components/goals.astro";
   goals={[
     "Clique em um espaço para adicionar um valor.",
     "Clique entre dois blocos para criar um novo bloco entre eles.",
-    "Clique em um bloco para remove-lo.",
-    "Clique em um bloco entre dois blocos para remove-lo",
+    "Clique no último bloco para removê-lo.",
+    "Clique em um bloco entre dois blocos para removê-lo",
     "Clique e adicione ao menos 5 blocos",
+    "Clique e remove todos os blocos",
   ]}
 />
-<Canvas id="dynamic-memory-canvas" label="Dinâmico" height="4000px" />
+<Canvas id="dynamic-memory-canvas" label="Dinâmico" height="300px" />
 <script>
   import {
     currentNodeValue,
-    currentNodeIndex,
     totalNodes,
     animationBlock,
   } from "./stores/dynamic-memory.store";
   import {
     createNodeAt,
-    createNodeAtEnd,
     moveForward,
-    removeNodeAtEnd,
     calculateClickActionByEvent,
     calculateNodeIndexByEvent,
     calculateNodeIndexByNodePosition,
     removeNodeAt,
     moveBackward,
+    createArrowAtEnd,
+    expandCanvasIfNeeded,
+    shrinkCanvasIfNeeded,
+    removeArrowAtEnd,
   } from "./dynamicMemAnim";
   import { createArrow } from "./utils/Arrows";
 
@@ -51,7 +53,7 @@ import Goals from "./components/goals.astro";
       nodeOffsetPerNode * nodeLimitPerRow -
       arrowWidth * (nodeLimitPerRow - 1)) /
     2;
-  let nodeOffsetTop = 74; //(canvasHeight - nodeOffsetPerNode) / 2;
+  let nodeOffsetTop = 74;
   let nodeOffsetRow = 30;
   let rowSize =
     nodeLimitPerRow * nodeOffsetPerNode + (nodeLimitPerRow - 1) * arrowWidth;
@@ -94,85 +96,94 @@ import Goals from "./components/goals.astro";
     nodesClassName,
   };
 
+  const increaseStores = () => {
+    currentNodeValue.set(currentNodeValue.get() + 1);
+    totalNodes.set(totalNodes.get() + 1);
+    sizes.nodeAmount = totalNodes.get();
+  };
+
+  const decreaseStores = () => {
+    totalNodes.set(totalNodes.get() - 1);
+    sizes.nodeAmount = totalNodes.get();
+  };
+
+  const logStores = () => {
+    console.log("Current Node Value: ", currentNodeValue.get());
+    console.log("Total Nodes: ", totalNodes.get());
+    console.log("Nodes Amount: ", sizes.nodeAmount);
+  };
+
+  /*
+  [ ] create animations
+  */
   canvas.onclick = (e: PointerEvent) => {
     if (animationBlock.get()) return;
     animationBlock.set(true);
+
     let clickAction = calculateClickActionByEvent(e);
     if (clickAction == "insert") {
+      // Insert Action
+      // Every Insert Action requires a node and a arrow to be created.
+      // The position of the node to be insert should be calculated.
+      // The arrow to be inserted will alyways be the last one.
+      expandCanvasIfNeeded(elements, sizes);
+
       let nodeIndex = calculateNodeIndexByEvent(e, sizes, elements);
-      if (nodeIndex == sizes.nodeAmount) {
-        // Insert Action Required at the end
-        let currentValue = currentNodeValue.get();
-        let currentIndex = currentNodeIndex.get();
-        let totalNodesValue = totalNodes.get();
-        sizes.nodeAmount = totalNodesValue;
+      let currentValue = currentNodeValue.get();
+      let totalNodesValue = totalNodes.get();
+      sizes.nodeAmount = totalNodesValue;
 
-        createNodeAtEnd(elements, tags, sizes, currentIndex, currentValue);
+      if (sizes.nodeAmount != 0) createArrowAtEnd(elements, tags, sizes);
 
-        currentNodeValue.set(currentValue + 1);
-        currentNodeIndex.set(currentIndex + 1);
-        totalNodes.set(totalNodesValue + 1);
-        sizes.nodeAmount = totalNodesValue + 1;
-      } else {
-        // Insert Action Required in the middle or beginning
-        let currentValue = currentNodeValue.get();
-        let currentIndex = currentNodeIndex.get();
-        let totalNodesValue = totalNodes.get();
-        sizes.nodeAmount = totalNodesValue;
-
-        let positionToPush = sizes.nodeAmount - 1;
-        while (positionToPush >= nodeIndex) {
-          let shouldCreateArrow = positionToPush + 2 == sizes.nodeAmount;
-          moveForward(
-            elements.nodes[positionToPush],
-            positionToPush + 1,
-            shouldCreateArrow,
-            elements,
-            tags,
-            sizes,
-          );
-          positionToPush--;
-        }
-        createNodeAt(elements, tags, sizes, nodeIndex, currentValue);
-
-        currentNodeValue.set(currentValue + 1);
-        currentNodeIndex.set(currentIndex + 1);
-        totalNodes.set(totalNodesValue + 1);
-        sizes.nodeAmount = totalNodesValue + 1;
+      // if (nodeIndex != sizes.nodeAmount) {
+      let positionToPush = sizes.nodeAmount - 1;
+      while (positionToPush >= nodeIndex) {
+        moveForward(elements.nodes[positionToPush], positionToPush + 1, sizes);
+        positionToPush--;
       }
-    }
-    if (clickAction == "remove") {
+      // }
+      createNodeAt(elements, tags, sizes, nodeIndex, currentValue);
+
+      increaseStores();
+    } else if (clickAction == "remove") {
+      // Remove Action
+      // Every Remove Action requires a node and a arrow to be removed.
+      // The position of the node to be removed should be calculated.
+      // The arrow to be removed will always be the last one.
+      shrinkCanvasIfNeeded(elements, sizes);
+
       let nodeIndex = calculateNodeIndexByNodePosition(
         e.target as HTMLElement,
         elements,
       );
-      if (nodeIndex == sizes.nodeAmount - 1) {
-        // Remove Action Required at the end
-        removeNodeAtEnd(elements);
-        sizes.nodeAmount = Math.max(0, sizes.nodeAmount - 1);
-        currentNodeIndex.set(Math.max(0, currentNodeIndex.get() - 1));
-        totalNodes.set(sizes.nodeAmount);
-      } else {
-        // Remove Action Required in the middle or beginning
-        removeNodeAt(elements, nodeIndex);
+      removeNodeAt(elements, nodeIndex);
+
+      if (nodeIndex != sizes.nodeAmount - 1) {
         let positionToPull = nodeIndex;
         while (positionToPull < sizes.nodeAmount - 1) {
-          moveBackward(
-            elements.nodes[positionToPull],
-            positionToPull,
-            false,
-            elements,
-            tags,
-            sizes,
-          );
+          moveBackward(elements.nodes[positionToPull], positionToPull, sizes);
           positionToPull++;
         }
-
-        sizes.nodeAmount = Math.max(0, sizes.nodeAmount - 1);
-        currentNodeIndex.set(Math.max(0, currentNodeIndex.get() - 1));
-        totalNodes.set(sizes.nodeAmount);
       }
+
+      removeArrowAtEnd(elements);
+
+      decreaseStores();
     }
+
     animationBlock.set(false);
   };
+
+  canvas.onauxclick = (e: PointerEvent) => {
+    e.preventDefault();
+    console.log("Aux Click");
+  };
+
+  document.addEventListener(
+    "contextmenu",
+    function (e) {
+      e.preventDefault();
+    },
+    false,
+  );
 </script>
