@@ -8,6 +8,7 @@ type NodeWithPointerStyleProps = {
   bottom?: string;
   right?: string;
   backgroundColor?: string;
+  bottomBackgroundColor?: string;
 }
 
 export type NodeWithPointerProps = {
@@ -38,6 +39,7 @@ const styleNodeBottom = (elem: HTMLElement, style: NodeWithPointerStyleProps) =>
   elem.style.fontWeight = "bold";
   elem.style.fontSize = "12px";
   elem.style.display = "flex";
+  if (style.bottomBackgroundColor) elem.style.backgroundColor = style.bottomBackgroundColor;
   elem.style.alignItems = "center";
   elem.style.justifyContent = "center";
   elem.style.position = "relative";
@@ -60,7 +62,6 @@ const styleNodeWithPointer = (elem: HTMLElement, style: NodeWithPointerStyleProp
   elem.style.fontFamily = "ui-monospace"
   elem.style.overflow = "hidden";
   elem.style.fontSize = "14px";
-  elem.style.background = "#F7F3EE";
   elem.style.userSelect = "none";
   elem.style.zIndex = "1";
 }

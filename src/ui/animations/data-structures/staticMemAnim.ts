@@ -1,4 +1,4 @@
-import { animate, JSAnimation } from "animejs";
+import { animate, JSAnimation } from "animejs/animation";
 import { createNode } from "./utils/Node";
 
 type Sizes = {

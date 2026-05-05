@@ -6,13 +6,14 @@ type Props = {
 
 let { id, goals } = Astro.props;
 ---
+
 <style>
   ul {
     margin-block-start: 0px;
     padding-inline-start: 16px;
   }
   ul li {
-    display: inline-block;
+    display: block;
     box-sizing: border-box;
     background-image: linear-gradient(black, black);
     background-repeat: no-repeat;
@@ -24,9 +25,8 @@ let { id, goals } = Astro.props;
     transition-delay: 0ms, 0ms;
     transition-property: background-size, opacity;
   }
-  </style>
+</style>
 <div id={id}>
-  <span><strong>Interaja para entender melhor:</strong>
-  </span>
+  <span><strong>Interaja para entender melhor:</strong> </span>
   <ul id={`${id}-ul`}>{goals.map((goal) => <li>{goal}</li>)}</ul>
 </div>

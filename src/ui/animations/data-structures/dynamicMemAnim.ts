@@ -1,4 +1,4 @@
-import { animate, JSAnimation } from "animejs";
+import { animate, JSAnimation } from "animejs/animation";
 import { createNodeWithPointer } from "./utils/NodeWithPointer";
 import { createArrow } from "./utils/Arrows";
 import { getElem } from "./utils/HtmlElement";
@@ -177,7 +177,8 @@ export const createNodeAt = (elements: Elements, tags: Tags, sizes: Sizes, nodeI
       size: sizes.nodeSize,
       top: topOffset,
       left: leftOffset,
-      backgroundColor: "#ededed",
+      backgroundColor: "#F7F3EE",
+      bottomBackgroundColor: isLastNode ? "#ededed" : "#F7F3EE",
     },
     innitialValue: `${nodeValue}`,
     innitialPointerValue: isLastNode ? "null" : "next",
@@ -219,7 +220,17 @@ export const linkPreviousNodeToCreated = (elements: Elements, nodeIndex: number)
   let nodeId = nodeToUpdate.id;
   let bottom = getElem<HTMLElement>(`#${nodeId}-bottom`);
   if (bottom.innerText == "null") {
-    bottom.innerText = "next";
+    animate(bottom, {
+      background: [`#ededed`, `#F7F3EE`],
+      innerText: ["null", "next"],
+      duration: 350,
+      easing: "easeInOutQuad",
+      autoplay: true,
+      loop: false,
+      onComplete: (self: JSAnimation) => {
+        self.cancel();
+      },
+    })
   }
 }
 
@@ -248,33 +259,63 @@ export const unLinkPreviousNodeToRemoved = (elements: Elements, nodeIndex: numbe
   let nodeId = nodeToUpdate.id;
   let bottom = getElem<HTMLElement>(`#${nodeId}-bottom`)
   if (bottom.innerText == "next") {
-    bottom.innerText = "null";
+    animate(bottom, {
+      background: [`#F7F3EE`, `#ededed`],
+      innerText: ["next", "null"],
+      duration: 350,
+      easing: "easeInOutQuad",
+      autoplay: true,
+      loop: false,
+      onComplete: (self: JSAnimation) => {
+        self.cancel();
+      },
+    })
   }
 }
 
-export const moveForward = (element: HTMLElement, newIndex: number, sizes: Sizes) => {
+export const moveForward = async (element: HTMLElement, newIndex: number, sizes: Sizes) => {
   let rowIndex = Math.floor(newIndex / sizes.nodeLimitPerRow);
   let isRowEven = rowIndex % 2 == 0;
   let inRowIndex = newIndex % sizes.nodeLimitPerRow;
 
-  let topOffset = calculateNodeTopOffset(rowIndex, sizes);
-  let leftOffset = calculateNodeLeftOffset(inRowIndex, isRowEven, sizes);
-  element.style.left = `${leftOffset}px`;
-  element.style.top = `${topOffset}px`;
+  await animate(element, {
+    left: [
+      element.style.left,
+      `${calculateNodeLeftOffset(inRowIndex, isRowEven, sizes)}px`
+    ],
+    top: [
+      element.style.top,
+      `${calculateNodeTopOffset(rowIndex, sizes)}px`
+    ],
+    delay: 50,
+    duration: 150,
+    easing: "easeInOutQuad",
+    loop: false,
+  });
 }
 
-export const moveBackward = (element: HTMLElement, newIndex: number, sizes: Sizes) => {
+export const moveBackward = async (element: HTMLElement, newIndex: number, sizes: Sizes) => {
   let rowIndex = Math.floor(newIndex / sizes.nodeLimitPerRow);
   let isRowEven = rowIndex % 2 == 0;
   let inRowIndex = newIndex % sizes.nodeLimitPerRow;
 
-  let topOffset = calculateNodeTopOffset(rowIndex, sizes);
-  let leftOffset = calculateNodeLeftOffset(inRowIndex, isRowEven, sizes);
-  element.style.left = `${leftOffset}px`;
-  element.style.top = `${topOffset}px`;
+  await animate(element, {
+    left: [
+      element.style.left,
+      `${calculateNodeLeftOffset(inRowIndex, isRowEven, sizes)}px`
+    ],
+    top: [
+      element.style.top,
+      `${calculateNodeTopOffset(rowIndex, sizes)}px`
+    ],
+    delay: 50,
+    duration: 150,
+    easing: "easeInOutQuad",
+    loop: false,
+  });
 }
 
-export const expandCanvasIfNeeded = (elements: Elements, sizes: Sizes) => {
+export const expandCanvasIfNeeded = async (elements: Elements, sizes: Sizes) => {
   const { canvasHeight, nodeAmount, nodeLimitPerRow, nodeOffsetRow, nodeSize, nodeOffsetTop } = sizes;
 
   // Adding a new node will start a new row if current nodes fill rows exactly
@@ -286,23 +327,44 @@ export const expandCanvasIfNeeded = (elements: Elements, sizes: Sizes) => {
 
     if (canvasHeight < requiredHeight) {
       sizes.canvasHeight = requiredHeight;
-      elements.canvas.style.height = `${requiredHeight}px`;
+      let animation = animate(elements.canvas, {
+        height: [`${canvasHeight}px`, `${requiredHeight}px`],
+        duration: 250,
+        easing: "easeInOutQuad",
+        autoplay: true,
+        loop: false,
+        onComplete: (self: JSAnimation) => {
+          self.cancel();
+        },
+      })
+      await animation;
     }
   }
 }
 
-export const shrinkCanvasIfNeeded = (elements: Elements, sizes: Sizes) => {
-  const { nodeAmount, nodeLimitPerRow, nodeOffsetRow, nodeSize } = sizes;
+export const shrinkCanvasIfNeeded = async (elements: Elements, sizes: Sizes) => {
+  const { canvasHeight, nodeAmount, nodeLimitPerRow, nodeOffsetRow, nodeSize } = sizes;
 
-  // Removing a node will empty the last row if it's the only node in that row
-  const willEmptyLastRow = nodeAmount % nodeLimitPerRow === 1;
+  // This will be true if the last row is empty after the remove action, meaning we can shrink the canvas height
+  const willEmptyLastRow = nodeAmount % nodeLimitPerRow === 0;
 
   // Don't shrink below the initial double-row height
   const minHeight = 2 * (nodeSize + nodeOffsetRow) + sizes.nodeOffsetTop;
 
-  if (willEmptyLastRow && sizes.canvasHeight > minHeight) {
-    const newHeight = sizes.canvasHeight - nodeSize - nodeOffsetRow;
+  if (willEmptyLastRow && canvasHeight > minHeight) {
+    const newHeight = canvasHeight - nodeSize - nodeOffsetRow;
     sizes.canvasHeight = newHeight;
-    elements.canvas.style.height = `${newHeight}px`;
+    let animation = animate(elements.canvas, {
+      height: [`${canvasHeight}px`, `${newHeight}px`],
+      delay: 50,
+      duration: 150,
+      easing: "easeInOutQuad",
+      autoplay: true,
+      loop: false,
+      onComplete: (self: JSAnimation) => {
+        self.cancel();
+      },
+    })
+    await animation;
   }
 }
