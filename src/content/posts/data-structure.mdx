@@ -20,9 +20,9 @@ Talvez um dos assuntos mais batidos no mundo da programação. Mas esse ponto te
 
 Começando da forma mais simples possível Estruturas de Dados são formas de se organizar/agrupar dados para obter um comportamento ou atingir uma eficiência maior em comparação com um padão "desorganizado" ou menos pertinente.
 
-Mas "**o que?**" exatamente estamos organizando? **Dados**, que inevitalmente são apenas sequências de **0's** e **1's**. Estes **0's** e **1's** escritos/lidos de forma correta representam valores de diferentes **"tipos"**. Por exemplo podemos representar números e caracteres de texto e através destes representar outros **"tipos"** mais abstratos.
+Mas "**o que?**" exatamente estamos organizando? **Dados**, que inevitalmente são apenas sequências de **0's** e **1's**. Estes **0's** e **1's** escritos/lidos de formas diferentes representam valores de diferentes **"tipos"**. Por exemplo podemos representar números e caracteres de texto e através destes representar outros **"tipos"** mais abstratos.
 
-Apesar de um conceito abstrato e um pouco genérico podemos definir Estruturas de Dados pelo forma como dados são armazenados e tratados, através das rotinas ou métodos da estrutura em questão. Apesar da abastração conseguimos organizar Estruturas de Dados em grupos que nos ajudam a compreender seu comportamento.
+Apesar de um conceito abstrato e um pouco genérico podemos categorizar Estruturas de Dados pelo forma como dados são armazenados e tratados, através das rotinas ou métodos da estrutura em questão. Apesar da abastração conseguimos organizar Estruturas de Dados em grupos que nos ajudam a compreender seu comportamento.
 
 Dentre as principais formas de distinguir esturutras de Dados temos quanto a forma de Alocação e a Linearidade dessa Estrutura.
 
@@ -59,6 +59,8 @@ Através deste **tipo** podemos representar todos os números de <SetToZero /> a
 Ainda que os dados venham a ser adicionados ao longo do tempo podemos alocar memória suficiente em uma única operação. Dai o nome Alocação ou Tamanho **Estático**, pois a ideia é que este tamanho não vá variar de acordo com o tempo, ao menos não é o ideal.
 
 Exemplificando de forma rasa, supondo que desejamos instanciar um Array que comportará dados do tipo **u32**, esperando que o Array abrigue **5 posições** deste tipo de dado. Se para cada posição precisamos de **4 bytes**, então basta pedir ao sistema operacional por uma porção de memória de **20 bytes** para este Array e teremos espaço suficiente.
+
+**Exemplo prático**
 
 Vamos simular. Como seria alocar um Array e definir valores para cada item dele. Neste exemplo entenda cada bloco abaixo como um conjunto de **4 bytes**, cada um para representar um valor no Array.
 
@@ -149,7 +151,7 @@ console.log(arr);
 Ao executarmos este código também não obteremos erro.
 
 ```shell
-λ node example2.js
+λ node example.js
 Uint8Array(5) [ 0, 0, 0, 0, 0 ]
 ```
 
@@ -163,39 +165,65 @@ Neste caso o melhor a se fazer é não utilizar uma Estrutura que faz-uso deste 
 
 ### Alocação Dinâmica
 
-rewrite
-Em contrapartida a alocação estática, nem sempre sabemos quanto de memória será necessário para que o programa seja executado. A <strong>Alocação Dinâmica</strong> lida com estes casos e não possui estrutura completamente fixa e pode mudar de acordo com as operações realizadas em tempo de execução.
+Em contrapartida a alocação estática, nem sempre sabemos quanto de memória será necessário para que todos os dados sejam alocados. A <strong>Alocação Dinâmica</strong> lida com estes casos e não possui estrutura completamente fixa e pode mudar de acordo com as operações realizadas em tempo de execução.
 
-Mas de que modo a alocação varia? Majoritariamente uma estrutura que se apoia no modelo de alocação dinâmica trabalha com <strong>Nós</strong> ou <strong>Nodes</strong> estes que por sua vez vão conter os dados em tipos primitivos, ou também, muito comumente os <strong>Nós</strong> são alocados com estruturas de tamanho estático. Assim a medida que há necessidade de alocar dados estes nós são construidos em mémoria e adereçados à estrutura através de ponteiros.
+**Mas de que modo a alocação varia?**
 
-Máquina de ponteiros.
+Majoritariamente uma estrutura que se apoia no modelo de alocação dinâmica trabalha com <strong>Nós</strong> ou <strong>Nodes</strong> estes que por sua vez vão conter os dados em tipos primitivos, ou também, muito comumente os <strong>Nós</strong> são alocados com estruturas de tamanho estático. Além dos dados estes Nós contém ponteiors para endereçar outros nós. Assim a medida que há necessidade de alocar dados estes nós são construidos em mémoria e adereçados à estrutura que no fim trabalha como uma máquiana de ponteiros.
 
-<strong>Listas encadeadas</strong> são um exelente exemplo de <strong>Nós</strong> que carregam informações através de tipos primitivos. E uma <strong>BTree</strong> é uma estrutura de alocação dinâmica que utiliza de <strong>Arrays</strong> em seus <strong>Nós</strong>.
+**O que seria uma \"Maquina de Ponteiros\"?**
 
+Comumente Estruturas de Dados de **Alocação dinâmica** são ditas como **\"Maquina de Ponteiros\"**. Isso ocorre porque toda a estrutura é construida através de **ponteiros**. Assim como no exemplo anterior, do <a href="#static-memory-goals">Array</a> onde os dados são armazenados em blocos de memória e inseridos no endereço da estrutura na posição desejada no caso da alocação dinâmica também são armazenados em blocos de memória, porém os caso  blocos/elemento também armazenaum ou mais ponteiros. Ponteiros armazenam **endereços de memória** de outros nós para permitir a navegação entre nós.
+
+Ao contrário da simulação anterior, em que toda a memória foi alocada previmanete, na alocação dinâmica a memória é alocada conforme a necessidade. Na instânciação da estrutura apenas uma alocação é necessária a do primeiro ponteiro normalmente chamado de **HEAD** ou **ROOT**. Esse ponteiro é usado para apontar para o primeiro elemento da lista quando ele for construído. E assim sucessivamente sempre que um novo elemento for inserido, o ponteiro do último elemento será atualizado para apontar para o novo elemento inserido.
+
+**Exemplo prático**
+
+Vamos agora simular um exemplo de Lista Encadeada. Nesse exemplo entenda cada bloco abaixo como um conjunto de **4 bytes** para representar um valor e  **8 bytes** para representar um ponteiro, totalizando **12 bytes** por elemento. O tamanho do ponteiro varia de acordo com a arquiteutra do sistema operacional (neste exemplo o sistema operacional trabalha com uma arquitetura de 64 bits).
 
 <DynamicMemoryAnimation />
-<br />
 
-{/*
+**Por que esse tipo de alocação pode ser útil?**
+
+Como dito anteriormente, nem sempre sabemos quanto de memória será necessário para que todos os dados sejam alocados. Perceba que neste exemplo a medida que mais "espaço" foi necessário mais "espaço" foi alocado.
+
+** Há desvantagens no uso de estruturas de alocação dinâmica?**
+
+Apesar de prover liberdade quanto ao tamanho. Essa liberdade tem um custo. Ao passo que na **Alocação Estática** o tamanho de cada dado alocado era de **4 bytes** para o mesmo dado no exemplo tivemos a alocação de **12 bytes**.
+
+Outro contraponto, na **Alocação Estática** podemos fazer **acesso aleatório** à memória. Dado um **Array** podemos acessar qualquer posição de memória em tempo constante. No caso da **Alocação Dinâmica** para chegar a um Nó qualquer precisamos navegar pelos ponteiros até chegar no nó desejado.
+
+**Exemplificando de forma suscinta uma fila implementada utilizando uma Lista encadeada**
+
+Uma fila segue o padrão FIFO (First in First Out, primeiro a entrar primeiro a sair).
+
+Sendo assim todo o processo de inserção deve ser realizado ao final da Lista encadeada. E todo processo de remoção deve ser realizado ao começo da Lista encadeada.
+
+Otimizações podem ser feitas para melhorar a performance deste exemplo. Como adicionar uma referência na estrutura para o último elemento. Então a estrutra contária com **ROOT** e **TAIL** por exemplo. Ao inserir um elemento na Lista encadeada, basta atualizar o ponteiro nó na referência de **TAIL** para apontar para o novo elemento inserido e após atualizar o ponteiro **TAIL** para apontar para o novo elemento inserido.
+
+Dessa forma tanto as inserções quanto as remoções são feitas em tempo constante. Sem a necessidade de percorrer toda a Lista encadeada para chegar ao elemento desejado.
+
 
 ### Comparativo
 
+Ambas as estruturas tem suas particularidades e casos de uso bem definidos. A diferença entre a alocação altera também a forma como a estruutra é implementada. A alocação dinâmica é mais flexível e pode ser utilizada para representar estruturas mais complexas. Já a alocação estática é mais rígida e é mais adequada para representar estruturas mais simples.
 
-<br/>
-<br/>
-<br/>
-
-Nem toda estrutura é exclusivamente dinâmica.
-Btree estrutura dinâmica que se apoia em uma estrutura estática (arrays).
-Hash tables array que pode utilizar estrutura dinâmia(linked list) para resolver colisões.
-Assim como também, podemos ter representações de uma estrutura de um tipo em outro.
-Exemplo um Array pode ser utilizado para representar uma árvore binária.
+Não somente dessa forma podemos variar na implementação de uma estrutura de dados. Outra forma que também é utilizada para categorização é quanto a **Linearidade**. Vejamos no próximo tópico a respeito.
 
 ## Linearidade
+
+{/*
+Em sequência as diferentes formas de cate
 
 Linearidade:
 - Linear
 - Não Linear
+
+### Linear
+
+### Não Linear
+
+
 
 // Linearidade
 // exemplo Pesquisa binária em um linear outro n linear
