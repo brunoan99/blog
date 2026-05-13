@@ -2,6 +2,7 @@
 title: "Estruturas de Dados"
 description: "Exemplos e explicações a respeito de Estruturas de Dados"
 pubDate: "Aug 26 2024"
+updatedDate: "May 10 2026"
 ---
 import StaticNodeExample from "../../ui/animations/data-structures/anim-static-node.astro"
 import SetToZero from "../../ui/animations/data-structures/components/set-to-zero.astro"
@@ -9,10 +10,11 @@ import SetToMax from "../../ui/animations/data-structures/components/set-to-max.
 
 import StaticMemoryAnimation from "../../ui/animations/data-structures/anim-static-memory.astro"
 import DynamicMemoryAnimation from "../../ui/animations/data-structures/anim-dynamic-memory.astro"
+import LinearSequenceAnimation from "../../ui/animations/data-structures/anim-linear-sequence.astro"
+import NonLinearSequenceAnimation from "../../ui/animations/data-structures/anim-non-linear-sequence.astro"
+import ComparisonLinearNonLinearAnimation from "../../ui/animations/data-structures/anim-comparison-linear-non-linear.astro"
 
-import InProgress from "../../ui/components/InProgress.astro"
-
-**Obs**: *Recomendo leitura via desktop*.
+**Obs**: *leia via desktop*.
 
 ## Intro
 
@@ -34,7 +36,6 @@ No que diz respeito a Alocação de Memória em Estrutura de Dados pode-mos divi
 - Alocação Estática ou Tamanho Estático;
 - Alocação Dinâmica ou Tamanho Dinâmico (Máquina de Ponteiros).
 
-Vejamos um pouco mais a respeito de cada uma das formas antes de debater seu impacto.
 
 ### Alocação Estática
 
@@ -187,7 +188,7 @@ Vamos agora simular um exemplo de Lista Encadeada. Nesse exemplo entenda cada bl
 
 Como dito anteriormente, nem sempre sabemos quanto de memória será necessário para que todos os dados sejam alocados. Perceba que neste exemplo a medida que mais "espaço" foi necessário mais "espaço" foi alocado.
 
-** Há desvantagens no uso de estruturas de alocação dinâmica?**
+**Há desvantagens no uso de estruturas de alocação dinâmica?**
 
 Apesar de prover liberdade quanto ao tamanho. Essa liberdade tem um custo. Ao passo que na **Alocação Estática** o tamanho de cada dado alocado era de **4 bytes** para o mesmo dado no exemplo tivemos a alocação de **12 bytes**.
 
@@ -212,31 +213,60 @@ Não somente dessa forma podemos variar na implementação de uma estrutura de d
 
 ## Linearidade
 
-{/*
-Em sequência as diferentes formas de cate
+Em sequência as diferentes formas de categorizar Estruturas de Dados temos quanto a **Linearidade**.
 
-Linearidade:
-- Linear
-- Não Linear
+No que diz respeito a Linearidade em Estrutura de Dados pode-mos dividir em duas as diferentes formas:
+- Linear;
+- Não Linear.
 
-### Linear
-
-### Não Linear
-
-
-
-// Linearidade
-// exemplo Pesquisa binária em um linear outro n linear
+Vejamos um pouco mais a respeito de cada uma das formas antes de debater seu impacto.
 
 ### Linear
 
+Como é dito pelo proprío nome trata-se do tipo de Esturtura de Dados onde os elementos são arranjados de forma sequêncial/linear. Alguns exemplos de estruturas lineares são **Arrays**, **Pilhas**, **Filas** e **Listas Encadeadas**.
+
+Uma maneira de facilmente identificar uma Estrutura Linear é visualizando como os dados são percorridos. Para toda e qualquer instância de uma Estrutura Linear é possível percorrer todos os elementos da estrutura uma única vez em uma única passagem.
+
+Observe a visualização abaixo:
+
+<LinearSequenceAnimation/>
+
+Perceba que nesse exemplo toda a estrutura pode ser percorrida através de uma única passagem. Começando pelo **ROOT** e percorrendo até chegar ao último **Nó** que carrega o valor **3**.
+
+**E por que usar uma estrutura linear?**
+
+Estruturas Lineares são simples e eficientes. Excelentes escolhas para casos emq ue os dados devem ser acessados e processados de forma sequêncial. Operações como agendamento de tarefas através de **Filas** e implementação da funcionalidade de Desfazer através de **Pilhas** são exemplos de utilizações de Estruturas Lineares.
+
 ### Não Linear
+
+Em oposição as Estruturas Lineares neste caso os elementos são  arranjados de forma não sequêncial/linear. Exemplos de estruturas não lineares são **Grafos**, **Árvores**, **Árvores Binárias**, **Heaps** e **Tries**.
+
+Não é possível percorrer todos os elementos da estrutura uma única vez em uma única passagem para toda e qualquer instância de uma Estrutura Não Linear. Um exemplo no caso de uma **Árvore** com 3 **Nós**, uma raiz e duas folhas. A árvore não pode ser percorrida através de uma única passagem a partir da raiz.
+
+Um exemplo que quebra essa regra é o de um **Grafo Cíclico** apesar de **Grafos** serem **Estruturas Não Lineares**, no caso particular do **Grafo Cíclico** é possível percorrer os elementos através de uma única passagem. Porém trata-se de uma exceção a regra
+
+<NonLinearSequenceAnimation />
+
+Note que ao percorrer o grafo acíclico os **Nós** de valores **1** e **2** são percorridos mais de uma vez. Isso ocorre pois estes **Nós** são a única conexão dos **Nós** de valores **4** e **5**, então para acessá-los é necessário passar uma vez pelos anteriores e após acessá-los é necessário retornar aos anteriores para dar sequência ao percorrimento da estrutura.
+
+**E por que usar uma estrutura não linear?**
+
+São muito utilizados para representar **dados complexos** com **hierarquia** ou **conexões não lineares**. Normalmente oferecem **busca mais rápida** que estruturas lineares. São essênciais para modelar problemas do mundo real. Sistemas de arquivos de sistemas operacionais, redes sociais e navegação através de mapas são exemplos de uso de Estruturas Não Lineares.
 
 ### Comparativo
 
-## Final
+Assim como com a distinção entre Estruturas de Dados de **Alocação Estática** e **Alocação Dinâmica** as particularidades de cada tipo são bem expressivas. Porém quanto a **linearidade** a distinção entre **casos de uso** é menos clara.
 
-Parte da ideia desse post é introduzir a maneira como eu pretendo representar Estruturas de Dados, Nós, um pouco de Memória e afins. A ideia central não é representar diversas estruturas diferentes de formas diferentes. Mas apenas o suficiente para dar a entender a representação. */}
-<hr />
+<ComparisonLinearNonLinearAnimation />
 
-<InProgress />
+Note que apenas para o elemento **0** o caso **Linear** encontra o valor mais rapidamente, para os casos **1** e **2** a mesma quantidade de saltos é feita, para os demais casos o caso **Não Linear** performa melhor e assim também segueria para todo e qualquer número adiante.
+
+Ao passo que o número de buscas máximos cresce **Linearmente** com o tamanho da **Lista Encadeada** no primeiro exemplo. No segundo a quantidade de máxima de nós percorridos sempre será a profundidade máxima da árvore, e isto cresce de forma **Não Linear** com a quantidade de elementos da árvore.
+
+Neste exemplo em especifico para a finalidade proposta a utilização de uma **Estrutura Não Linear** é preferível, tendo em vista a eficiência para resolver o problema. Mas cada caso é um caso e não é necessariamente a melhor solução para todos os casos.
+
+Não quero entrar nos detalhes desse algorimo, trata-se de uma busca em árvore binária, mas se quiserem saber mais sobre o assunto, recomendo leitura sobre em [Árvore binária de busca](https://pt.wikipedia.org/wiki/%C3%81rvore_bin%C3%A1ria_de_busca) e [Árvore AVL](https://pt.wikipedia.org/wiki/%C3%81rvore_AVL)
+
+## Conclusão
+
+Parte da ideia desse post é introduzir a maneira como eu pretendo representar Estruturas de Dados, Nós, um pouco de Memória e afins. A ideia central não é representar diversas estruturas diferentes de formas diferentes, muito menos me aprofundar no debate a respeito de alguma Estrutura em especifico. Mas apenas falar a respeito do tópico de modo suficiente para dar a entender a representação.

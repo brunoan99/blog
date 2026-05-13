@@ -1,32 +1,35 @@
 ---
 import BaseHead from "../components/BaseHead.astro";
-import Header from '../components/Header.astro';
-import Head from '../components/post/Head.astro';
-import Summary from '../components/post/Summary.astro';
+import Header from "../components/Header.astro";
+import Head from "../components/post/Head.astro";
+import Summary from "../components/post/Summary.astro";
 import "../styles/global.css";
 
 type Props = {
   metadata: {
-    title: string,
-    description: string,
-    pubDate: Date,
-    updatedDate: Date | undefined,
-    slug: string
-  },
+    title: string;
+    description: string;
+    pubDate: Date;
+    updatedDate: Date | undefined;
+    slug: string;
+  };
   summary: {
-    id: string,
-    level: number,
-    label: string,
-  }[]
+    id: string;
+    level: number;
+    label: string;
+  }[];
 };
 
-const { metadata: { title, description, pubDate, updatedDate, slug }, summary } = Astro.props;
-
+const {
+  metadata: { title, description, pubDate, updatedDate, slug },
+  summary,
+} = Astro.props;
 ---
+
 <!doctype html>
 <html lang="pt-br">
-	<head>
-		<BaseHead title={title} description={description} />
+  <head>
+    <BaseHead title={title} description={description} />
     <style>
       html {
         scroll-behavior: smooth;
@@ -57,18 +60,23 @@ const { metadata: { title, description, pubDate, updatedDate, slug }, summary } 
       }
     </style>
   </head>
-	<body>
-		<Header/>
-		<main>
-      <Summary data={summary}/>
-			<article>
+  <body>
+    <Header />
+    <main>
+      <Summary data={summary} />
+      <article>
         <div class="prose">
-          <Head title={title} pubDate={pubDate} updatedDate={updatedDate} slug={slug} />
+          <Head
+            title={title}
+            pubDate={pubDate}
+            updatedDate={updatedDate}
+            slug={slug}
+          />
           <div class="content">
             <slot />
           </div>
-				</div>
-			</article>
-		</main>
-	</body>
+        </div>
+      </article>
+    </main>
+  </body>
 </html>

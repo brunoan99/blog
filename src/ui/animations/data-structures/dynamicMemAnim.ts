@@ -21,7 +21,6 @@ type Elements = {
   canvas: HTMLElement;
   nodes: HTMLElement[];
   arrows: SVGSVGElement[];
-  cursor?: HTMLElement;
 };
 
 type Tags = {
@@ -69,7 +68,6 @@ export const calculateClickActionByEvent = (event: PointerEvent): ClickAction =>
     case "DIV":
       if (target.className.includes("upper") || target.className.includes("bottom")) return "remove" as ClickAction;
       if (target.className.includes("node")) return "remove" as ClickAction;
-      if (target.id.includes("cursor")) return "insert" as ClickAction;
       if (target.id.includes("canvas")) return "insert" as ClickAction;
     default:
       console.log(target);
@@ -202,7 +200,7 @@ export const createArrowAtEnd = (elements: Elements, tags: Tags, sizes: Sizes) =
   let leftOffset = calculateArrowLeftOffset(inRowIndex, isRowEven, isLastInRow, sizes);
 
   let arrow = createArrow({
-    id: `${tags.nodesClassName}-arrow-${rowIndex}`,
+    id: `${tags.nodesClassName}-arrow-${nodeIndex}`,
     arrowWidth: sizes.arrowWidth,
     arrowType: isLastInRow ? "down" : (isRowEven ? "right" : "left"),
     top: topOffset,

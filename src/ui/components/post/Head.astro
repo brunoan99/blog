@@ -1,12 +1,17 @@
 ---
-import PubDate from './PubDate.astro';
-import UpdateDate from './UpdateDate.astro';
+import PubDate from "./PubDate.astro";
+import UpdateDate from "./UpdateDate.astro";
 
-
-type Props = { title: string, pubDate: Date, updatedDate: Date | undefined, slug: string };
+type Props = {
+  title: string;
+  pubDate: Date;
+  updatedDate: Date | undefined;
+  slug: string;
+};
 
 const { title, pubDate, updatedDate, slug } = Astro.props;
 ---
+
 <style>
   .prose {
     width: 720px;
@@ -30,7 +35,7 @@ const { title, pubDate, updatedDate, slug } = Astro.props;
 
     font-family: "Atkinson", sans-serif;
     font-weight: bold;
-	  font-size: 3.052em;
+    font-size: 3.052em;
     line-height: 1.7;
 
     margin: 0 0 0.5em 0;
