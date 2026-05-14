@@ -62,6 +62,7 @@ export const calculateClickActionByEvent = (event: PointerEvent): ClickAction =>
     case "line":
     case "polygon":
     case "text":
+    case "span":
     case "path":
       return "insert" as ClickAction;
     case "div":
