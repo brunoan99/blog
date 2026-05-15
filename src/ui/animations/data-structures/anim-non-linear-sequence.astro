@@ -1,0 +1,128 @@
+---
+import Canvas from "../shared/canvas.astro";
+import Goals from "./components/goals.astro";
+---
+
+<Goals
+  id="non-linear-sequence-goals"
+  goals={["Clique em qualquer lugar para visualizar a sequência."]}
+/>
+<Canvas
+  id="non-linear-sequence-canvas"
+  label="Percorrendo a Estrutura Não Linear"
+  height="504px"
+/>
+<script>
+  import { createArrow } from "./utils/Arrows";
+  import { setupEngine } from "../engine.default";
+  import {
+    createNodeAt,
+    createArrowAt,
+    createSequenceAnimation,
+  } from "./nonLinearSequenceAnim";
+  import { markGoalAsComplete } from "./staticMemAnim";
+  import { atom } from "nanostores";
+
+  setupEngine();
+
+  let canvas = document.getElementById(
+    "non-linear-sequence-canvas",
+  ) as HTMLElement;
+  let canvasWidth = canvas.clientWidth;
+  let canvasHeight = canvas.clientHeight;
+
+  let arrowWidth = 56;
+  let nodeLimitPerRow = 4;
+  let nodeSize = 90; // node visual size
+  let borderSize = 2;
+  let nodeOffsetPerNode = nodeSize + borderSize; // +2 cause of the border
+  let nodeOffsetLeft =
+    (canvasWidth -
+      nodeOffsetPerNode * nodeLimitPerRow -
+      arrowWidth * (nodeLimitPerRow - 1)) /
+    2;
+  let nodeOffsetPerRow = 41;
+  let nodeOffsetTop = 74 + nodeOffsetPerNode + nodeOffsetPerRow;
+  let rowHorizontalSize =
+    nodeLimitPerRow * nodeOffsetPerNode + (nodeLimitPerRow - 1) * arrowWidth;
+
+  let sizes = {
+    canvasWidth,
+    canvasHeight,
+    nodeSize,
+    nodeOffsetTop,
+    nodeOffsetLeft,
+    nodeOffsetPerNode,
+    nodeOffsetPerRow,
+    nodeAmount: 4,
+    arrowWidth,
+    rowHorizontalSize,
+  };
+
+  let nodesClassName = "non-linear-sequence-node-slot";
+
+  let elements = {
+    canvas,
+    nodes: [] as HTMLElement[],
+    arrows: [] as SVGSVGElement[],
+  };
+
+  let rootArrow = createArrow({
+    id: "non-linear-sequence-root-arrow",
+    arrowWidth: sizes.arrowWidth,
+    arrowType: "root",
+    top: sizes.nodeOffsetTop,
+    left: sizes.nodeOffsetLeft - sizes.arrowWidth - sizes.nodeSize,
+    nodeHeight: sizes.nodeSize,
+    nodeWidth: sizes.nodeSize,
+  });
+  elements.arrows.push(rootArrow);
+  elements.canvas.appendChild(rootArrow);
+
+  let tags = {
+    nodesClassName,
+  };
+  for (let nodeIndex = 0; nodeIndex < sizes.nodeAmount; nodeIndex++) {
+    let theresBackNode = nodeIndex != 0;
+    let theresNextNode = nodeIndex != sizes.nodeAmount - 1;
+    let theresMoreThanOneNext = nodeIndex == 1 || nodeIndex == 2;
+    createNodeAt(elements, tags, sizes, nodeIndex, `${nodeIndex}`);
+    if (nodeIndex != sizes.nodeAmount - 1) {
+      createArrowAt(elements, nodeIndex, tags, sizes, "right", 0.9);
+      createArrowAt(elements, nodeIndex, tags, sizes, "left", 0.7);
+    }
+  }
+  sizes.nodeOffsetTop = 74;
+  createNodeAt(elements, tags, sizes, 1, "4");
+  sizes.nodeOffsetTop = 72;
+  createArrowAt(elements, 1, tags, sizes, "up", 0.9);
+  sizes.nodeOffsetTop = 74;
+  let previousLeft = sizes.nodeOffsetLeft;
+  sizes.nodeOffsetLeft = previousLeft - sizes.nodeSize / 2;
+  createArrowAt(elements, 1, tags, sizes, "down", 0.9);
+  sizes.nodeOffsetLeft = previousLeft;
+
+  sizes.nodeOffsetTop = 278 + 30 + 30;
+  createNodeAt(elements, tags, sizes, 2, "5");
+  sizes.nodeOffsetTop = 204;
+  createArrowAt(elements, 2, tags, sizes, "down", 0.9);
+  sizes.nodeOffsetLeft = previousLeft - sizes.nodeSize / 2;
+  createArrowAt(elements, 2, tags, sizes, "up", 0.9);
+
+  let goals = document.getElementById(
+    "non-linear-sequence-goals-ul",
+  ) as HTMLUListElement;
+
+  const any = atom(false);
+  any.subscribe((value) => {
+    if (!value) return;
+    markGoalAsComplete(goals.childNodes[0] as HTMLLIElement);
+  });
+
+  let timeline = createSequenceAnimation(elements);
+
+  canvas.onclick = (e: PointerEvent) => {
+    if (!any.get()) any.set(true);
+    timeline.play();
+  };
+</script>

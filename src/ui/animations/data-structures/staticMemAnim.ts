@@ -1,4 +1,4 @@
-import { animate, JSAnimation } from "animejs";
+import { animate, JSAnimation } from "animejs/animation";
 import { createNode } from "./utils/Node";
 
 type Sizes = {
@@ -45,6 +45,9 @@ const createNodeAndCursorAppearAnimation = (elements: Elements, tags: Tags): JSA
     duration: 550,
     easing: "linear",
     autoplay: true,
+    onComplete: (self: JSAnimation) => {
+      self.cancel();
+    },
   });
 }
 

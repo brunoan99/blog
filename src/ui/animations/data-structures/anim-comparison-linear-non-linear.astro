@@ -1,0 +1,187 @@
+---
+import Canvas from "../shared/canvas.astro";
+import Goals from "./components/goals.astro";
+---
+
+<Goals
+  id="comparison-linear-non-linear-goals"
+  goals={[
+    "Pesquise qualquer valor para ver como a pesquisa é feita em ambos os tipos de linearidade.",
+  ]}
+/>
+
+<div class="comparison-linear-non-linear-input-line">
+  <span>Buscar por:</span>
+  <input
+    id="comparison-linear-non-linear-input"
+    autocomplete="off"
+    maxlength="1"
+  />
+  <button
+    class="comparison-linear-non-linear-button"
+    id="comparison-linear-non-linear-button">Buscar</button
+  >
+</div>
+<style>
+  .comparison-linear-non-linear-input-line {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-bottom: 10px;
+    gap: 10px;
+  }
+</style>
+
+<Canvas
+  id="comparison-linear-non-linear-canvas"
+  label="Estrutura Linear"
+  height="788px"
+/>
+<script>
+  import { createArrow, createArrowBetweenPoints } from "./utils/Arrows";
+  import {
+    createLinearNodeAt,
+    createLinearArrowAtEnd,
+    createNonLinearNodeAt,
+    createNonLinearArrowsAt,
+    createAnimationTimeline,
+  } from "./comparisonLinearNonLinearAnim";
+  import { setupEngine } from "../engine.default";
+  import { animationBlock } from "./stores/comparison.store";
+
+  setupEngine();
+
+  let canvas = document.getElementById(
+    "comparison-linear-non-linear-canvas",
+  ) as HTMLElement;
+  let canvasWidth = canvas.clientWidth;
+  let canvasHeight = canvas.clientHeight;
+
+  let arrowWidth = 56;
+  let nodeLimitPerRow = 4;
+  let nodeSize = 90; // node visual size
+  let borderSize = 2;
+  let nodeOffsetPerNode = nodeSize + borderSize; // +2 cause of the border
+  let nodeOffsetLeft =
+    (canvasWidth -
+      nodeOffsetPerNode * nodeLimitPerRow -
+      arrowWidth * (nodeLimitPerRow - 1)) /
+    2;
+  let nodeOffsetTop = 74;
+  let nodeOffsetPerRow = 30;
+  let rowHorizontalSize =
+    nodeLimitPerRow * nodeOffsetPerNode + (nodeLimitPerRow - 1) * arrowWidth;
+
+  let sizesLinear = {
+    canvasWidth,
+    canvasHeight,
+    nodeLimitPerRow,
+    nodeSize,
+    nodeOffsetTop,
+    nodeOffsetLeft,
+    nodeOffsetPerNode,
+    nodeOffsetPerRow,
+    nodeAmount: 7,
+    arrowWidth,
+    rowHorizontalSize,
+  };
+
+  let elements = {
+    canvas,
+    nodesLinear: [] as HTMLElement[],
+    arrowsLinear: [] as SVGSVGElement[],
+    nodesNonLinear: [] as HTMLElement[],
+    arrowsNonLinear: [] as SVGSVGElement[],
+  };
+
+  let rootLinearArrow = createArrow({
+    id: "comparison-linear-root-arrow",
+    arrowWidth: sizesLinear.arrowWidth,
+    arrowType: "root",
+    top: sizesLinear.nodeOffsetTop,
+    left:
+      sizesLinear.nodeOffsetLeft -
+      sizesLinear.arrowWidth -
+      sizesLinear.nodeSize,
+    nodeHeight: sizesLinear.nodeSize,
+    nodeWidth: sizesLinear.nodeSize,
+  });
+  elements.arrowsLinear.push(rootLinearArrow);
+  elements.canvas.appendChild(rootLinearArrow);
+
+  let tags = {
+    nodesLinearClassName: "comparison-linear-node-slot",
+    nodesNonLinearClassName: "comparison-non-linear-node-slot",
+  };
+
+  for (let nodeIndex = 0; nodeIndex < sizesLinear.nodeAmount; nodeIndex++) {
+    createLinearNodeAt(elements, tags, sizesLinear, nodeIndex, nodeIndex);
+    if (nodeIndex != sizesLinear.nodeAmount - 1)
+      createLinearArrowAtEnd(elements, tags, sizesLinear);
+  }
+
+  let sizesNonLinear = {
+    canvasWidth,
+    canvasHeight,
+    nodeSize,
+    nodeOffsetPerNode,
+    nodeOffsetTop:
+      nodeOffsetTop +
+      2 * (sizesLinear.nodeOffsetPerNode + 2 * sizesLinear.nodeOffsetPerRow),
+    nodeOffsetPerRow,
+    nodeAmount: 7,
+    arrowWidth,
+  };
+
+  let rootNonLinearTop = sizesNonLinear.nodeOffsetTop - 20;
+  let rootNonLinearLeft =
+    (sizesNonLinear.canvasWidth - sizesNonLinear.nodeOffsetPerNode) / 2 - 148;
+  let rootNonLinearArrow = createArrow({
+    id: "comparison-linear-root-arrow",
+    arrowWidth: sizesLinear.arrowWidth,
+    arrowType: "root",
+    top: rootNonLinearTop,
+    left: rootNonLinearLeft,
+    nodeHeight: sizesLinear.nodeSize,
+    nodeWidth: sizesLinear.nodeSize,
+  });
+  elements.arrowsNonLinear.push(rootNonLinearArrow);
+  elements.canvas.appendChild(rootNonLinearArrow);
+
+  let sequenceToCreateNodes = [3, 1, 5, 0, 2, 4, 6];
+  for (let nodeIndex of sequenceToCreateNodes) {
+    createNonLinearNodeAt(elements, tags, sizesNonLinear, nodeIndex);
+    createNonLinearArrowsAt(elements, tags, sizesNonLinear, nodeIndex);
+  }
+
+  let inputElem = document.getElementById(
+    "comparison-linear-non-linear-input",
+  ) as HTMLInputElement;
+  let buttonElem = document.getElementById(
+    "comparison-linear-non-linear-button",
+  ) as HTMLButtonElement;
+
+  inputElem.addEventListener("keydown", (e) => {
+    if (e.key.length > 1 && e.key !== "Unidentified") {
+      return;
+    }
+
+    // 2. Allow only numbers (0-9)
+    // We use a regex to check if the character is a digit.
+    if (!/[0-9]/.test(e.key)) {
+      e.preventDefault();
+    }
+  });
+
+  buttonElem.addEventListener("click", async (e) => {
+    if (animationBlock.get()) return;
+    animationBlock.set(true);
+    canvas.style.cursor = "wait";
+
+    await createAnimationTimeline(elements, parseInt(inputElem.value));
+
+    canvas.style.cursor = "pointer";
+    animationBlock.set(false);
+  });
+</script>
