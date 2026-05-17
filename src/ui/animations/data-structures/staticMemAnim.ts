@@ -1,5 +1,6 @@
 import { animate, JSAnimation } from "animejs/animation";
 import { createNode } from "./utils/Node";
+import { utils, waapi } from "animejs";
 
 type Sizes = {
   canvasWidth: number;
@@ -14,7 +15,7 @@ type Sizes = {
 type Elements = {
   canvas: HTMLElement;
   nodes: HTMLElement[];
-  cursor: HTMLElement;
+  cursor: HTMLElement | null;
 };
 
 type Tags = {
@@ -27,7 +28,7 @@ const createNodesElements = (elements: Elements, tags: Tags, sizes: Sizes) => {
       id: `${tags.nodesClassName}-${(i + 1).toString()}`,
       className: tags.nodesClassName,
       style: {
-        opacity: "0",
+        opacity: "1",
         size: `${sizes.nodeSize}px`,
         top: `${sizes.nodeOffsetTop}px`,
         left: `${sizes.nodeOffsetLeft + (i * sizes.nodeOffsetPerNode)}px`,
@@ -39,63 +40,53 @@ const createNodesElements = (elements: Elements, tags: Tags, sizes: Sizes) => {
   }
 }
 
-const createNodeAndCursorAppearAnimation = (elements: Elements, tags: Tags): JSAnimation => {
-  return animate([`.${tags.nodesClassName}`, `#${elements.cursor.id}`], {
-    opacity: [{ to: 0 }, { to: 1 }],
-    duration: 550,
-    easing: "linear",
-    autoplay: true,
-    onComplete: (self: JSAnimation) => {
-      self.cancel();
-    },
-  });
-}
-
 const createCursorClickAnimation = (cursor: HTMLElement): JSAnimation => {
-  return animate(`#${cursor.id}`, {
-    scale: [{ to: 0.9 }, { to: 1 }],
-    strokeWidth: [{ to: 2 }, { to: 1 }],
+  cursor.style.willChange = "scale, stroke-width";
+
+  return animate(cursor, {
+    scale: [0.9, 1, 0.9],
+    strokeWidth: [2, 1, 2],
     easing: 'easeInOutQuad',
-    duration: 450,
-    delay: 50,
     autoplay: true,
     loop: true,
   });
 }
 
-const createCursorMoveAnimation = (cursor: HTMLElement, left: string) => {
-  return animate(`#${cursor.id}`, {
-    left: left,
-    easing: 'easeInOutQuad',
+const createCursorMoveAnimation = (cursor: HTMLElement, lastTranslate: number, nextTranslate: number) => {
+  cursor.style.willChange = "tranform";
+
+  return waapi.animate(cursor, {
+    translateX: [`${lastTranslate}px`, `${nextTranslate}px`],
     duration: 350,
-    delay: 50,
-    autoplay: true,
-    loop: false,
   })
 }
 
 const createNodeElementsAnimation = (element: HTMLElement) => {
-  return animate(`#${element.id}`, {
+  element.style.willChange = "background-color";
+
+  animate(element, {
     "background-color": "#F7F3EE",
-    easing: 'easeInOutQuad',
     duration: 500,
-    delay: 50,
-    autoplay: true,
-    loop: false,
   })
 }
 
 const markGoalAsComplete = (goal: HTMLElement) => {
   let lineWidth = goal.clientWidth;
   goal.style.backgroundSize = `${lineWidth}px 2px`;
-  goal.style.opacity = "0.5";
+  goal.style.opacity = "0.45";
+}
+
+const deleteCursorAnimation = (cursor: HTMLElement, elements: Elements) => {
+  utils.remove(cursor);
+  elements.canvas.removeChild(cursor);
+  elements.cursor = null;
 }
 
 export {
   createNodesElements,
-  createNodeAndCursorAppearAnimation,
   createCursorClickAnimation,
   createCursorMoveAnimation,
   createNodeElementsAnimation,
-  markGoalAsComplete
+  markGoalAsComplete,
+  deleteCursorAnimation
 };

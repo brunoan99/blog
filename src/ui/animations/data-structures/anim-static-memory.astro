@@ -27,11 +27,11 @@ import Goals from "./components/goals.astro";
   } from "./stores/static-memory.store";
   import {
     createNodesElements,
-    createNodeAndCursorAppearAnimation,
     createCursorClickAnimation,
     createNodeElementsAnimation,
     createCursorMoveAnimation,
     markGoalAsComplete,
+    deleteCursorAnimation,
   } from "./staticMemAnim";
 
   let canvas = document.getElementById("static-memory-canvas") as HTMLElement;
@@ -58,12 +58,14 @@ import Goals from "./components/goals.astro";
     nodeOffsetLeft,
   };
 
-  let cursor = document.getElementById(
-    "static-memory-cursor",
-  ) as HTMLButtonElement;
+  let cursor = document.getElementById("static-memory-cursor") as HTMLElement;
+  let cursorWrapper = document.getElementById(
+    "static-memory-cursor-wrapper",
+  ) as HTMLElement;
   let cursorPercentFromBorder = 0.85;
-  cursor.style.left = `${nodeOffsetLeft + nodeSize * cursorPercentFromBorder}px`;
-  cursor.style.top = `${nodeOffsetTop + nodeSize * cursorPercentFromBorder}px`;
+  let cursorLeftBase = nodeOffsetLeft + nodeSize * cursorPercentFromBorder;
+  cursorWrapper.style.left = `${cursorLeftBase}px`;
+  cursorWrapper.style.top = `${nodeOffsetTop + nodeSize * cursorPercentFromBorder}px`;
 
   let goals = document.getElementById(
     "static-memory-goals-ul",
@@ -81,8 +83,9 @@ import Goals from "./components/goals.astro";
     nodesClassName,
   };
 
+  let lastTranslateX = 0;
+
   createNodesElements(elements, tags, sizes);
-  createNodeAndCursorAppearAnimation(elements, tags);
 
   let cursorAnimation = createCursorClickAnimation(cursor);
 
@@ -94,9 +97,8 @@ import Goals from "./components/goals.astro";
     if (value) markGoalAsComplete(goals.childNodes[1] as HTMLLIElement);
 
     if (replaced.get()) {
-      cursorAnimation.cancel();
-      cursor.style.opacity = "";
-      cursor.style.display = "none";
+      cursorAnimation.pause().cancel();
+      deleteCursorAnimation(cursorWrapper, elements);
     }
   });
 
@@ -104,19 +106,21 @@ import Goals from "./components/goals.astro";
     if (!value) return;
     markGoalAsComplete(goals.childNodes[2] as HTMLLIElement);
     // Disable cursor animation and hide it.
-    // Here is the best place to do it, cause the cursor will always stop when
-    // all goals are done, and there is no path which all goals are completed
-    // without this one being the last.
+    // the cursor will always stop when all goals are done
+    // this and every goal can be completed as the last.
+    // So here and at every goals are the best places to do the cancel.
+    // This is why inside replaced whe check every and inside every whe check replaced
 
     if (every.get()) {
-      cursorAnimation.cancel();
-      cursor.style.opacity = "";
-      cursor.style.display = "none";
+      cursorAnimation.pause().cancel();
+      deleteCursorAnimation(cursorWrapper, elements);
     }
   });
 
   clicked.subscribe((value) => {
     if (value.length == 0) return;
+
+    if (any.get() && every.get() && replaced.get()) return;
 
     let cursorPositionValue = cursorPosition.get();
     let clickPosition = value[0];
@@ -134,14 +138,22 @@ import Goals from "./components/goals.astro";
     // The left property that will be changed do move the cursor always starts counting from the initial position
     // of the cursor. So to cursor to move to nextSpot, will always need to set the translatX to be offsetleft + nodeSize * nextSpot.
     // and for cursor not be moved to start of node, add nodeSize * cursorPercentFromBorder;
-    let left = `${nodeOffsetLeft + nodeSize * (nextSpot + cursorPercentFromBorder)}px`;
-    createCursorMoveAnimation(cursor, left);
+    // if any, every or replaced is false, then the cursor will be moved
+    // otherwise the cursor will be removed from canvas and element set to null
+    // so creating the animation will have no effect
+    let nextTranslateX =
+      nodeOffsetLeft +
+      nodeSize * (nextSpot + cursorPercentFromBorder) -
+      cursorLeftBase;
+
+    createCursorMoveAnimation(cursorWrapper, lastTranslateX, nextTranslateX);
+    lastTranslateX = nextTranslateX;
     cursorPosition.set(nextSpot);
   });
 
-  elements.nodes.forEach((n: HTMLElement) => {
-    n.addEventListener("click", () => {
-      let index = parseInt(n.id.charAt(n.id.length - 1)) - 1;
+  elements.nodes.forEach((node: HTMLElement) => {
+    node.addEventListener("click", () => {
+      let index = parseInt(node.id.charAt(node.id.length - 1)) - 1;
       let clicks = clicksPerNodes.get();
       clicks[index] = clicks[index] + 1;
 
@@ -151,14 +163,15 @@ import Goals from "./components/goals.astro";
 
       if (!replaced.get() && clicks.some((v) => v > 1)) replaced.set(true);
 
-      if (n.innerText == "") createNodeElementsAnimation(n);
+      // the only need to create the animation is when the node is empty
+      if (node.innerText == "") createNodeElementsAnimation(node);
 
       clicksPerNodes.set([...clicks]);
       clicked.set([index]);
 
       let newValue = currentValue.get() + 1;
       currentValue.set(newValue);
-      n.innerText = newValue.toString();
+      node.innerText = newValue.toString();
     });
   });
 </script>

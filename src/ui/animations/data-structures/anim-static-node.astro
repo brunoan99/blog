@@ -40,8 +40,10 @@ import "../../styles/global.css";
   import { createNode, createBin } from "./utils/Node";
   import { inputValue } from "./stores/node-example.store";
   import { createTimeline } from "animejs/timeline";
-  import { JSAnimation, utils } from "animejs";
-  import { promise } from "astro:schema";
+  import { utils } from "animejs";
+  import { setupEngine } from "../engine.default";
+
+  setupEngine();
 
   let canvas = document.getElementById("static-node-canvas") as HTMLElement;
   let width = canvas.clientWidth;

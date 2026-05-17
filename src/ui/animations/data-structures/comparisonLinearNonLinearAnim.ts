@@ -1,10 +1,7 @@
-import { animate, JSAnimation } from "animejs/animation";
 import { createNodeWithPointer } from "./utils/NodeWithPointer";
 import { createArrow, createArrowBetweenPoints } from "./utils/Arrows";
-import { getElem } from "./utils/HtmlElement";
 import { createNodeWithTwoPointers } from "./utils/NodeWithTwoPointers";
 import { createTimeline, Timeline } from "animejs/timeline";
-import { utils } from "animejs";
 
 type SizesLinear = {
   canvasWidth: number;
