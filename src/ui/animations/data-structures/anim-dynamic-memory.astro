@@ -211,7 +211,7 @@ import Goals from "./components/goals.astro";
         positionToPush--;
       }
 
-      await createNodeAt(elements, tags, sizes, nodeIndex, currentValue);
+      createNodeAt(elements, tags, sizes, nodeIndex, currentValue);
 
       increaseStores();
     } else if (clickAction == "remove") {
@@ -228,7 +228,7 @@ import Goals from "./components/goals.astro";
       let wasFirst = nodeIndex == 0;
       let wasLast = nodeIndex == elements.nodes.length - 1;
 
-      await removeNodeAt(elements, nodeIndex);
+      removeNodeAt(elements, nodeIndex);
 
       if (!anyRemoved.get()) anyRemoved.set(true);
 

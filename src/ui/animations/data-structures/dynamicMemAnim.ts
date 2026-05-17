@@ -158,7 +158,7 @@ const calculateArrowTopOffset = (rowIndex: number, sizes: Sizes) => {
   return sizes.nodeOffsetTop + (rowIndex * (sizes.nodeOffsetPerNode + sizes.nodeOffsetRow));
 }
 
-export const createNodeAt = async (elements: Elements, tags: Tags, sizes: Sizes, nodeIndex: number, nodeValue: number) => {
+export const createNodeAt = (elements: Elements, tags: Tags, sizes: Sizes, nodeIndex: number, nodeValue: number) => {
   let rowIndex = Math.floor(nodeIndex / sizes.nodeLimitPerRow);
   let isRowEven = rowIndex % 2 == 0;
   let inRowIndex = nodeIndex % sizes.nodeLimitPerRow;
@@ -185,7 +185,7 @@ export const createNodeAt = async (elements: Elements, tags: Tags, sizes: Sizes,
   elements.canvas.appendChild(node);
 
   if (isLastNode && nodeIndex != 0)
-    await linkPreviousNodeToCreated(elements, nodeIndex - 1);
+    linkPreviousNodeToCreated(elements, nodeIndex - 1);
 }
 
 export const createArrowAtEnd = (elements: Elements, tags: Tags, sizes: Sizes) => {
@@ -212,7 +212,7 @@ export const createArrowAtEnd = (elements: Elements, tags: Tags, sizes: Sizes) =
   elements.canvas.appendChild(arrow);
 }
 
-export const linkPreviousNodeToCreated = async (elements: Elements, nodeIndex: number) => {
+export const linkPreviousNodeToCreated = (elements: Elements, nodeIndex: number) => {
   let nodeToUpdate = elements.nodes[nodeIndex];
   let nodeId = nodeToUpdate.id;
   let bottom = getElem<HTMLElement>(`#${nodeId}-bottom`);
@@ -229,14 +229,12 @@ export const linkPreviousNodeToCreated = async (elements: Elements, nodeIndex: n
   })
   setTimeout(() => { bottom.innerText = "next" }, 140);
 
-  await animation.finished;
-
-  bottom.style.backgroundColor = "#F7F3EE";
-  bottom.style.opacity = "1";
-  bottom.style.willChange = "auto";
+  animation.onfinish = () => {
+    bottom.style.willChange = "auto";
+  };
 }
 
-export const removeNodeAt = async (elements: Elements, nodeIndex: number) => {
+export const removeNodeAt = (elements: Elements, nodeIndex: number) => {
   let nodeToRemove = elements.nodes[nodeIndex];
 
   const wasLast = nodeIndex == elements.nodes.length - 1;
@@ -247,7 +245,7 @@ export const removeNodeAt = async (elements: Elements, nodeIndex: number) => {
   }
 
   if (wasLast)
-    await unLinkPreviousNodeToRemoved(elements, nodeIndex - 1);
+    unLinkPreviousNodeToRemoved(elements, nodeIndex - 1);
 }
 
 export const removeArrowAtEnd = (elements: Elements) => {
@@ -256,7 +254,7 @@ export const removeArrowAtEnd = (elements: Elements) => {
     elements.canvas.removeChild(arrowToRemove);
 }
 
-export const unLinkPreviousNodeToRemoved = async (elements: Elements, nodeIndex: number) => {
+export const unLinkPreviousNodeToRemoved = (elements: Elements, nodeIndex: number) => {
   let nodeToUpdate = elements.nodes[nodeIndex];
   if (!nodeToUpdate) return;
 
@@ -275,11 +273,10 @@ export const unLinkPreviousNodeToRemoved = async (elements: Elements, nodeIndex:
   })
   setTimeout(() => { bottom.innerText = "null" }, 140);
 
-  await animation.finished;
+  animation.onfinish = () => {
+    bottom.style.willChange = "auto";
+  };
 
-  bottom.style.backgroundColor = "#ededed";
-  bottom.style.opacity = "1";
-  bottom.style.willChange = "auto";
 }
 
 export const moveNodeTo = async (element: HTMLElement, newIndex: number, sizes: Sizes) => {
