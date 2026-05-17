@@ -33,15 +33,15 @@ type NodeProps = {
   id: string;
   style: NodeStyle;
   className?: string;
-  innitialValue?: string;
+  initialValue?: string;
 }
 
-export const createNode = ({ id, className, style, innitialValue }: NodeProps): HTMLElement => {
+export const createNode = ({ id, className, style, initialValue }: NodeProps): HTMLElement => {
   let node = createElem<HTMLElement>({
     type: "div",
     id,
     className,
-    innerValue: innitialValue,
+    innerValue: initialValue,
   });
   styleNode(node, style)
   return node;

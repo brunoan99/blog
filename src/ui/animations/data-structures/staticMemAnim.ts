@@ -1,4 +1,3 @@
-import { animate, JSAnimation } from "animejs/animation";
 import { createNode } from "./utils/Node";
 
 type Sizes = {
@@ -14,7 +13,7 @@ type Sizes = {
 type Elements = {
   canvas: HTMLElement;
   nodes: HTMLElement[];
-  cursor: HTMLElement;
+  cursor: HTMLElement | null;
 };
 
 type Tags = {
@@ -27,7 +26,7 @@ const createNodesElements = (elements: Elements, tags: Tags, sizes: Sizes) => {
       id: `${tags.nodesClassName}-${(i + 1).toString()}`,
       className: tags.nodesClassName,
       style: {
-        opacity: "0",
+        opacity: "1",
         size: `${sizes.nodeSize}px`,
         top: `${sizes.nodeOffsetTop}px`,
         left: `${sizes.nodeOffsetLeft + (i * sizes.nodeOffsetPerNode)}px`,
@@ -39,63 +38,74 @@ const createNodesElements = (elements: Elements, tags: Tags, sizes: Sizes) => {
   }
 }
 
-const createNodeAndCursorAppearAnimation = (elements: Elements, tags: Tags): JSAnimation => {
-  return animate([`.${tags.nodesClassName}`, `#${elements.cursor.id}`], {
-    opacity: [{ to: 0 }, { to: 1 }],
-    duration: 550,
-    easing: "linear",
-    autoplay: true,
-    onComplete: (self: JSAnimation) => {
-      self.cancel();
-    },
-  });
-}
+const createCursorClickAnimation = (cursor: HTMLElement): Animation => {
+  cursor.style.willChange = "scale, stroke-width";
 
-const createCursorClickAnimation = (cursor: HTMLElement): JSAnimation => {
-  return animate(`#${cursor.id}`, {
-    scale: [{ to: 0.9 }, { to: 1 }],
-    strokeWidth: [{ to: 2 }, { to: 1 }],
-    easing: 'easeInOutQuad',
-    duration: 450,
-    delay: 50,
-    autoplay: true,
-    loop: true,
-  });
-}
-
-const createCursorMoveAnimation = (cursor: HTMLElement, left: string) => {
-  return animate(`#${cursor.id}`, {
-    left: left,
-    easing: 'easeInOutQuad',
-    duration: 350,
-    delay: 50,
-    autoplay: true,
-    loop: false,
+  let cursorAnimation = cursor.animate([
+    { scale: 0.9, strokeWidth: 2 },
+    { scale: 1, strokeWidth: 1 },
+  ], {
+    duration: 350, easing: "ease-in-out", fill: "forwards", direction: "alternate", iterations: Infinity
   })
+
+  return cursorAnimation
 }
 
-const createNodeElementsAnimation = (element: HTMLElement) => {
-  return animate(`#${element.id}`, {
-    "background-color": "#F7F3EE",
-    easing: 'easeInOutQuad',
-    duration: 500,
-    delay: 50,
-    autoplay: true,
-    loop: false,
+const createCursorMoveAnimation = (cursor: HTMLElement, newLeft: string) => {
+  let currentLeft = cursor.style.left;
+  if (currentLeft == newLeft) return;
+
+  cursor.style.willChange = "left";
+
+  let cursorMoveAnimation = cursor.animate([
+    { left: currentLeft },
+    { left: newLeft },
+  ], {
+    duration: 350, easing: "ease-in-out", fill: "forwards",
   })
+
+  cursorMoveAnimation.onfinish = () => {
+    cursor.style.left = newLeft;
+    cursor.style.willChange = "auto";
+  };
+
+}
+
+const createNodeElementsAnimation = async (element: HTMLElement) => {
+  element.style.willChange = "background-color";
+
+  let animation = element.animate([
+    { backgroundColor: "#ededed" },
+    { backgroundColor: "#F7F3EE" },
+  ], {
+    duration: 350, easing: "ease-in-out", fill: "forwards"
+  });
+
+  animation.onfinish = () => {
+    element.style.backgroundColor = "#F7F3EE";
+    element.style.willChange = "auto";
+  };
 }
 
 const markGoalAsComplete = (goal: HTMLElement) => {
   let lineWidth = goal.clientWidth;
   goal.style.backgroundSize = `${lineWidth}px 2px`;
-  goal.style.opacity = "0.5";
+  goal.style.opacity = "0.45";
+}
+
+const deleteCursorAnimation = (cursor: HTMLElement, animation: Animation, elements: Elements) => {
+  animation.commitStyles()
+  animation.cancel();
+
+  elements.canvas.removeChild(cursor);
+  elements.cursor = null;
 }
 
 export {
   createNodesElements,
-  createNodeAndCursorAppearAnimation,
   createCursorClickAnimation,
   createCursorMoveAnimation,
   createNodeElementsAnimation,
-  markGoalAsComplete
+  markGoalAsComplete,
+  deleteCursorAnimation
 };

@@ -35,11 +35,11 @@ import Goals from "./components/goals.astro";
 
 <Canvas
   id="comparison-linear-non-linear-canvas"
-  label="Estrutura Linear"
+  label="Comparação entre Estruturas Linear e Não Linear"
   height="788px"
 />
 <script>
-  import { createArrow, createArrowBetweenPoints } from "./utils/Arrows";
+  import { createArrow } from "./utils/Arrows";
   import {
     createLinearNodeAt,
     createLinearArrowAtEnd,
@@ -47,10 +47,7 @@ import Goals from "./components/goals.astro";
     createNonLinearArrowsAt,
     createAnimationTimeline,
   } from "./comparisonLinearNonLinearAnim";
-  import { setupEngine } from "../engine.default";
   import { animationBlock } from "./stores/comparison.store";
-
-  setupEngine();
 
   let canvas = document.getElementById(
     "comparison-linear-non-linear-canvas",

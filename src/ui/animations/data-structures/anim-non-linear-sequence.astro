@@ -14,7 +14,6 @@ import Goals from "./components/goals.astro";
 />
 <script>
   import { createArrow } from "./utils/Arrows";
-  import { setupEngine } from "../engine.default";
   import {
     createNodeAt,
     createArrowAt,
@@ -22,8 +21,6 @@ import Goals from "./components/goals.astro";
   } from "./nonLinearSequenceAnim";
   import { markGoalAsComplete } from "./staticMemAnim";
   import { atom } from "nanostores";
-
-  setupEngine();
 
   let canvas = document.getElementById(
     "non-linear-sequence-canvas",
@@ -83,9 +80,6 @@ import Goals from "./components/goals.astro";
     nodesClassName,
   };
   for (let nodeIndex = 0; nodeIndex < sizes.nodeAmount; nodeIndex++) {
-    let theresBackNode = nodeIndex != 0;
-    let theresNextNode = nodeIndex != sizes.nodeAmount - 1;
-    let theresMoreThanOneNext = nodeIndex == 1 || nodeIndex == 2;
     createNodeAt(elements, tags, sizes, nodeIndex, `${nodeIndex}`);
     if (nodeIndex != sizes.nodeAmount - 1) {
       createArrowAt(elements, nodeIndex, tags, sizes, "right", 0.9);
@@ -119,10 +113,8 @@ import Goals from "./components/goals.astro";
     markGoalAsComplete(goals.childNodes[0] as HTMLLIElement);
   });
 
-  let timeline = createSequenceAnimation(elements);
-
-  canvas.onclick = (e: PointerEvent) => {
+  canvas.onclick = async (e: PointerEvent) => {
     if (!any.get()) any.set(true);
-    timeline.play();
+    await createSequenceAnimation(elements);
   };
 </script>

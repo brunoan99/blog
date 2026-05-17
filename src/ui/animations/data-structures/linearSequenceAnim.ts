@@ -1,8 +1,6 @@
-import { animate, JSAnimation } from "animejs/animation";
 import { createNodeWithPointer } from "./utils/NodeWithPointer";
 import { createArrow } from "./utils/Arrows";
 import { getElem } from "./utils/HtmlElement";
-import { createTimeline, Timeline } from "animejs/timeline";
 
 type Sizes = {
   canvasWidth: number;
@@ -26,8 +24,6 @@ type Elements = {
 type Tags = {
   nodesClassName: string;
 };
-
-const NODE_AMOUNT = 4;
 
 const calculateNodeLeftOffset = (inRowIndex: number, sizes: Sizes) => {
   return sizes.nodeOffsetLeft + (inRowIndex * (sizes.nodeOffsetPerNode + sizes.arrowWidth))
@@ -55,8 +51,8 @@ export const createNodeAt = (elements: Elements, tags: Tags, sizes: Sizes, nodeI
       backgroundColor: "#F7F3EE",
       bottomBackgroundColor: isLastNode ? "#ededed" : "#F7F3EE",
     },
-    innitialValue: `${nodeIndex}`,
-    innitialPointerValue: isLastNode ? "null" : "next",
+    initialValue: `${nodeIndex}`,
+    initialPointerValue: isLastNode ? "null" : "next",
   });
 
   elements.nodes.splice(nodeIndex, 0, node);
@@ -70,19 +66,22 @@ export const linkPreviousNodeToCreated = (elements: Elements, nodeIndex: number)
   let nodeToUpdate = elements.nodes[nodeIndex];
   let nodeId = nodeToUpdate.id;
   let bottom = getElem<HTMLElement>(`#${nodeId}-bottom`);
-  if (bottom.innerText == "null") {
-    animate(bottom, {
-      background: [`#ededed`, `#F7F3EE`],
-      innerText: ["null", "next"],
-      duration: 350,
-      easing: "easeInOutQuad",
-      autoplay: true,
-      loop: false,
-      onComplete: (self: JSAnimation) => {
-        self.cancel();
-      },
-    })
-  }
+  if (bottom.innerText != "null") return
+
+  bottom.style.willChange = "background-color, opacity";
+
+  let animation = bottom.animate([
+    { backgroundColor: "#ededed", opacity: 1 },
+    { backgroundColor: "#F7F3EE", opacity: 0, offset: 0.4 },
+    { backgroundColor: "#F7F3EE", opacity: 1 },
+  ], {
+    duration: 350, easing: "ease-in-out", fill: "forwards"
+  })
+  setTimeout(() => { bottom.innerText = "next" }, 140);
+
+  animation.onfinish = () => {
+    bottom.style.willChange = "auto";
+  };
 }
 
 export const createArrowAtEnd = (elements: Elements, nodeIndex: number, tags: Tags, sizes: Sizes) => {
@@ -115,14 +114,9 @@ const interleave = <A, B>(a1: A[], a2: B[]): (A | B)[] => {
   return result;
 }
 
-export const createSequenceAnimation = (elements: Elements, sizes: Sizes): Timeline => {
+export const createSequenceAnimation = async (elements: Elements) => {
   let elementsToAnimate = interleave(elements.arrows, elements.nodes);
-  let timeline = createTimeline({
-    autoplay: false,
-    onComplete: (self) => {
-      self.reset();
-    }
-  })
+
   let totalElements = elementsToAnimate.length;
   let zIndex = totalElements;
   for (let i = 0; i < totalElements; i++) {
@@ -130,29 +124,20 @@ export const createSequenceAnimation = (elements: Elements, sizes: Sizes): Timel
     zIndex--;
   }
   for (let element of elementsToAnimate) {
-    if (element.id.includes("arrow")) {
-      timeline.add(element, {
-        scale: [
-          1,
-          1.15,
-          1],
-        duration: 1000,
-        easing: "easeInOutQuad",
-        loop: false,
-      })
-    }
-    else {
-      timeline.add(element, {
-        scale: [
-          1,
-          1.15,
-          1],
-        duration: 1000,
-        easing: "easeInOutQuad",
-        loop: false,
-      })
-    }
-  }
+    element.style.willChange = "scale";
 
-  return timeline
+    let animation = element.animate([
+      { scale: 1 },
+      { scale: 1.15 },
+      { scale: 1 },
+    ], {
+      duration: 1000,
+      direction: "alternate",
+      fill: "forwards",
+    })
+
+    await animation.finished;
+
+    element.style.willChange = "auto";
+  }
 }

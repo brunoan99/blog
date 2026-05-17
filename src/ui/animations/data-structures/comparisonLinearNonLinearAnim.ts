@@ -1,10 +1,6 @@
-import { animate, JSAnimation } from "animejs/animation";
 import { createNodeWithPointer } from "./utils/NodeWithPointer";
 import { createArrow, createArrowBetweenPoints } from "./utils/Arrows";
-import { getElem } from "./utils/HtmlElement";
 import { createNodeWithTwoPointers } from "./utils/NodeWithTwoPointers";
-import { createTimeline, Timeline } from "animejs/timeline";
-import { utils } from "animejs";
 
 type SizesLinear = {
   canvasWidth: number;
@@ -87,8 +83,8 @@ export const createLinearNodeAt = (elements: Elements, tags: Tags, sizes: SizesL
       backgroundColor: "#F7F3EE",
       bottomBackgroundColor: isLastNode ? "#ededed" : "#F7F3EE",
     },
-    innitialValue: `${nodeValue}`,
-    innitialPointerValue: isLastNode ? "null" : "next",
+    initialValue: `${nodeValue}`,
+    initialPointerValue: isLastNode ? "null" : "next",
   });
 
   elements.nodesLinear.splice(nodeIndex, 0, node);
@@ -165,9 +161,9 @@ export const createNonLinearNodeAt = (elements: Elements, tags: Tags, sizes: Siz
       bottomFirstBackgroundColor: hasChild ? "#F7F3EE" : "#ededed",
       bottomSecondBackgroundColor: hasChild ? "#F7F3EE" : "#ededed",
     },
-    innitialValue: `${nodeIndex}`,
-    innitialPointerFirstValue: hasChild ? "left" : "null",
-    innitialPointerSecondValue: hasChild ? "right" : "null",
+    initialValue: `${nodeIndex}`,
+    initialPointerFirstValue: hasChild ? "left" : "null",
+    initialPointerSecondValue: hasChild ? "right" : "null",
   });
   elements.nodesNonLinear.push(node);
   elements.canvas.appendChild(node);
@@ -224,7 +220,7 @@ const createArrowsFirstLine = (elements: Elements, tags: Tags, sizes: SizesNonLi
   }
 }
 
-export const createcreateArrowsMiddleLine = (elements: Elements, tags: Tags, sizes: SizesNonLinear, nodeIndex: number) => {
+export const createArrowsMiddleLine = (elements: Elements, tags: Tags, sizes: SizesNonLinear, nodeIndex: number) => {
   let rowIndex = Math.floor(nodeIndex / 4);
   let spaceInBetween = (sizes.canvasWidth - (2 * sizes.nodeOffsetPerNode)) / 3;
   let originNodeTopOffset = sizes.nodeOffsetTop + sizes.nodeOffsetPerNode + sizes.nodeOffsetPerRow;
@@ -239,10 +235,10 @@ export const createcreateArrowsMiddleLine = (elements: Elements, tags: Tags, siz
       y: originNodeTopOffset + sizes.nodeOffsetPerNode * 0.8,
     }
     let nodeBottomRowIndex = rowIndex ? 2 : 0;
-    let spaceInBetween = (sizes.canvasWidth - (4 * sizes.nodeOffsetPerNode)) / 5;
+    let spaceInBetweenBottomNodes = (sizes.canvasWidth - (4 * sizes.nodeOffsetPerNode)) / 5;
 
     let nodeBottomTopOffset = sizes.nodeOffsetTop + 2 * (sizes.nodeOffsetPerNode + sizes.nodeOffsetPerRow);
-    let nodeBottomLeftOffset = spaceInBetween + nodeBottomRowIndex * (spaceInBetween + sizes.nodeOffsetPerNode);
+    let nodeBottomLeftOffset = spaceInBetweenBottomNodes + nodeBottomRowIndex * (spaceInBetweenBottomNodes + sizes.nodeOffsetPerNode);
     let p2 = {
       x: nodeBottomLeftOffset + sizes.nodeOffsetPerNode * 0.5,
       y: nodeBottomTopOffset,
@@ -293,7 +289,7 @@ export const createNonLinearArrowsAt = (elements: Elements, tags: Tags, sizes: S
   ) {
     // second row
     // two options to create arrows, node 1 and node 5
-    createcreateArrowsMiddleLine(elements, tags, sizes, nodeIndex);
+    createArrowsMiddleLine(elements, tags, sizes, nodeIndex);
     return
   }
   if (nodeIndex == 0
@@ -317,86 +313,108 @@ const interleave = <A, B>(a1: A[], a2: B[]): (A | B)[] => {
   return result;
 }
 
-const arrowAnimationParams = {
-  scale: [
-    1,
-    1.10,
-    1],
-  duration: 1000,
-  easing: "easeInOutQuad",
-  loop: false
-};
-
-const nodeAnimationParams = {
-  scale: [
-    1,
-    1.15,
-    1],
-  duration: 1000,
-  easing: "easeInOutQuad",
-  loop: false,
-}
-
-const createLastNodeLinearTimeline = (element: HTMLElement, nodeFound: boolean, duration: number): Timeline => {
+const createLastNodeLinearAnimation = (element: HTMLElement, duration: number, startDelay: number, color: string): Animation => {
   let upper = element.querySelector(".node-upper") as HTMLElement;
   let bottom = element.querySelector(".node-bottom") as HTMLElement;
-  const lastNodeTimeline = createTimeline({
-    onComplete: (self) => {
-      self.restart();
-      self.pause();
-      self.reset();
-    }
-  });
-  lastNodeTimeline.add(element, {
-    scale: [1, 1.10],
+
+  element.animate([
+    { scale: 1.15 },
+  ], {
     duration: 500,
-    easing: "easeOutQuad",
-    loop: false,
-  }).add([element, upper, bottom], {
-    "background-color": nodeFound ? "#A8DCAB" : "#FF7F7F",
-    direction: "alternate",
-    duration: duration - 1000,
-    easing: "easeOutQuad",
-    loop: false,
-  }).add(element, {
-    scale: [1.10, 1],
-    duration: 500,
-    easing: "easeOutQuad",
-    loop: false,
+    delay: startDelay,
+    fill: "forwards",
   })
-  return lastNodeTimeline;
+  element.animate([
+    { scale: 1 },
+  ], {
+    duration: 500,
+    delay: startDelay + duration - 1000,
+    fill: "forwards",
+  })
+  let upperElementColor = upper.style.backgroundColor;
+  upper.animate([
+    { backgroundColor: upperElementColor },
+    { backgroundColor: color },
+    { backgroundColor: upperElementColor },
+  ], {
+    duration: duration,
+    direction: "alternate",
+    easing: "cubic-bezier(0.1, 0.7, 1.0, 0.1)",
+    delay: startDelay,
+  })
+  let bottomElementColor = bottom.style.backgroundColor;
+  let bottomAnimation = bottom.animate([
+    { backgroundColor: bottomElementColor },
+    { backgroundColor: color },
+    { backgroundColor: bottomElementColor },
+  ], {
+    duration: duration,
+    direction: "alternate",
+    easing: "cubic-bezier(0.1, 0.7, 1.0, 0.1)",
+    delay: startDelay,
+  })
+
+  return bottomAnimation;
 }
 
-const createLastNodeNonLinearTimeline = (element: HTMLElement, nodeFound: boolean, duration: number): Timeline => {
+const createLastNodeNonLinearAnimation = (element: HTMLElement, duration: number, startDelay: number, color: string): Animation => {
   let upper = element.querySelector(".node-upper") as HTMLElement;
   let bottom = element.querySelector(".node-bottom") as HTMLElement;
   let bottomFirst = element.querySelector(".node-bottom-first") as HTMLElement;
   let bottomSecond = element.querySelector(".node-bottom-second") as HTMLElement;
-  const lastNodeTimeline = createTimeline({
-    onComplete: (self) => {
-      self.restart();
-      self.pause();
-      self.reset();
-    }
-  });
-  lastNodeTimeline.add(element, {
-    scale: [1, 1.10],
+
+  element.animate([
+    { scale: 1.15 },
+  ], {
     duration: 500,
-    easing: "easeOutQuad",
-    loop: false,
-  }).add([element, upper, bottom, bottomFirst, bottomSecond], {
-    "background-color": nodeFound ? "#A8DCAB" : "#FF7F7F",
-    direction: "alternate",
-    duration: duration - 1000,
-    easing: "easeOutQuad",
-    loop: false,
-  }).add(element, {
-    scale: [1.10, 1],
-    duration: 500,
-    easing: "easeOutQuad",
-    loop: false,
+    delay: startDelay,
+    fill: "forwards",
   })
-  return lastNodeTimeline;
+  element.animate([
+    { scale: 1 },
+  ], {
+    duration: 500,
+    delay: startDelay + duration - 1000,
+    fill: "forwards",
+  })
+
+  let upperElementColor = upper.style.backgroundColor;
+  upper.animate([
+    { backgroundColor: upperElementColor },
+    { backgroundColor: color },
+    { backgroundColor: upperElementColor },
+  ], {
+    duration: duration,
+    direction: "alternate",
+    easing: "cubic-bezier(0.1, 0.7, 1.0, 0.1)",
+    delay: startDelay,
+  })
+
+  let bottomFirstElementColor = bottomFirst.style.backgroundColor;
+  bottomFirst.animate([
+    { backgroundColor: bottomFirstElementColor },
+    { backgroundColor: color },
+    { backgroundColor: bottomFirstElementColor },
+  ], {
+    duration: duration,
+    direction: "alternate",
+    easing: "cubic-bezier(0.1, 0.7, 1.0, 0.1)",
+    delay: startDelay,
+  })
+
+  let bottomSecondElementColor = bottomSecond.style.backgroundColor;
+  let bottomSecondAnimation = bottomSecond.animate([
+    { backgroundColor: bottomSecondElementColor },
+    { backgroundColor: color },
+    { backgroundColor: bottomSecondElementColor },
+  ], {
+    duration: duration,
+    direction: "alternate",
+    easing: "cubic-bezier(0.1, 0.7, 1.0, 0.1)",
+    delay: startDelay,
+  })
+
+  return bottomSecondAnimation;
 }
 
 
@@ -409,7 +427,7 @@ const getSequenceOfLinearAnimation = (numberSearched: number): number[] => {
   return sequenceOfAnimations;
 }
 
-export const getSequenceOfNonLinearAnimation = (numberSearched: number): number[] => {
+const getSequenceOfNonLinearAnimation = (numberSearched: number): number[] => {
   let sequenceOfAnimationsMap = {
     0: [0, 1, 2, 3, 6, 7],
     1: [0, 1, 2, 3],
@@ -418,12 +436,10 @@ export const getSequenceOfNonLinearAnimation = (numberSearched: number): number[
     4: [0, 1, 4, 5, 10, 11],
     5: [0, 1, 4, 5],
     6: [0, 1, 4, 5, 12, 13],
-    7: [0, 1, 4, 5, 12, 13],
-    8: [0, 1, 4, 5, 12, 13],
-    9: [0, 1, 4, 5, 12, 13],
   } as { [key: number]: number[] }
-  // if numberSearch > 6 then number will not be found
-  let sequenceOfAnimations = sequenceOfAnimationsMap[numberSearched];
+  // if numberSearch > 6 then number will not be found but the
+  // animation will be the same
+  let sequenceOfAnimations = sequenceOfAnimationsMap[numberSearched] ?? [0, 1, 4, 5, 12, 13];
   return sequenceOfAnimations;
 }
 
@@ -441,46 +457,57 @@ export const createAnimationTimeline = async (elements: Elements, numberSearched
 
   // both examples have starts on 0 and goes to 6 so any number above 6 will not be found
   let nodeFound = numberSearched <= 6;
+  let color = nodeFound ? "#A8DCAB" : "#FF7F7F";
 
-  let timelineLinear = createTimeline({
-    onComplete: (self) => {
-      self.reset();
-    }
-  });
-  let timelineNonLinear = createTimeline({
-    onComplete: (self) => {
-      self.reset();
-    }
-  });
+  let maxIndex = Math.max(
+    sequenceOfLinearAnimation.length,
+    sequenceOfNonLinearAnimation.length);
 
-  for (const [i, elementIndex] of sequenceOfLinearAnimation.entries()) {
-    let element = elementsLinear[elementIndex];
-    if (i === sequenceOfLinearAnimation.length - 1 && element.nodeName === "DIV") {
-      let lastNodeTimeline = createLastNodeLinearTimeline(element as HTMLElement, nodeFound, maxDuration - linearDuration);
-      timelineLinear.sync(lastNodeTimeline);
-    } else {
-      timelineLinear.add(element, element.id.includes("arrow") ? arrowAnimationParams : nodeAnimationParams);
+  let lastLinearAnimation = null;
+  let lastNonLinearAnimation = null;
+  for (let index = 0; index < maxIndex; index++) {
+    if (index <= sequenceOfLinearAnimation.length - 1) {
+      let isLast = index == sequenceOfLinearAnimation.length - 1;
+      let linearIndex = sequenceOfLinearAnimation[index];
+      let linearElement = elementsLinear[linearIndex];
+
+      if (!isLast) linearElement.animate([
+        { scale: 1 },
+        { scale: linearElement.id.includes("arrow") ? 1.12 : 1.15 },
+        { scale: 1 },
+      ], {
+        duration: 1000,
+        direction: "alternate",
+        fill: "none",
+        delay: index * 1000,
+      });
+      else
+        lastLinearAnimation = createLastNodeLinearAnimation(linearElement as HTMLElement, maxDuration - linearDuration, index * 1000, color);
     }
+
+    if (index <= sequenceOfNonLinearAnimation.length - 1) {
+      let isLast = index == sequenceOfNonLinearAnimation.length - 1;
+      let nonLinearIndex = sequenceOfNonLinearAnimation[index];
+      let nonLinearElement = elementsNonLinear[nonLinearIndex];
+
+      if (!isLast) nonLinearElement.animate([
+        { scale: 1 },
+        { scale: nonLinearElement.id.includes("arrow") ? 1.12 : 1.15 },
+        { scale: 1 },
+      ], {
+        duration: 1000,
+        direction: "alternate",
+        fill: "none",
+        delay: index * 1000,
+      });
+      else lastNonLinearAnimation = createLastNodeNonLinearAnimation(nonLinearElement as HTMLElement, maxDuration - nonLinearDuration, index * 1000, color);
+
+    }
+
   }
-
-  for (const [i, elementIndex] of sequenceOfNonLinearAnimation.entries()) {
-    let element = elementsNonLinear[elementIndex];
-    if (i === sequenceOfNonLinearAnimation.length - 1 && element.nodeName === "DIV") {
-      timelineNonLinear.sync(createLastNodeNonLinearTimeline(
-        element as HTMLElement,
-        nodeFound,
-        maxDuration - nonLinearDuration
-      ));
-    } else {
-      timelineNonLinear.add(element, element.id.includes("arrow") ? arrowAnimationParams : nodeAnimationParams);
-    }
-  }
-
-  timelineLinear.play();
-  timelineNonLinear.play();
 
   await Promise.all([
-    timelineLinear.then(),
-    timelineNonLinear.then(),
+    lastLinearAnimation?.finished,
+    lastNonLinearAnimation?.finished,
   ]);
 }

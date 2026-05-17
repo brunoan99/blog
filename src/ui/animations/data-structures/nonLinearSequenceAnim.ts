@@ -1,5 +1,4 @@
 import { createArrow } from "./utils/Arrows";
-import { createTimeline, Timeline } from "animejs/timeline";
 import { createNodeWithPointer } from "./utils/NodeWithPointer";
 
 type Sizes = {
@@ -54,8 +53,8 @@ export const createNodeAt = (
       backgroundColor: "#F7F3EE",
       bottomBackgroundColor: "#F7F3EE",
     },
-    innitialValue: nodeValue,
-    innitialPointerValue: "connections",
+    initialValue: nodeValue,
+    initialPointerValue: "connections",
   });
 
   elements.nodes.splice(nodeIndex, 0, node);
@@ -99,40 +98,27 @@ const interleave = <A, B>(a1: A[], a2: B[]): (A | B)[] => {
   return result;
 }
 
-export const createSequenceAnimation = (elements: Elements): Timeline => {
+export const createSequenceAnimation = async (elements: Elements) => {
   let elementsToAnimate = interleave(elements.arrows, elements.nodes);
   let sequenceOfAnimations = [0, 1, 2, 7, 13, 3, 14, 7, 6, 9, 15, 5, 16, 9, 10, 11];
-  let timeline = createTimeline({
-    autoplay: false,
-    onComplete: (self) => {
-      self.reset();
-    }
-  })
+
   for (let index of sequenceOfAnimations) {
     let element = elementsToAnimate[index];
-    if (element.id.includes("arrow")) {
-      timeline.add(element, {
-        scale: [
-          1,
-          1.10,
-          1],
-        duration: 1000,
-        easing: "easeInOutQuad",
-        loop: false,
-      })
-    }
-    else {
-      timeline.add(element, {
-        scale: [
-          1,
-          1.15,
-          1],
-        duration: 1000,
-        easing: "easeInOutQuad",
-        loop: false,
-      })
-    }
-  }
 
-  return timeline
+    element.style.willChange = "scale";
+
+    let animation = element.animate([
+      { scale: 1 },
+      { scale: element.id.includes("arrow") ? 1.12 : 1.15 },
+      { scale: 1 },
+    ], {
+      duration: 1000,
+      direction: "alternate",
+      fill: "forwards",
+    })
+
+    await animation.finished;
+
+    element.style.willChange = "auto";
+  }
 }

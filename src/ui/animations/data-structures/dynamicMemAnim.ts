@@ -1,4 +1,3 @@
-import { animate, JSAnimation } from "animejs/animation";
 import { createNodeWithPointer } from "./utils/NodeWithPointer";
 import { createArrow } from "./utils/Arrows";
 import { getElem } from "./utils/HtmlElement";
@@ -70,6 +69,7 @@ export const calculateClickActionByEvent = (event: PointerEvent): ClickAction =>
       if (target.className.includes("upper") || target.className.includes("bottom")) return "remove" as ClickAction;
       if (target.className.includes("node")) return "remove" as ClickAction;
       if (target.id.includes("canvas")) return "insert" as ClickAction;
+      throw new Error(`Unhandled div class: ${target.className}`);
     default:
       console.log(target);
       throw new Error("Unknown target element");
@@ -106,7 +106,6 @@ const calculateNodeIndexByCanvasPosition = (event: PointerEvent, sizes: Sizes): 
     col = sizes.nodeLimitPerRow - col - 1;
   }
 
-  // if (row % 2 == 1) index = row * sizes.nodeLimitPerRow + (sizes.nodeLimitPerRow - col - 1);
   let index = row * sizes.nodeLimitPerRow + col;
   index = Math.min(index, sizes.nodeAmount);
 
@@ -130,11 +129,10 @@ export const calculateNodeIndexByEvent = (event: PointerEvent, sizes: Sizes, ele
     case "div":
     case "DIV":
       return calculateNodeIndexByCanvasPosition(event, sizes);
-    case "default":
+    default:
       console.log(target);
       throw new Error("Unknown target element");
   }
-  throw new Error("Unable to calculate node index");
 }
 
 const calculateNodeLeftOffset = (inRowIndex: number, isRowEven: boolean, sizes: Sizes) => {
@@ -179,8 +177,8 @@ export const createNodeAt = (elements: Elements, tags: Tags, sizes: Sizes, nodeI
       backgroundColor: "#F7F3EE",
       bottomBackgroundColor: isLastNode ? "#ededed" : "#F7F3EE",
     },
-    innitialValue: `${nodeValue}`,
-    innitialPointerValue: isLastNode ? "null" : "next",
+    initialValue: `${nodeValue}`,
+    initialPointerValue: isLastNode ? "null" : "next",
   });
 
   elements.nodes.splice(nodeIndex, 0, node);
@@ -218,30 +216,35 @@ export const linkPreviousNodeToCreated = (elements: Elements, nodeIndex: number)
   let nodeToUpdate = elements.nodes[nodeIndex];
   let nodeId = nodeToUpdate.id;
   let bottom = getElem<HTMLElement>(`#${nodeId}-bottom`);
-  if (bottom.innerText == "null") {
-    animate(bottom, {
-      background: [`#ededed`, `#F7F3EE`],
-      innerText: ["null", "next"],
-      duration: 350,
-      easing: "easeInOutQuad",
-      autoplay: true,
-      loop: false,
-      onComplete: (self: JSAnimation) => {
-        self.cancel();
-      },
-    })
-  }
+  if (bottom.innerText != "null") return;
+
+  bottom.style.willChange = "background-color, opacity";
+
+  let animation = bottom.animate([
+    { backgroundColor: "#ededed", opacity: 1 },
+    { backgroundColor: "#F7F3EE", opacity: 0, offset: 0.4 },
+    { backgroundColor: "#F7F3EE", opacity: 1 },
+  ], {
+    duration: 350, easing: "ease-in-out", fill: "forwards"
+  })
+  setTimeout(() => { bottom.innerText = "next" }, 140);
+
+  animation.onfinish = () => {
+    bottom.style.willChange = "auto";
+  };
 }
 
 export const removeNodeAt = (elements: Elements, nodeIndex: number) => {
   let nodeToRemove = elements.nodes[nodeIndex];
+
+  const wasLast = nodeIndex == elements.nodes.length - 1;
 
   if (nodeToRemove) {
     elements.canvas.removeChild(nodeToRemove);
     elements.nodes = elements.nodes.filter((v, i) => v.id != nodeToRemove.id);
   }
 
-  if (nodeIndex == elements.nodes.length)
+  if (wasLast)
     unLinkPreviousNodeToRemoved(elements, nodeIndex - 1);
 }
 
@@ -257,61 +260,52 @@ export const unLinkPreviousNodeToRemoved = (elements: Elements, nodeIndex: numbe
 
   let nodeId = nodeToUpdate.id;
   let bottom = getElem<HTMLElement>(`#${nodeId}-bottom`)
-  if (bottom.innerText == "next") {
-    animate(bottom, {
-      background: [`#F7F3EE`, `#ededed`],
-      innerText: ["next", "null"],
-      duration: 350,
-      easing: "easeInOutQuad",
-      autoplay: true,
-      loop: false,
-      onComplete: (self: JSAnimation) => {
-        self.cancel();
-      },
-    })
-  }
+  if (bottom.innerText != "next") return
+
+  bottom.style.willChange = "background-color, opacity";
+
+  let animation = bottom.animate([
+    { backgroundColor: "#F7F3EE", opacity: 1 },
+    { backgroundColor: "#ededed", opacity: 0, offset: 0.4 },
+    { backgroundColor: "#ededed", opacity: 1 },
+  ], {
+    duration: 350, easing: "ease-in-out", fill: "forwards"
+  })
+  setTimeout(() => { bottom.innerText = "null" }, 140);
+
+  animation.onfinish = () => {
+    bottom.style.willChange = "auto";
+  };
+
 }
 
-export const moveForward = async (element: HTMLElement, newIndex: number, sizes: Sizes) => {
+export const moveNodeTo = async (element: HTMLElement, newIndex: number, sizes: Sizes) => {
   let rowIndex = Math.floor(newIndex / sizes.nodeLimitPerRow);
   let isRowEven = rowIndex % 2 == 0;
   let inRowIndex = newIndex % sizes.nodeLimitPerRow;
 
-  await animate(element, {
-    left: [
-      element.style.left,
-      `${calculateNodeLeftOffset(inRowIndex, isRowEven, sizes)}px`
-    ],
-    top: [
-      element.style.top,
-      `${calculateNodeTopOffset(rowIndex, sizes)}px`
-    ],
-    delay: 50,
-    duration: 150,
-    easing: "easeInOutQuad",
-    loop: false,
-  });
-}
+  let toLeft = `${calculateNodeLeftOffset(inRowIndex, isRowEven, sizes)}px`;
+  let toTop = `${calculateNodeTopOffset(rowIndex, sizes)}px`;
 
-export const moveBackward = async (element: HTMLElement, newIndex: number, sizes: Sizes) => {
-  let rowIndex = Math.floor(newIndex / sizes.nodeLimitPerRow);
-  let isRowEven = rowIndex % 2 == 0;
-  let inRowIndex = newIndex % sizes.nodeLimitPerRow;
-
-  await animate(element, {
-    left: [
-      element.style.left,
-      `${calculateNodeLeftOffset(inRowIndex, isRowEven, sizes)}px`
-    ],
-    top: [
-      element.style.top,
-      `${calculateNodeTopOffset(rowIndex, sizes)}px`
-    ],
-    delay: 50,
-    duration: 150,
-    easing: "easeInOutQuad",
-    loop: false,
+  element.style.willChange = "left, top";
+  const anim = element.animate([
+    {
+      left: element.style.left,
+      top: element.style.top
+    },
+    {
+      left: toLeft,
+      top: toTop
+    }
+  ], {
+    duration: 150, easing: "ease-in-out", fill: "forwards"
   });
+
+  await anim.finished;
+
+  element.style.left = toLeft;
+  element.style.top = toTop;
+  element.style.willChange = "auto";
 }
 
 export const expandCanvasIfNeeded = async (elements: Elements, sizes: Sizes) => {
@@ -324,20 +318,22 @@ export const expandCanvasIfNeeded = async (elements: Elements, sizes: Sizes) => 
     const nextRowIndex = Math.floor(nodeAmount / nodeLimitPerRow); // 0-based
     const requiredHeight = 2 * nodeOffsetTop + (nextRowIndex + 1) * (nodeSize + nodeOffsetRow);
 
-    if (canvasHeight < requiredHeight) {
-      sizes.canvasHeight = requiredHeight;
-      let animation = animate(elements.canvas, {
-        height: [`${canvasHeight}px`, `${requiredHeight}px`],
-        duration: 250,
-        easing: "easeInOutQuad",
-        autoplay: true,
-        loop: false,
-        onComplete: (self: JSAnimation) => {
-          self.cancel();
-        },
-      })
-      await animation;
-    }
+    if (canvasHeight >= requiredHeight) return;
+
+    elements.canvas.style.willChange = "height";
+
+    let animation = elements.canvas.animate([
+      { height: `${canvasHeight}px` },
+      { height: `${requiredHeight}px` }
+    ], {
+      duration: 250, easing: "ease-in-out", fill: "forwards"
+    })
+
+    await animation.finished;
+
+    sizes.canvasHeight = requiredHeight;
+    elements.canvas.style.height = `${requiredHeight}px`;
+    elements.canvas.style.willChange = "auto";
   }
 }
 
@@ -350,20 +346,17 @@ export const shrinkCanvasIfNeeded = async (elements: Elements, sizes: Sizes) => 
   // Don't shrink below the initial double-row height
   const minHeight = 2 * (nodeSize + nodeOffsetRow) + sizes.nodeOffsetTop;
 
-  if (willEmptyLastRow && canvasHeight > minHeight) {
-    const newHeight = canvasHeight - nodeSize - nodeOffsetRow;
-    sizes.canvasHeight = newHeight;
-    let animation = animate(elements.canvas, {
-      height: [`${canvasHeight}px`, `${newHeight}px`],
-      delay: 50,
-      duration: 150,
-      easing: "easeInOutQuad",
-      autoplay: true,
-      loop: false,
-      onComplete: (self: JSAnimation) => {
-        self.cancel();
-      },
-    })
-    await animation;
-  }
+  if (!(willEmptyLastRow && canvasHeight > minHeight)) return;
+
+  const newHeight = canvasHeight - nodeSize - nodeOffsetRow;
+
+  let animation = elements.canvas.animate(
+    [{ height: `${canvasHeight}px` }, { height: `${newHeight}px` }],
+    { duration: 250, easing: "ease-in-out", fill: "forwards" }
+  );
+  await animation.finished;
+
+  sizes.canvasHeight = newHeight;
+  elements.canvas.style.height = `${newHeight}px`;
+  elements.canvas.style.willChange = "auto";
 }
