@@ -20,13 +20,15 @@ import ComparisonLinearNonLinearAnimation from "../../ui/animations/data-structu
 
 Talvez um dos assuntos mais batidos no mundo da programação. Mas esse ponto tem uma explicação muito pertinente, a importância e o impacto que a utilização correta de Estruturas de Dados tem no desenvolvimento de software. Aqui pretendo apenas introduzir alguns tópicos a respeito, exemplificar e tentar trazer nitidez para quem ainda se vê confuso no assunto.
 
-Começando da forma mais simples possível Estruturas de Dados são formas de se organizar/agrupar dados para obter um comportamento ou atingir uma eficiência maior em comparação com um padão "desorganizado" ou menos pertinente.
+Em um nível mais baixo, todo dado armazenado por um programa é representado como uma sequência de bits (**0s** e **1s**). No entanto, esses bits por si só não possuem significado — o que dá sentido a eles é a forma como escolhemos interpretá-los.
 
-Mas "**o que?**" exatamente estamos organizando? **Dados**, que inevitalmente são apenas sequências de **0's** e **1's**. Estes **0's** e **1's** escritos/lidos de formas diferentes representam valores de diferentes **"tipos"**. Por exemplo podemos representar números e caracteres de texto e através destes representar outros **"tipos"** mais abstratos.
+É aí que entram os tipos de dados. Um mesmo conjunto de bits pode representar um **número inteiro**, um **caractere** ou até **parte de uma estrutura** mais complexa, dependendo do tipo associado. Além disso, cada tipo possui um **tamanho e um formato bem definidos na memória**.
 
-Apesar de um conceito abstrato e um pouco genérico podemos categorizar Estruturas de Dados pelo forma como dados são armazenados e tratados, através das rotinas ou métodos da estrutura em questão. Apesar da abastração conseguimos organizar Estruturas de Dados em grupos que nos ajudam a compreender seu comportamento.
+Mas apenas definir tipos não é suficiente. Em aplicações reais, raramente lidamos com dados isolados — precisamos **organizar múltiplos valores** e **manipulá-los de forma eficiente**.
 
-Dentre as principais formas de distinguir esturutras de Dados temos quanto a forma de Alocação e a Linearidade dessa Estrutura.
+É nesse ponto que entram as estruturas de dados: elas definem não apenas como os dados são armazenados na memória, mas também quais operações são eficientes sobre eles (como **acessar**, **inserir**, **remover** ou **buscar** valores).
+
+Para dar ordem a essa abstração, categorizamos as estruturas pela forma como **armazenam** e **processam** informações. Entender como elas se comportam fica muito mais simples quando as dividimos por grupos. Neste artigo, focaremos nas duas distinções que mais impactam o dia a dia do desenvolvedor: a estratégia de **Alocação** e a **Linearidade** da estrutura.
 
 ## Alocação
 
@@ -39,7 +41,7 @@ No que diz respeito a Alocação de Memória em Estrutura de Dados pode-mos divi
 
 ### Alocação Estática
 
-Alocação Estática resume-se a utilizar previamente do conhecimento do tamanho de um dado e realizar alocação sequêncial de memória suficiente para conter o arranjo destes dados desejados. Um claro exemplo são os Arrays.
+Neste artigo, utilizaremos o termo **alocação estática** para nos referirmos a estruturas cuja capacidade é definida previamente, antes de seu uso. Isso significa que a **memória necessária é reservada antecipadamente** para comportar todos os elementos esperados. Em geral, esse modelo envolve o uso de um **bloco contíguo de memória** e de uma **quantidade fixa de posições** para armazenamento de dados. Um exemplo clássico de estrutura com essas características são os **Arrays**
 
 Antes de exemplificar como Estruturas de Dados fazem uso dessa propriedade, permita-me demostrar o que seria conhecer o tamanho de um dado/tipo. Tomemos como exemplo um **u32** em Rust (u32 é a notação para inteiro sem sinal de 32 bits). Este tipo possui um tamanho definido **32 bits** ou **4 bytes**.
 
@@ -139,7 +141,7 @@ console.log(arr);
 [ <5 empty items>, 6 ]
 ```
 
-Em javascript esse código executa sem erro algum. O Array é instânciado com 5 posições, ao passo que uma sexta é solicitada a linguagem automaticamente realiza por baixo dos panos as operações necessárias para se adequar e seguir com a execução normalmente.
+Em javascript esse código executa sem erro algum. O "Array" é instânciado com 5 posições, ao passo que uma sexta é solicitada a linguagem automaticamente realiza por baixo dos panos as operações necessárias para se adequar e seguir com a execução normalmente.
 
 Se utilizarmos Nodejs como runtime para execução do nosso código Javascript podemos adotar um exemplo utilizando uma estrutura melhor adequada há um Array o <strong>Uint8Array</strong> que é uma subclasse de <strong>TypedArray</strong>. Chegamos então ao simples exemplo:
 
@@ -157,6 +159,8 @@ Uint8Array(5) [ 0, 0, 0, 0, 0 ]
 ```
 
 Porém neste cenário o Nodejs por baixo dos panos não irá realizar o trabalho necessário para criar uma nova estrutura. O que particularmente me parece mais adequado tendo em consideranção o comportamento experado de um Array.
+
+Neste caso é de certa forma injusta a comparação de Javascript com as demais linguagens citadas a cima. Não entrarei nos meritos do porque, mas no geral ambas as linguagens anteriores se propõem a ser linguagens de mais baixo nível, permitindo que os desenvolvedores possam escrever código que seja mais próximo da máquina. Enquanto Javascript é uma linguagem de alto nível que permite que os desenvolvedores escrevam código sem a necessidade de complexidades de baixo nível, porém oferecendo menor controle sobre o algumas questões como memória.
 
 **Mas e se dentro do uso desejado não sabemos a quantidade de items que serão comportados e/ou o tamanho destes items?**
 
@@ -270,3 +274,5 @@ Não quero entrar nos detalhes desse algorimo, trata-se de uma busca em árvore 
 ## Conclusão
 
 Parte da ideia desse post é introduzir a maneira como eu pretendo representar Estruturas de Dados, Nós, um pouco de Memória e afins. A ideia central não é representar diversas estruturas diferentes de formas diferentes, muito menos me aprofundar no debate a respeito de alguma Estrutura em especifico. Mas apenas falar a respeito do tópico de modo suficiente para dar a entender a representação.
+
+Obviamente o tópico de Estruturas de Dados é muito amplo e não pode ser resumido a esta categorização. Outros fatores são constantemente alvo de discussão e debate como por exemplo **custo de inserção/remoção**, **custo de acesso aleatório**, **ordenação**, **mutabilidade** e muitos outros. Neste artigo o foco é apenas a representação de Estruturas de Dados. E através dessa representação separar conceitualmente diferentes formas de categorizar Estruturas de Dados.
