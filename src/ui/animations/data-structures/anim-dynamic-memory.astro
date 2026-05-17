@@ -21,7 +21,6 @@ import Goals from "./components/goals.astro";
 <script>
   import {
     currentNodeValue,
-    totalNodes,
     animationBlock,
     any,
     between,
@@ -39,18 +38,14 @@ import Goals from "./components/goals.astro";
     calculateNodeIndexByEvent,
     calculateNodeIndexByNodePosition,
     removeNodeAt,
-    moveBackward,
     createArrowAtEnd,
     expandCanvasIfNeeded,
     shrinkCanvasIfNeeded,
     removeArrowAtEnd,
-    moveForward,
+    moveNodeTo,
   } from "./dynamicMemAnim";
   import { createArrow } from "./utils/Arrows";
-  import { setupEngine } from "../engine.default";
   import { markGoalAsComplete } from "./staticMemAnim";
-
-  setupEngine();
 
   let canvas = document.getElementById("dynamic-memory-canvas") as HTMLElement;
   let canvasWidth = canvas.clientWidth;
@@ -59,8 +54,6 @@ import Goals from "./components/goals.astro";
   let arrowWidth = 56;
   let nodeLimitPerRow = 4;
   let nodeSize = 90; // node visual size
-  // if (nodeSize * nodeLimitPerRow + arrowWidth * (nodeLimitPerRow - 1) > canvasWidth)
-  //   nodeSize = canvasWidth / (nodeLimitPerRow + 0.5);
 
   let borderSize = 2;
   let nodeOffsetPerNode = nodeSize + borderSize; // +2 cause of the border
@@ -114,18 +107,15 @@ import Goals from "./components/goals.astro";
 
   const increaseStores = () => {
     currentNodeValue.set(currentNodeValue.get() + 1);
-    totalNodes.set(totalNodes.get() + 1);
-    sizes.nodeAmount = totalNodes.get();
+    sizes.nodeAmount += 1;
   };
 
   const decreaseStores = () => {
-    totalNodes.set(totalNodes.get() - 1);
-    sizes.nodeAmount = totalNodes.get();
+    sizes.nodeAmount -= 1;
   };
 
   const logStores = () => {
     console.log("Current Node Value: ", currentNodeValue.get());
-    console.log("Total Nodes: ", totalNodes.get());
     console.log("Nodes Amount: ", sizes.nodeAmount);
   };
 
@@ -195,18 +185,16 @@ import Goals from "./components/goals.astro";
 
       let nodeIndex = calculateNodeIndexByEvent(e, sizes, elements);
       let currentValue = currentNodeValue.get();
-      let totalNodesValue = totalNodes.get();
-      sizes.nodeAmount = totalNodesValue;
 
       if (
         !between.get() &&
         sizes.nodeAmount >= 2 &&
         nodeIndex != 0 &&
-        nodeIndex != totalNodesValue
+        nodeIndex != sizes.nodeAmount
       )
         between.set(true);
 
-      if (!atStart.get() && nodeIndex == 0 && totalNodesValue > 0)
+      if (!atStart.get() && nodeIndex == 0 && sizes.nodeAmount > 0)
         atStart.set(true);
 
       if (!atLeastFive.get() && currentValue >= 4) atLeastFive.set(true);
@@ -215,7 +203,7 @@ import Goals from "./components/goals.astro";
 
       let positionToPush = sizes.nodeAmount - 1;
       while (positionToPush >= nodeIndex) {
-        await moveForward(
+        await moveNodeTo(
           elements.nodes[positionToPush],
           positionToPush + 1,
           sizes,
@@ -223,7 +211,7 @@ import Goals from "./components/goals.astro";
         positionToPush--;
       }
 
-      createNodeAt(elements, tags, sizes, nodeIndex, currentValue);
+      await createNodeAt(elements, tags, sizes, nodeIndex, currentValue);
 
       increaseStores();
     } else if (clickAction == "remove") {
@@ -236,31 +224,26 @@ import Goals from "./components/goals.astro";
         e.target as HTMLElement,
         elements,
       );
-      removeNodeAt(elements, nodeIndex);
+
+      let wasFirst = nodeIndex == 0;
+      let wasLast = nodeIndex == elements.nodes.length - 1;
+
+      await removeNodeAt(elements, nodeIndex);
 
       if (!anyRemoved.get()) anyRemoved.set(true);
 
-      if (
-        !betweenRemoved.get() &&
-        nodeIndex != 0 &&
-        nodeIndex != elements.nodes.length
-      )
+      if (!betweenRemoved.get() && !wasFirst && !wasLast)
         betweenRemoved.set(true);
 
       if (!atStartRemoved.get() && nodeIndex == 0) atStartRemoved.set(true);
 
-      if (!atEndRemoved.get() && nodeIndex == elements.nodes.length)
-        atEndRemoved.set(true);
+      if (!atEndRemoved.get() && wasLast) atEndRemoved.set(true);
 
       if (!removedAll.get() && elements.nodes.length == 0) removedAll.set(true);
 
       let positionToPull = nodeIndex;
       while (positionToPull < sizes.nodeAmount - 1) {
-        await moveBackward(
-          elements.nodes[positionToPull],
-          positionToPull,
-          sizes,
-        );
+        await moveNodeTo(elements.nodes[positionToPull], positionToPull, sizes);
         positionToPull++;
       }
 
