@@ -14,7 +14,6 @@ import Goals from "./components/goals.astro";
 />
 <script>
   import { createArrow } from "./utils/Arrows";
-  import { setupEngine } from "../engine.default";
   import {
     createNodeAt,
     createArrowAtEnd,
@@ -22,8 +21,6 @@ import Goals from "./components/goals.astro";
   } from "./linearSequenceAnim";
   import { markGoalAsComplete } from "./staticMemAnim";
   import { atom } from "nanostores";
-
-  setupEngine();
 
   let canvas = document.getElementById("linear-sequence-canvas") as HTMLElement;
   let canvasWidth = canvas.clientWidth;

@@ -1,5 +1,3 @@
-import { $ } from "animejs";
-
 export type ArrowProps = {
   id: string;
   arrowWidth: number;

@@ -38,9 +38,6 @@ import "../../styles/global.css";
 <script>
   import { createNode, createBin } from "./utils/Node";
   import { inputValue } from "./stores/node-example.store";
-  import { setupEngine } from "../engine.default";
-
-  setupEngine();
 
   let canvas = document.getElementById("static-node-canvas") as HTMLElement;
   let width = canvas.clientWidth;
