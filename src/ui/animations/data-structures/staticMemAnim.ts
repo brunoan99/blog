@@ -1,6 +1,4 @@
-import { animate, JSAnimation } from "animejs/animation";
 import { createNode } from "./utils/Node";
-import { utils, waapi } from "animejs";
 
 type Sizes = {
   canvasWidth: number;
@@ -40,34 +38,53 @@ const createNodesElements = (elements: Elements, tags: Tags, sizes: Sizes) => {
   }
 }
 
-const createCursorClickAnimation = (cursor: HTMLElement): JSAnimation => {
+const createCursorClickAnimation = (cursor: HTMLElement): Animation => {
   cursor.style.willChange = "scale, stroke-width";
 
-  return animate(cursor, {
-    scale: [0.9, 1, 0.9],
-    strokeWidth: [2, 1, 2],
-    easing: 'easeInOutQuad',
-    autoplay: true,
-    loop: true,
-  });
-}
-
-const createCursorMoveAnimation = (cursor: HTMLElement, lastTranslate: number, nextTranslate: number) => {
-  cursor.style.willChange = "tranform";
-
-  return waapi.animate(cursor, {
-    translateX: [`${lastTranslate}px`, `${nextTranslate}px`],
-    duration: 350,
+  let cursorAnimation = cursor.animate([
+    { scale: 0.9, strokeWidth: 2 },
+    { scale: 1, strokeWidth: 1 },
+  ], {
+    duration: 350, easing: "ease-in-out", fill: "forwards", direction: "alternate", iterations: Infinity
   })
+
+  return cursorAnimation
 }
 
-const createNodeElementsAnimation = (element: HTMLElement) => {
+const createCursorMoveAnimation = (cursor: HTMLElement, newLeft: string) => {
+  let currentLeft = cursor.style.left;
+  if (currentLeft == newLeft) return;
+
+  cursor.style.willChange = "left";
+
+  let cursorMoveAnimation = cursor.animate([
+    { left: currentLeft },
+    { left: newLeft },
+  ], {
+    duration: 350, easing: "ease-in-out", fill: "forwards",
+  })
+
+  cursorMoveAnimation.onfinish = () => {
+    cursor.style.left = newLeft;
+    cursor.style.willChange = "auto";
+  };
+
+}
+
+const createNodeElementsAnimation = async (element: HTMLElement) => {
   element.style.willChange = "background-color";
 
-  animate(element, {
-    "background-color": "#F7F3EE",
-    duration: 500,
-  })
+  let animation = element.animate([
+    { backgroundColor: "#ededed" },
+    { backgroundColor: "#F7F3EE" },
+  ], {
+    duration: 350, easing: "ease-in-out", fill: "forwards"
+  });
+
+  animation.onfinish = () => {
+    element.style.backgroundColor = "#F7F3EE";
+    element.style.willChange = "auto";
+  };
 }
 
 const markGoalAsComplete = (goal: HTMLElement) => {
@@ -76,8 +93,10 @@ const markGoalAsComplete = (goal: HTMLElement) => {
   goal.style.opacity = "0.45";
 }
 
-const deleteCursorAnimation = (cursor: HTMLElement, elements: Elements) => {
-  utils.remove(cursor);
+const deleteCursorAnimation = (cursor: HTMLElement, animation: Animation, elements: Elements) => {
+  animation.commitStyles()
+  animation.cancel();
+
   elements.canvas.removeChild(cursor);
   elements.cursor = null;
 }

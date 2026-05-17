@@ -83,8 +83,6 @@ import Goals from "./components/goals.astro";
     nodesClassName,
   };
 
-  let lastTranslateX = 0;
-
   createNodesElements(elements, tags, sizes);
 
   let cursorAnimation = createCursorClickAnimation(cursor);
@@ -96,10 +94,8 @@ import Goals from "./components/goals.astro";
   every.subscribe((value) => {
     if (value) markGoalAsComplete(goals.childNodes[1] as HTMLLIElement);
 
-    if (replaced.get()) {
-      cursorAnimation.pause().cancel();
-      deleteCursorAnimation(cursorWrapper, elements);
-    }
+    if (replaced.get())
+      deleteCursorAnimation(cursorWrapper, cursorAnimation, elements);
   });
 
   replaced.subscribe((value) => {
@@ -111,13 +107,11 @@ import Goals from "./components/goals.astro";
     // So here and at every goals are the best places to do the cancel.
     // This is why inside replaced whe check every and inside every whe check replaced
 
-    if (every.get()) {
-      cursorAnimation.pause().cancel();
-      deleteCursorAnimation(cursorWrapper, elements);
-    }
+    if (every.get())
+      deleteCursorAnimation(cursorWrapper, cursorAnimation, elements);
   });
 
-  clicked.subscribe((value) => {
+  clicked.subscribe(async (value) => {
     if (value.length == 0) return;
 
     if (any.get() && every.get() && replaced.get()) return;
@@ -141,18 +135,16 @@ import Goals from "./components/goals.astro";
     // if any, every or replaced is false, then the cursor will be moved
     // otherwise the cursor will be removed from canvas and element set to null
     // so creating the animation will have no effect
-    let nextTranslateX =
-      nodeOffsetLeft +
-      nodeSize * (nextSpot + cursorPercentFromBorder) -
-      cursorLeftBase;
+    let left = `${
+      nodeOffsetLeft + nodeSize * (nextSpot + cursorPercentFromBorder)
+    }px`;
 
-    createCursorMoveAnimation(cursorWrapper, lastTranslateX, nextTranslateX);
-    lastTranslateX = nextTranslateX;
+    await createCursorMoveAnimation(cursorWrapper, left);
     cursorPosition.set(nextSpot);
   });
 
   elements.nodes.forEach((node: HTMLElement) => {
-    node.addEventListener("click", () => {
+    node.addEventListener("click", async () => {
       let index = parseInt(node.id.charAt(node.id.length - 1)) - 1;
       let clicks = clicksPerNodes.get();
       clicks[index] = clicks[index] + 1;
