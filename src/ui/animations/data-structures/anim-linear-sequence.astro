@@ -97,9 +97,8 @@ import Goals from "./components/goals.astro";
     markGoalAsComplete(goals.childNodes[0] as HTMLLIElement);
   });
 
-  canvas.onclick = (e: PointerEvent) => {
+  canvas.onclick = async (e: PointerEvent) => {
     if (!any.get()) any.set(true);
-    let timeline = createSequenceAnimation(elements, sizes);
-    timeline.play();
+    await createSequenceAnimation(elements);
   };
 </script>
