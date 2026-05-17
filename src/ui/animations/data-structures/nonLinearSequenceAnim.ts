@@ -53,8 +53,8 @@ export const createNodeAt = (
       backgroundColor: "#F7F3EE",
       bottomBackgroundColor: "#F7F3EE",
     },
-    innitialValue: nodeValue,
-    innitialPointerValue: "connections",
+    initialValue: nodeValue,
+    initialPointerValue: "connections",
   });
 
   elements.nodes.splice(nodeIndex, 0, node);

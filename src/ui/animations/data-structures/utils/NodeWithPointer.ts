@@ -15,8 +15,8 @@ export type NodeWithPointerProps = {
   id: string;
   className?: string;
   style: NodeWithPointerStyleProps;
-  innitialValue?: string;
-  innitialPointerValue?: string;
+  initialValue?: string;
+  initialPointerValue?: string;
 }
 
 const styleNodeUpper = (elem: HTMLElement, style: NodeWithPointerStyleProps) => {
@@ -66,19 +66,19 @@ const styleNodeWithPointer = (elem: HTMLElement, style: NodeWithPointerStyleProp
   elem.style.zIndex = "1";
 }
 
-export const createNodeWithPointer = ({ id, className, style, innitialValue, innitialPointerValue }: NodeWithPointerProps): HTMLElement => {
+export const createNodeWithPointer = ({ id, className, style, initialValue, initialPointerValue }: NodeWithPointerProps): HTMLElement => {
   let upper = createElem<HTMLElement>({
     type: "div",
     id: `${id}-upper`,
     className: "node-upper",
-    innerValue: innitialValue,
+    innerValue: initialValue,
   });
   styleNodeUpper(upper, style);
   let bottom = createElem<HTMLElement>({
     type: "div",
     id: `${id}-bottom`,
     className: "node-bottom",
-    innerValue: innitialPointerValue,
+    innerValue: initialPointerValue,
   });
   styleNodeBottom(bottom, style);
   let node = createElem<HTMLElement>({

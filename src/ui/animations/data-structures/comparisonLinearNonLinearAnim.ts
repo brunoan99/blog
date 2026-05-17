@@ -83,8 +83,8 @@ export const createLinearNodeAt = (elements: Elements, tags: Tags, sizes: SizesL
       backgroundColor: "#F7F3EE",
       bottomBackgroundColor: isLastNode ? "#ededed" : "#F7F3EE",
     },
-    innitialValue: `${nodeValue}`,
-    innitialPointerValue: isLastNode ? "null" : "next",
+    initialValue: `${nodeValue}`,
+    initialPointerValue: isLastNode ? "null" : "next",
   });
 
   elements.nodesLinear.splice(nodeIndex, 0, node);
@@ -161,9 +161,9 @@ export const createNonLinearNodeAt = (elements: Elements, tags: Tags, sizes: Siz
       bottomFirstBackgroundColor: hasChild ? "#F7F3EE" : "#ededed",
       bottomSecondBackgroundColor: hasChild ? "#F7F3EE" : "#ededed",
     },
-    innitialValue: `${nodeIndex}`,
-    innitialPointerFirstValue: hasChild ? "left" : "null",
-    innitialPointerSecondValue: hasChild ? "right" : "null",
+    initialValue: `${nodeIndex}`,
+    initialPointerFirstValue: hasChild ? "left" : "null",
+    initialPointerSecondValue: hasChild ? "right" : "null",
   });
   elements.nodesNonLinear.push(node);
   elements.canvas.appendChild(node);
@@ -220,7 +220,7 @@ const createArrowsFirstLine = (elements: Elements, tags: Tags, sizes: SizesNonLi
   }
 }
 
-export const createcreateArrowsMiddleLine = (elements: Elements, tags: Tags, sizes: SizesNonLinear, nodeIndex: number) => {
+export const createArrowsMiddleLine = (elements: Elements, tags: Tags, sizes: SizesNonLinear, nodeIndex: number) => {
   let rowIndex = Math.floor(nodeIndex / 4);
   let spaceInBetween = (sizes.canvasWidth - (2 * sizes.nodeOffsetPerNode)) / 3;
   let originNodeTopOffset = sizes.nodeOffsetTop + sizes.nodeOffsetPerNode + sizes.nodeOffsetPerRow;
@@ -235,10 +235,10 @@ export const createcreateArrowsMiddleLine = (elements: Elements, tags: Tags, siz
       y: originNodeTopOffset + sizes.nodeOffsetPerNode * 0.8,
     }
     let nodeBottomRowIndex = rowIndex ? 2 : 0;
-    let spaceInBetween = (sizes.canvasWidth - (4 * sizes.nodeOffsetPerNode)) / 5;
+    let spaceInBetweenBottomNodes = (sizes.canvasWidth - (4 * sizes.nodeOffsetPerNode)) / 5;
 
     let nodeBottomTopOffset = sizes.nodeOffsetTop + 2 * (sizes.nodeOffsetPerNode + sizes.nodeOffsetPerRow);
-    let nodeBottomLeftOffset = spaceInBetween + nodeBottomRowIndex * (spaceInBetween + sizes.nodeOffsetPerNode);
+    let nodeBottomLeftOffset = spaceInBetweenBottomNodes + nodeBottomRowIndex * (spaceInBetweenBottomNodes + sizes.nodeOffsetPerNode);
     let p2 = {
       x: nodeBottomLeftOffset + sizes.nodeOffsetPerNode * 0.5,
       y: nodeBottomTopOffset,
@@ -289,7 +289,7 @@ export const createNonLinearArrowsAt = (elements: Elements, tags: Tags, sizes: S
   ) {
     // second row
     // two options to create arrows, node 1 and node 5
-    createcreateArrowsMiddleLine(elements, tags, sizes, nodeIndex);
+    createArrowsMiddleLine(elements, tags, sizes, nodeIndex);
     return
   }
   if (nodeIndex == 0
@@ -436,13 +436,10 @@ const getSequenceOfNonLinearAnimation = (numberSearched: number): number[] => {
     4: [0, 1, 4, 5, 10, 11],
     5: [0, 1, 4, 5],
     6: [0, 1, 4, 5, 12, 13],
-    7: [0, 1, 4, 5, 12, 13],
-    8: [0, 1, 4, 5, 12, 13],
-    9: [0, 1, 4, 5, 12, 13],
   } as { [key: number]: number[] }
   // if numberSearch > 6 then number will not be found but the
   // animation will be the same
-  let sequenceOfAnimations = sequenceOfAnimationsMap[numberSearched];
+  let sequenceOfAnimations = sequenceOfAnimationsMap[numberSearched] ?? [0, 1, 4, 5, 12, 13];
   return sequenceOfAnimations;
 }
 
@@ -465,8 +462,6 @@ export const createAnimationTimeline = async (elements: Elements, numberSearched
   let maxIndex = Math.max(
     sequenceOfLinearAnimation.length,
     sequenceOfNonLinearAnimation.length);
-
-  console.log("Max Index: ", maxIndex);
 
   let lastLinearAnimation = null;
   let lastNonLinearAnimation = null;

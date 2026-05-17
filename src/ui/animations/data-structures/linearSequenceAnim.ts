@@ -51,8 +51,8 @@ export const createNodeAt = (elements: Elements, tags: Tags, sizes: Sizes, nodeI
       backgroundColor: "#F7F3EE",
       bottomBackgroundColor: isLastNode ? "#ededed" : "#F7F3EE",
     },
-    innitialValue: `${nodeIndex}`,
-    innitialPointerValue: isLastNode ? "null" : "next",
+    initialValue: `${nodeIndex}`,
+    initialPointerValue: isLastNode ? "null" : "next",
   });
 
   elements.nodes.splice(nodeIndex, 0, node);

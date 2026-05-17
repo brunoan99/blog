@@ -16,9 +16,9 @@ export type NodeWithPointerProps = {
   id: string;
   className?: string;
   style: NodeWithPointerStyleProps;
-  innitialValue?: string;
-  innitialPointerFirstValue?: string;
-  innitialPointerSecondValue?: string;
+  initialValue?: string;
+  initialPointerFirstValue?: string;
+  initialPointerSecondValue?: string;
 }
 
 const styleNodeUpper = (elem: HTMLElement, style: NodeWithPointerStyleProps) => {
@@ -82,12 +82,12 @@ const styleNodeWithPointer = (elem: HTMLElement, style: NodeWithPointerStyleProp
   elem.style.zIndex = "1";
 }
 
-export const createNodeWithTwoPointers = ({ id, className, style, innitialValue, innitialPointerFirstValue, innitialPointerSecondValue }: NodeWithPointerProps): HTMLElement => {
+export const createNodeWithTwoPointers = ({ id, className, style, initialValue, initialPointerFirstValue, initialPointerSecondValue }: NodeWithPointerProps): HTMLElement => {
   let upper = createElem<HTMLElement>({
     type: "div",
     id: `${id}-upper`,
     className: "node-upper",
-    innerValue: innitialValue,
+    innerValue: initialValue,
   });
   styleNodeUpper(upper, style);
 
@@ -101,7 +101,7 @@ export const createNodeWithTwoPointers = ({ id, className, style, innitialValue,
     type: "div",
     id: `${id}-bottom-first`,
     className: "node-bottom-first",
-    innerValue: innitialPointerFirstValue,
+    innerValue: initialPointerFirstValue,
   });
   if (style.bottomFirstBackgroundColor) bottomFirst.style.backgroundColor = style.bottomFirstBackgroundColor;
   styleNodeBottomSection(bottomFirst, style, true);
@@ -111,7 +111,7 @@ export const createNodeWithTwoPointers = ({ id, className, style, innitialValue,
     type: "div",
     id: `${id}-bottom-second`,
     className: "node-bottom-second",
-    innerValue: innitialPointerSecondValue,
+    innerValue: initialPointerSecondValue,
   });
   if (style.bottomSecondBackgroundColor) bottomSecond.style.backgroundColor = style.bottomSecondBackgroundColor;
   styleNodeBottomSection(bottomSecond, style, false);
