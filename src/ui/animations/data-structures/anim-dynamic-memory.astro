@@ -114,11 +114,6 @@ import Goals from "./components/goals.astro";
     sizes.nodeAmount -= 1;
   };
 
-  const logStores = () => {
-    console.log("Current Node Value: ", currentNodeValue.get());
-    console.log("Nodes Amount: ", sizes.nodeAmount);
-  };
-
   let goals = document.getElementById(
     "dynamic-memory-goals-ul",
   ) as HTMLUListElement;
