@@ -13,6 +13,6 @@ export const createElem = <T extends HTMLElement>(props: ElemProps): T => {
   let elem = document.createElement(props.type);
   if (props.id) elem.id = props.id;
   if (props.className) elem.className = props.className;
-  if (props.innerValue) elem.innerText = props.innerValue;
+  if (props.innerValue !== undefined) elem.innerText = props.innerValue;
   return elem as T;
 }
