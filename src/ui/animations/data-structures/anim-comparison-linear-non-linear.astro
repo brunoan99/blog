@@ -176,6 +176,9 @@ import Goals from "./components/goals.astro";
     animationBlock.set(true);
     canvas.style.cursor = "wait";
 
+    const inputValue = Number(inputElem.value);
+    if (!Number.isInteger(inputValue) || inputValue < 0) return;
+
     await createAnimationTimeline(elements, parseInt(inputElem.value));
 
     canvas.style.cursor = "pointer";
