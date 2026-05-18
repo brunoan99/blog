@@ -128,7 +128,8 @@ import Goals from "./components/goals.astro";
     // if there is no nextSpot it will return -1 meaning all nodes have been clicked once.
     // and so if also the replaced goal wasn't already return the cursor to the first position.
     if (nextSpot == -1 && !replaced.get())
-      nextSpot = elements.nodes.findIndex((v) => v.innerText == "1") || 0;
+      nextSpot = elements.nodes.findIndex((v) => v.innerText == "1");
+    nextSpot = nextSpot == -1 ? 0 : nextSpot;
     // The left property that will be changed do move the cursor always starts counting from the initial position
     // of the cursor. So to cursor to move to nextSpot, will always need to set the translatX to be offsetleft + nodeSize * nextSpot.
     // and for cursor not be moved to start of node, add nodeSize * cursorPercentFromBorder;
