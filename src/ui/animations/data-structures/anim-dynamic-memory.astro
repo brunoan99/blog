@@ -184,6 +184,8 @@ import Goals from "./components/goals.astro";
       await expandCanvasIfNeeded(elements, sizes);
 
       let nodeIndex = calculateNodeIndexByEvent(e, sizes, elements);
+      if (nodeIndex == -1) return;
+
       let currentValue = currentNodeValue.get();
 
       if (
