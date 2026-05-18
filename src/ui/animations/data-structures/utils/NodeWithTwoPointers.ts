@@ -40,13 +40,12 @@ const styleNodeBottom = (elem: HTMLElement, style: NodeWithPointerStyleProps) =>
   elem.style.fontWeight = "bold";
   elem.style.fontSize = "12px";
   elem.style.display = "flex";
+  elem.style.flexDirection = "row";
   if (style.bottomFirstBackgroundColor) elem.style.backgroundColor = style.bottomFirstBackgroundColor;
   elem.style.alignItems = "center";
   elem.style.justifyContent = "center";
   elem.style.position = "relative";
   elem.style.userSelect = "none";
-  elem.style.display = "flex";
-  elem.style.flexDirection = "row";
 }
 
 const styleNodeBottomSection = (elem: HTMLElement, style: NodeWithPointerStyleProps, isLeft: boolean = true) => {
