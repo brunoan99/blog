@@ -173,90 +173,97 @@ import Goals from "./components/goals.astro";
     animationBlock.set(true);
     canvas.style.cursor = "wait";
 
-    let clickAction = calculateClickActionByEvent(e);
-    if (clickAction == "insert") {
-      // Insert Action
-      // Every Insert Action requires a node and a arrow to be created.
-      // The position of the node to be insert should be calculated.
-      // The arrow to be inserted will alyways be the last one.
-      if (!any.get()) any.set(true);
+    try {
+      let clickAction = calculateClickActionByEvent(e);
+      if (clickAction == "insert") {
+        // Insert Action
+        // Every Insert Action requires a node and a arrow to be created.
+        // The position of the node to be insert should be calculated.
+        // The arrow to be inserted will alyways be the last one.
+        if (!any.get()) any.set(true);
 
-      await expandCanvasIfNeeded(elements, sizes);
+        await expandCanvasIfNeeded(elements, sizes);
 
-      let nodeIndex = calculateNodeIndexByEvent(e, sizes, elements);
-      if (nodeIndex == -1) return;
+        let nodeIndex = calculateNodeIndexByEvent(e, sizes, elements);
+        if (nodeIndex == -1) return;
 
-      let currentValue = currentNodeValue.get();
+        let currentValue = currentNodeValue.get();
 
-      if (
-        !between.get() &&
-        sizes.nodeAmount >= 2 &&
-        nodeIndex != 0 &&
-        nodeIndex != sizes.nodeAmount
-      )
-        between.set(true);
+        if (
+          !between.get() &&
+          sizes.nodeAmount >= 2 &&
+          nodeIndex != 0 &&
+          nodeIndex != sizes.nodeAmount
+        )
+          between.set(true);
 
-      if (!atStart.get() && nodeIndex == 0 && sizes.nodeAmount > 0)
-        atStart.set(true);
+        if (!atStart.get() && nodeIndex == 0 && sizes.nodeAmount > 0)
+          atStart.set(true);
 
-      if (!atLeastFive.get() && currentValue >= 4) atLeastFive.set(true);
+        if (!atLeastFive.get() && currentValue >= 4) atLeastFive.set(true);
 
-      if (sizes.nodeAmount != 0) createArrowAtEnd(elements, tags, sizes);
+        if (sizes.nodeAmount != 0) createArrowAtEnd(elements, tags, sizes);
 
-      let positionToPush = sizes.nodeAmount - 1;
-      while (positionToPush >= nodeIndex) {
-        await moveNodeTo(
-          elements.nodes[positionToPush],
-          positionToPush + 1,
-          sizes,
+        let positionToPush = sizes.nodeAmount - 1;
+        while (positionToPush >= nodeIndex) {
+          await moveNodeTo(
+            elements.nodes[positionToPush],
+            positionToPush + 1,
+            sizes,
+          );
+          positionToPush--;
+        }
+
+        createNodeAt(elements, tags, sizes, nodeIndex, currentValue);
+
+        increaseStores();
+      } else if (clickAction == "remove") {
+        // Remove Action
+        // Every Remove Action requires a node and a arrow to be removed.
+        // The position of the node to be removed should be calculated.
+        // The arrow to be removed will always be the last one.
+
+        let nodeIndex = calculateNodeIndexByNodePosition(
+          e.target as HTMLElement,
+          elements,
         );
-        positionToPush--;
+
+        let wasFirst = nodeIndex == 0;
+        let wasLast = nodeIndex == elements.nodes.length - 1;
+
+        removeNodeAt(elements, nodeIndex);
+
+        if (!anyRemoved.get()) anyRemoved.set(true);
+
+        if (!betweenRemoved.get() && !wasFirst && !wasLast)
+          betweenRemoved.set(true);
+
+        if (!atStartRemoved.get() && nodeIndex == 0) atStartRemoved.set(true);
+
+        if (!atEndRemoved.get() && wasLast) atEndRemoved.set(true);
+
+        if (!removedAll.get() && elements.nodes.length == 0)
+          removedAll.set(true);
+
+        let positionToPull = nodeIndex;
+        while (positionToPull < sizes.nodeAmount - 1) {
+          await moveNodeTo(
+            elements.nodes[positionToPull],
+            positionToPull,
+            sizes,
+          );
+          positionToPull++;
+        }
+
+        removeArrowAtEnd(elements);
+
+        decreaseStores();
+
+        await shrinkCanvasIfNeeded(elements, sizes);
       }
-
-      createNodeAt(elements, tags, sizes, nodeIndex, currentValue);
-
-      increaseStores();
-    } else if (clickAction == "remove") {
-      // Remove Action
-      // Every Remove Action requires a node and a arrow to be removed.
-      // The position of the node to be removed should be calculated.
-      // The arrow to be removed will always be the last one.
-
-      let nodeIndex = calculateNodeIndexByNodePosition(
-        e.target as HTMLElement,
-        elements,
-      );
-
-      let wasFirst = nodeIndex == 0;
-      let wasLast = nodeIndex == elements.nodes.length - 1;
-
-      removeNodeAt(elements, nodeIndex);
-
-      if (!anyRemoved.get()) anyRemoved.set(true);
-
-      if (!betweenRemoved.get() && !wasFirst && !wasLast)
-        betweenRemoved.set(true);
-
-      if (!atStartRemoved.get() && nodeIndex == 0) atStartRemoved.set(true);
-
-      if (!atEndRemoved.get() && wasLast) atEndRemoved.set(true);
-
-      if (!removedAll.get() && elements.nodes.length == 0) removedAll.set(true);
-
-      let positionToPull = nodeIndex;
-      while (positionToPull < sizes.nodeAmount - 1) {
-        await moveNodeTo(elements.nodes[positionToPull], positionToPull, sizes);
-        positionToPull++;
-      }
-
-      removeArrowAtEnd(elements);
-
-      decreaseStores();
-
-      await shrinkCanvasIfNeeded(elements, sizes);
+    } finally {
+      canvas.style.cursor = "pointer";
+      animationBlock.set(false);
     }
-
-    canvas.style.cursor = "pointer";
-    animationBlock.set(false);
   };
 </script>
