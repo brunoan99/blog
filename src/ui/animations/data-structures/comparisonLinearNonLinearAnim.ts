@@ -471,18 +471,19 @@ export const createAnimationTimeline = async (elements: Elements, numberSearched
       let linearIndex = sequenceOfLinearAnimation[index];
       let linearElement = elementsLinear[linearIndex];
 
-      if (!isLast) linearElement.animate([
-        { scale: 1 },
-        { scale: linearElement.id.includes("arrow") ? 1.12 : 1.15 },
-        { scale: 1 },
-      ], {
-        duration: 1000,
-        direction: "alternate",
-        fill: "none",
-        delay: index * 1000,
-      });
-      else
-        lastLinearAnimation = createLastNodeLinearAnimation(linearElement as HTMLElement, maxDuration - linearDuration, index * 1000, color);
+      if (!linearElement) { } else
+        if (!isLast) linearElement.animate([
+          { scale: 1 },
+          { scale: linearElement.id.includes("arrow") ? 1.12 : 1.15 },
+          { scale: 1 },
+        ], {
+          duration: 1000,
+          direction: "alternate",
+          fill: "none",
+          delay: index * 1000,
+        });
+        else
+          lastLinearAnimation = createLastNodeLinearAnimation(linearElement as HTMLElement, maxDuration - linearDuration, index * 1000, color);
     }
 
     if (index <= sequenceOfNonLinearAnimation.length - 1) {
@@ -490,17 +491,18 @@ export const createAnimationTimeline = async (elements: Elements, numberSearched
       let nonLinearIndex = sequenceOfNonLinearAnimation[index];
       let nonLinearElement = elementsNonLinear[nonLinearIndex];
 
-      if (!isLast) nonLinearElement.animate([
-        { scale: 1 },
-        { scale: nonLinearElement.id.includes("arrow") ? 1.12 : 1.15 },
-        { scale: 1 },
-      ], {
-        duration: 1000,
-        direction: "alternate",
-        fill: "none",
-        delay: index * 1000,
-      });
-      else lastNonLinearAnimation = createLastNodeNonLinearAnimation(nonLinearElement as HTMLElement, maxDuration - nonLinearDuration, index * 1000, color);
+      if (!nonLinearElement) { } else
+        if (!isLast) nonLinearElement.animate([
+          { scale: 1 },
+          { scale: nonLinearElement.id.includes("arrow") ? 1.12 : 1.15 },
+          { scale: 1 },
+        ], {
+          duration: 1000,
+          direction: "alternate",
+          fill: "none",
+          delay: index * 1000,
+        });
+        else lastNonLinearAnimation = createLastNodeNonLinearAnimation(nonLinearElement as HTMLElement, maxDuration - nonLinearDuration, index * 1000, color);
 
     }
 

@@ -131,7 +131,7 @@ export const calculateNodeIndexByEvent = (event: PointerEvent, sizes: Sizes, ele
       return calculateNodeIndexByCanvasPosition(event, sizes);
     default:
       console.log(target);
-      throw new Error("Unknown target element");
+      return -1;
   }
 }
 

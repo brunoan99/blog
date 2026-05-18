@@ -105,6 +105,8 @@ export const createSequenceAnimation = async (elements: Elements) => {
   for (let index of sequenceOfAnimations) {
     let element = elementsToAnimate[index];
 
+    if (!element) continue;
+
     element.style.willChange = "scale";
 
     let animation = element.animate([

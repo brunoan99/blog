@@ -124,6 +124,8 @@ export const createSequenceAnimation = async (elements: Elements) => {
     zIndex--;
   }
   for (let element of elementsToAnimate) {
+    if (!element) continue;
+
     element.style.willChange = "scale";
 
     let animation = element.animate([
