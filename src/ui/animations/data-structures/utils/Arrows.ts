@@ -104,17 +104,21 @@ const arrowDown = ({ id, arrowWidth, top, left, nodeWidth, nodeHeight, heightPer
   const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
 
   const x = nodeWidth / 2;
+  const headLen = 8;
+  const remainingHeight = nodeHeight - cy;
+  const totalDistance = remainingHeight + arrowWidth;
+  const lineEndY = totalDistance - headLen;
 
   line.setAttribute('x1', `${x}`);
-  line.setAttribute('y1', `${0}`);
+  line.setAttribute('y1', `${10}`);
   line.setAttribute('x2', `${x}`);
-  line.setAttribute('y2', `${nodeHeight / 2 - 8 + 8}`);
+  line.setAttribute('y2', `${lineEndY}`);
   line.setAttribute('fill', '#674d3d');
   line.setAttribute('stroke', '#674d3d');
   line.setAttribute('stroke-width', '1.5');
 
 
-  poly.setAttribute('points', `${x},${nodeHeight / 2 + 6} ${x - 4},${nodeHeight / 2 - 8 + 6} ${x + 4},${nodeHeight / 2 - 8 + 6}`);
+  poly.setAttribute('points', `${x},${totalDistance} ${x - 4},${lineEndY} ${x + 4},${lineEndY}`);
   poly.setAttribute('fill', '#674d3d');
   poly.setAttribute('stroke', '#674d3d');
   poly.setAttribute('stroke-width', '1.5');
@@ -133,7 +137,7 @@ const arrowUp = ({ id, arrowWidth, top, left, nodeWidth, nodeHeight, heightPerce
   arrow.style.height = "1px";
   arrow.style.flexShrink = "0";
   arrow.style.overflow = "visible";
-  arrow.style.top = `${top + he}px`
+  arrow.style.top = `${top + he - arrowWidth}px`
   arrow.style.left = `${left + nodeWidth * 0.25}px`
   arrow.style.position = "absolute";
   arrow.style.userSelect = "none";
@@ -143,17 +147,19 @@ const arrowUp = ({ id, arrowWidth, top, left, nodeWidth, nodeHeight, heightPerce
   const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
 
   const x = nodeWidth / 2;
+  const headLen = 8;
+  const totalDistance = arrowWidth;
+  const lineStartY = totalDistance - 8;
 
   line.setAttribute('x1', `${x}`);
-  line.setAttribute('y1', `${18}`);
+  line.setAttribute('y1', `${lineStartY}`);
   line.setAttribute('x2', `${x}`);
-  line.setAttribute('y2', `${nodeHeight / 2 + 8}`);
+  line.setAttribute('y2', `${headLen}`);
   line.setAttribute('fill', '#674d3d');
   line.setAttribute('stroke', '#674d3d');
   line.setAttribute('stroke-width', '1.5');
 
-  const n = -1 * (nodeHeight / 2 - 6 + 6) / 2;
-  poly.setAttribute('points', `${x},${nodeHeight / 2 - 6 + n} ${x - 4},${nodeHeight / 2 + 8 - 6 + n} ${x + 4},${nodeHeight / 2 + 8 - 6 + n}`);
+  poly.setAttribute('points', `${x},${0} ${x - 4},${headLen} ${x + 4},${headLen}`);
   poly.setAttribute('fill', '#674d3d');
   poly.setAttribute('stroke', '#674d3d');
   poly.setAttribute('stroke-width', '1.5');
