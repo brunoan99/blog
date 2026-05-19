@@ -26,9 +26,16 @@ import Goals from "./components/goals.astro";
   let canvasWidth = canvas.clientWidth;
   let canvasHeight = canvas.clientHeight;
 
-  let arrowWidth = 56;
   let nodeLimitPerRow = 4;
   let nodeSize = 90; // node visual size
+  // on dynamic memory animation the screem should be able to fit 4 nodes which means:
+  // 4 nodes + 3 arrows, if the arrow size is half of the node size.
+  // so the line should be able to fit 5,5 nodes + left and right margins.
+  // if each margin is half of the node size too, then 6,5 nodes.
+  nodeSize = Math.min(nodeSize, canvasWidth / 6.5);
+
+  let arrowWidth = nodeSize / 2;
+
   let borderSize = 2;
   let nodeOffsetPerNode = nodeSize + borderSize; // +2 cause of the border
   let nodeOffsetLeft =
@@ -36,8 +43,8 @@ import Goals from "./components/goals.astro";
       nodeOffsetPerNode * nodeLimitPerRow -
       arrowWidth * (nodeLimitPerRow - 1)) /
     2;
-  let nodeOffsetTop = 74;
-  let nodeOffsetPerRow = 30;
+  let nodeOffsetTop = (canvasHeight - nodeOffsetPerNode) / 2;
+  let nodeOffsetPerRow = arrowWidth;
   let rowHorizontalSize =
     nodeLimitPerRow * nodeOffsetPerNode + (nodeLimitPerRow - 1) * arrowWidth;
 
