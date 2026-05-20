@@ -40,15 +40,20 @@ import "../../styles/global.css";
   import { inputValue } from "./stores/node-example.store";
 
   let canvas = document.getElementById("static-node-canvas") as HTMLElement;
-  let width = canvas.clientWidth;
-  let height = canvas.clientHeight;
+  let canvasWidth = canvas.clientWidth;
+  let canvasHeight = canvas.clientHeight;
 
   // insert node on canvas
   let size = 120; // node size
+  size = Math.min(size, canvasWidth / 3);
   let offsetPerNode = size + 2; // +2 cause of the border
-  let offsetBinLeft = (width - 2 * offsetPerNode) / 3;
-  let offsetNodeLeft = offsetBinLeft * 2 + offsetPerNode;
-  let offsetTop = (height - offsetPerNode) / 2;
+
+  // space from start to bits, from bits to node and node to end.
+  let spaceInBetween = (canvasWidth - 2 * offsetPerNode) / 3;
+
+  let offsetBinLeft = spaceInBetween;
+  let offsetNodeLeft = spaceInBetween * 2 + offsetPerNode;
+  let offsetTop = (canvasHeight - offsetPerNode) / 2;
 
   let node = createNode({
     id: "static-node-example-1",

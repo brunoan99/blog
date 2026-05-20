@@ -23,7 +23,6 @@ export type NodeWithPointerProps = {
 
 const styleNodeUpper = (elem: HTMLElement, style: NodeWithPointerStyleProps) => {
   elem.style.height = `${style.size * 0.6}px`;
-  elem.style.padding = "8px 12px";
   elem.style.borderBottom = "#000 solid 1px";
   elem.style.textAlign = "flex";
   elem.style.fontWeight = "bold";

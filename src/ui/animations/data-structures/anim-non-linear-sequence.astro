@@ -28,20 +28,42 @@ import Goals from "./components/goals.astro";
   let canvasWidth = canvas.clientWidth;
   let canvasHeight = canvas.clientHeight;
 
-  let arrowWidth = 56;
   let nodeLimitPerRow = 4;
   let nodeSize = 90; // node visual size
+  nodeSize = Math.min(nodeSize, canvasWidth / 6.5);
+
   let borderSize = 2;
-  let nodeOffsetPerNode = nodeSize + borderSize; // +2 cause of the border
+  let nodeOffsetPerNode = nodeSize + borderSize; // +2 cause of
+  // the border
+
+  let arrowWidth = nodeSize / 2;
+  console.log(arrowWidth);
+
   let nodeOffsetLeft =
     (canvasWidth -
       nodeOffsetPerNode * nodeLimitPerRow -
       arrowWidth * (nodeLimitPerRow - 1)) /
     2;
-  let nodeOffsetPerRow = 41;
-  let nodeOffsetTop = 74 + nodeOffsetPerNode + nodeOffsetPerRow;
+  let nodeOffsetPerRow = arrowWidth;
+  let nodeOffsetTop =
+    (canvasHeight - 3 * nodeOffsetPerNode - 2 * arrowWidth) / 2;
+  if (nodeSize != 90) nodeOffsetTop = 50;
+  let nodeOffsetTopFirstRow = nodeOffsetTop;
+  let nodeOffsetTopSecondRow =
+    nodeOffsetTop + nodeOffsetPerNode + nodeOffsetPerRow;
+  let nodeOffsetTopThirdRow =
+    nodeOffsetTopSecondRow + nodeOffsetPerNode + nodeOffsetPerRow;
+  console.log("NodeOffsetPerNode", nodeOffsetPerNode);
+  console.log("NodeOffsetPerRow", nodeOffsetPerRow);
+  console.log("First row", nodeOffsetTopFirstRow);
+  console.log("Second row", nodeOffsetTopSecondRow);
+  console.log("Third row", nodeOffsetTopThirdRow);
+
   let rowHorizontalSize =
     nodeLimitPerRow * nodeOffsetPerNode + (nodeLimitPerRow - 1) * arrowWidth;
+
+  canvasHeight = 2 * nodeOffsetTop + 3 * nodeOffsetPerNode + 2 * arrowWidth;
+  canvas.style.height = `${canvasHeight}px`;
 
   let sizes = {
     canvasWidth,
@@ -68,7 +90,7 @@ import Goals from "./components/goals.astro";
     id: "non-linear-sequence-root-arrow",
     arrowWidth: sizes.arrowWidth,
     arrowType: "root",
-    top: sizes.nodeOffsetTop,
+    top: nodeOffsetTopSecondRow,
     left: sizes.nodeOffsetLeft - sizes.arrowWidth - sizes.nodeSize,
     nodeHeight: sizes.nodeSize,
     nodeWidth: sizes.nodeSize,
@@ -79,6 +101,9 @@ import Goals from "./components/goals.astro";
   let tags = {
     nodesClassName,
   };
+
+  // create nodes in line from 0 to 3
+  sizes.nodeOffsetTop = nodeOffsetTopSecondRow;
   for (let nodeIndex = 0; nodeIndex < sizes.nodeAmount; nodeIndex++) {
     createNodeAt(elements, tags, sizes, nodeIndex, `${nodeIndex}`);
     if (nodeIndex != sizes.nodeAmount - 1) {
@@ -86,20 +111,32 @@ import Goals from "./components/goals.astro";
       createArrowAt(elements, nodeIndex, tags, sizes, "left", 0.7);
     }
   }
-  sizes.nodeOffsetTop = 74;
+
+  // create node 4 and arrows
+  sizes.nodeOffsetTop = nodeOffsetTopFirstRow;
   createNodeAt(elements, tags, sizes, 1, "4");
-  sizes.nodeOffsetTop = 72;
+
+  // create node 4 arrow up
+  sizes.nodeOffsetTop = nodeOffsetTopFirstRow;
   createArrowAt(elements, 1, tags, sizes, "up", 0.9);
-  sizes.nodeOffsetTop = 74;
+
+  // create node 4 arrow down
+  sizes.nodeOffsetTop = nodeOffsetTopFirstRow;
   let previousLeft = sizes.nodeOffsetLeft;
   sizes.nodeOffsetLeft = previousLeft - sizes.nodeSize / 2;
   createArrowAt(elements, 1, tags, sizes, "down", 0.9);
+  // reset left
   sizes.nodeOffsetLeft = previousLeft;
 
-  sizes.nodeOffsetTop = 278 + 30 + 30;
+  // create node 5 and arrows
+  sizes.nodeOffsetTop = nodeOffsetTopThirdRow;
   createNodeAt(elements, tags, sizes, 2, "5");
-  sizes.nodeOffsetTop = 204;
+  sizes.nodeOffsetTop = nodeOffsetTopSecondRow;
+
+  // create node 5 arrow down
   createArrowAt(elements, 2, tags, sizes, "down", 0.9);
+
+  // create node 5 arrow up
   sizes.nodeOffsetLeft = previousLeft - sizes.nodeSize / 2;
   createArrowAt(elements, 2, tags, sizes, "up", 0.9);
 
