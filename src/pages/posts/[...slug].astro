@@ -1,32 +1,32 @@
 ---
-import { getCollection, type CollectionEntry } from "astro:content"
+import { getCollection, render, type CollectionEntry } from "astro:content";
 import PostLayout from "../../ui/layouts/PostLayout.astro";
 
 export async function getStaticPaths() {
-	const posts = await getCollection('posts');
-	return posts.map((post) => ({
-		params: { slug: post.slug },
-		props: post,
-	}));
+  const posts = await getCollection("posts");
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: post,
+  }));
 }
 
 type Props = CollectionEntry<"posts">;
 
 const post = Astro.props;
-const { Content, headings } = await post.render();
+const { Content, headings } = await render(post);
 
 const metadata = {
   title: post.data.title,
   description: post.data.description,
   pubDate: post.data.pubDate,
   updatedDate: post.data.updatedDate,
-  slug: post.slug
+  slug: post.id,
 };
 
-const summary = headings.map(h => ({
+const summary = headings.map((h) => ({
   id: h.slug,
   level: h.depth,
-  label: h.text
+  label: h.text,
 }));
 
 const props = {
@@ -34,6 +34,7 @@ const props = {
   summary,
 };
 ---
+
 <PostLayout {...props}>
   <Content />
 </PostLayout>
