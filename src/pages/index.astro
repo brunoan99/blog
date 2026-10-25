@@ -1,15 +1,15 @@
 ---
 import { getCollection } from "astro:content";
-import HomeLayout from "../ui/layouts/HomeLayout.astro"
+import HomeLayout from "../ui/layouts/HomeLayout.astro";
 
-let postsC = (await getCollection('posts')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+let postsC = (await getCollection("posts")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
-let posts = postsC.map(post => ({
+let posts = postsC.map((post) => ({
   title: post.data.title,
-  slug: post.slug,
+  slug: post.id,
   date: post.data.pubDate,
-}))
+}));
 ---
 
 <HomeLayout {posts} />
