@@ -1,5 +1,9 @@
 packages: []
 
-ignoreBuiltDependencies:
+allowBuilds:
+  esbuild: false
+  sharp: false
+
+ignoredBuiltDependencies:
   - esbuild
   - sharp
